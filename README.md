@@ -1,1 +1,1 @@
-# everguide
+Everguide Server Repository 입니다. 
