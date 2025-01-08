@@ -15,9 +15,9 @@ jobs:
           distribution: 'adopt'
       - name: Make application.yml
         run: |
-          cd ./src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+          mkdir -p ./src/main/resources
+          touch ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
         shell: bash
       - name: ./gradlew test
         run: |

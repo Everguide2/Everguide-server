@@ -37,3 +37,8 @@ out/
 .vscode/
 
 .DS_Store
+
+### Application Config ###
+src/main/resources/application-*.yml
+!src/main/resources/application.yml
+src/main/resources/application.yml
