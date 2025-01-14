@@ -1,4 +1,4 @@
-package com.example.everguide.domain.user;
+package com.example.everguide.domain;
 
 import com.example.everguide.domain.common.BaseEntity;
 import com.example.everguide.domain.enums.Gender;
@@ -41,6 +41,9 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String phoneNumber;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MemberSurvey memberSurvey;
 
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */
 }
