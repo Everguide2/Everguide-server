@@ -41,9 +41,5 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String phoneNumber;
-
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    private MemberSurvey memberSurvey;
-
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */
 }
