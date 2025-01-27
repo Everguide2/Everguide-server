@@ -35,7 +35,7 @@ public class Survey extends BaseEntity {
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private Set<ResourceType> resourceTypes; // 필요한 자원 (다중 선택)
+    private Set<SupportType> supportTypes; // 필요한 자원 (다중 선택)
 
     @ElementCollection
     @Enumerated(EnumType.STRING)

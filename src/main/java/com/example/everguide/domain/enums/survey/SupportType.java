@@ -1,6 +1,6 @@
 package com.example.everguide.domain.enums.survey;
 
-public enum ResourceType {
+public enum SupportType {
     PHYSICAL_HEALTH,
     MENTAL_HEALTH,
     LIFE_SUPPORT,
