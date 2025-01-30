@@ -3,6 +3,7 @@ package com.example.everguide.domain;
 import com.example.everguide.domain.common.BaseEntity;
 import com.example.everguide.domain.enums.Region;
 import com.example.everguide.domain.enums.survey.HouseholdType;
+import com.example.everguide.domain.enums.survey.LifeCycleType;
 import com.example.everguide.domain.enums.survey.SupportType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +38,10 @@ public class Policy extends BaseEntity {
     @ElementCollection
     @Enumerated(EnumType.STRING)
     private Set<SupportType> supportTypes; // intrsThemaNmArray 관심주제명
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private Set<LifeCycleType> lifeCycleTypes;  // lifeArray 생애 주기
 
     @Column(nullable = false)
     private String applyMethod; // aplyMtdNm 신청방법명
