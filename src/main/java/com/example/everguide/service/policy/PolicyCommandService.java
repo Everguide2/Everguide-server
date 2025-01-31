@@ -1,6 +1,7 @@
 package com.example.everguide.service.policy;
 
 import com.example.everguide.web.dto.policy.PolicyApiRequest;
+import reactor.core.publisher.Mono;
 
 public interface PolicyCommandService {
 
@@ -11,4 +12,6 @@ public interface PolicyCommandService {
      * @param request API 요청에 필요한 파라미터를 담은 객체
      */
     void savePolicies(PolicyApiRequest request);
+
+    Mono<Void> fetchAndSavePolicies(PolicyApiRequest request);
 }

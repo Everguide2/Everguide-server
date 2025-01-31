@@ -1,88 +1,86 @@
 package com.example.everguide.web.dto.policy;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@JacksonXmlRootElement(localName = "wantedList")
+@XmlRootElement(name = "OpenAPI_ServiceResponse")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class PolicyApiResponse {
 
-    @JacksonXmlProperty(localName = "totalCount")
+    @XmlElement(name = "totalCount")
     // private int totalCount;
     private String totalCount;
 
-    @JacksonXmlProperty(localName = "pageNo")
+    @XmlElement(name = "pageNo")
     // private int pageNo;
     private String pageNo;
 
-    @JacksonXmlProperty(localName = "numOfRows")
+    @XmlElement(name = "numOfRows")
     // private int numOfRows;
     private String numOfRows;
 
-    @JacksonXmlProperty(localName = "resultCode")
+    @XmlElement(name = "resultCode")
     private String resultCode;
 
-    @JacksonXmlProperty(localName = "resultMessage")
+    @XmlElement(name = "resultMessage")
     private String resultMessage;
 
-    @JacksonXmlElementWrapper(useWrapping = false)
-    @JacksonXmlProperty(localName = "servList")
+    @XmlElementWrapper(name = "servList")
+    @XmlElement(name = "servList")
     private List<PolicyItem> servList;
 
     @Getter
     @NoArgsConstructor
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class PolicyItem {
-        @JacksonXmlProperty(localName = "bizChrDeptNm")
+        @XmlElement(name = "bizChrDeptNm")
         private String bizChrDeptNm;  // 사업담당부서명
 
-        @JacksonXmlProperty(localName = "ctpvNm")
+        @XmlElement(name = "ctpvNm")
         private String ctpvNm;        // 시도명
 
-        @JacksonXmlProperty(localName = "sggNm")
+        @XmlElement(name = "sggNm")
         private String sggNm;         // 시군구명
 
-        @JacksonXmlProperty(localName = "servDgst")
+        @XmlElement(name = "servDgst")
         private String servDgst;      // 서비스요약
 
-        @JacksonXmlProperty(localName = "servDtlLink")
+        @XmlElement(name = "servDtlLink")
         private String servDtlLink;   // 서비스상세링크
 
-        @JacksonXmlProperty(localName = "lifeNmArray")
+        @XmlElement(name = "lifeNmArray")
         private String lifeNmArray;   // 생애주기명
 
-        @JacksonXmlProperty(localName = "intrsThemaNmArray")
+        @XmlElement(name = "intrsThemaNmArray")
         private String intrsThemaNmArray;  // 관심주제명
 
-        @JacksonXmlProperty(localName = "sprtCycNm")
+        @XmlElement(name = "sprtCycNm")
         private String sprtCycNm;     // 지원주기명
 
-        @JacksonXmlProperty(localName = "srvPvsnNm")
+        @XmlElement(name = "srvPvsnNm")
         private String srvPvsnNm;     // 제공유형명
 
-        @JacksonXmlProperty(localName = "aplyMtdNm")
+        @XmlElement(name = "aplyMtdNm")
         private String aplyMtdNm;     // 신청방법명
 
-        @JacksonXmlProperty(localName = "inqNum")
+        @XmlElement(name = "inqNum")
         private String inqNum;        // 조회수
 
-        @JacksonXmlProperty(localName = "lastModYmd")
+        @XmlElement(name = "lastModYmd")
         private String lastModYmd;    // 최종수정일자
 
-        @JacksonXmlProperty(localName = "servId")
+        @XmlElement(name = "servId")
         private String servId;        // 서비스ID
 
-        @JacksonXmlProperty(localName = "servNm")
+        @XmlElement(name = "servNm")
         private String servNm;        // 서비스명
 
-        @JacksonXmlProperty(localName = "trgterIndvdlNmArray")
+        @XmlElement(name = "trgterIndvdlNmArray")
         private String trgterIndvdlNmArray;  // 가구상황명
 
     }

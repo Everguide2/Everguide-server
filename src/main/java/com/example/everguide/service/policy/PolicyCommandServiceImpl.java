@@ -9,9 +9,11 @@ import com.example.everguide.domain.enums.survey.SupportType;
 import com.example.everguide.repository.PolicyRepository;
 import com.example.everguide.web.dto.policy.PolicyApiRequest;
 import com.example.everguide.web.dto.policy.PolicyApiResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,29 +23,45 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class PolicyCommandServiceImpl implements PolicyCommandService {
 
-    private final PolicyRepository policyRepository;
     private final PolicyApiClient policyApiClient;
+    private final PolicyRepository policyRepository;
+
+    @Override
+    public Mono<Void> fetchAndSavePolicies(PolicyApiRequest request) {
+        return policyApiClient.fetchPolicies(request)
+                .doOnNext(response -> {
+                    response.getServList().forEach(item -> {
+                        Policy policy = convertToPolicy(item);
+                        policyRepository.findByServiceId(policy.getServiceId())
+                                .ifPresentOrElse(
+                                        existingPolicy -> {
+                                            if (existingPolicy.getLastModifiedDate().isBefore(policy.getLastModifiedDate())) {
+                                                policyRepository.save(policy);
+                                                log.info("Policy updated: {}", policy.getServiceId());
+                                            } else {
+                                                log.info("Policy already up to date: {}", policy.getServiceId());
+                                            }
+                                        },
+                                        () -> {
+                                            policyRepository.save(policy);
+                                            log.info("New policy saved: {}", policy.getServiceId());
+                                        }
+                                );
+                    });
+                })
+                .then();
+    }
 
     @Override
     public void savePolicies(PolicyApiRequest request) {
-
-        policyApiClient.fetchPolicies(request)
-                .flatMapIterable(PolicyApiResponse::getServList)
-                .map(this::convertToPolicy)
-                .flatMap(policy -> Mono.fromCallable(() -> saveOrUpdatePolicy(policy)))
-                .subscribe(
-                        saved -> log.info("Policy saved/updated: {}", saved.getServiceId()),
-                        error -> log.error("Error saving policy", error)
-                );
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'savePolicies'");
     }
 
     private Policy saveOrUpdatePolicy(Policy policy) {
@@ -132,4 +150,5 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
                 .collect(Collectors.toSet());
     }
 
-} 
+
+}

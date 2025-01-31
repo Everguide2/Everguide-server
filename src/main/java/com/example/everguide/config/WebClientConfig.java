@@ -7,7 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
+import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
@@ -26,21 +30,47 @@ public class WebClientConfig {
      * 각 WebClient는 해당 API의 baseUrl을 사용하여 초기화
      */
 
+    // 정책 API WebClient 생성
     @Bean
     public WebClient policyWebClient() {
-        return createWebClient(apiProperties.getPolicy().getBaseUrl());
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> {
+                    configurer.defaultCodecs().maxInMemorySize(MAX_MEMORY_SIZE);
+                    configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder());
+                    configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
+                })
+                .build();
+
+        return WebClient.builder()
+                .baseUrl(apiProperties.getPolicy().getBaseUrl())
+                .exchangeStrategies(strategies)
+                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
+                .build();
     }
 
     @Bean
     public WebClient educationWebClient() {
-        return createWebClient(apiProperties.getEducation().getBaseUrl());
+        return WebClient.builder()
+                .baseUrl(apiProperties.getEducation().getBaseUrl())
+                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
+                .codecs(configurer -> {
+                    configurer.defaultCodecs().maxInMemorySize(MAX_MEMORY_SIZE);
+                })
+                .build();
     }
 
     @Bean
     public WebClient jobWebClient() {
-        return createWebClient(apiProperties.getJob().getBaseUrl());
+        return WebClient.builder()
+                .baseUrl(apiProperties.getJob().getBaseUrl())
+                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
+                .codecs(configurer -> {
+                    configurer.defaultCodecs().maxInMemorySize(MAX_MEMORY_SIZE);
+                })
+                .build();
     }
 
+    /* 공통 설정 메서드 */
     private WebClient createWebClient(String baseUrl) {
         return WebClient.builder()
                 .baseUrl(baseUrl)
@@ -51,7 +81,6 @@ public class WebClientConfig {
                 .build();
     }
 
-    /* 공통 설정 메서드 */
     private HttpClient createHttpClient() {
         return HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT)

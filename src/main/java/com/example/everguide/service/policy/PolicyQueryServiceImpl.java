@@ -12,4 +12,6 @@ import com.example.everguide.repository.PolicyRepository;
 public class PolicyQueryServiceImpl implements PolicyQueryService {
     
     private final PolicyRepository policyRepository;
+
+    
 } 
