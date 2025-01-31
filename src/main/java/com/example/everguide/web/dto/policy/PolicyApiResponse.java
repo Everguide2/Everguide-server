@@ -16,13 +16,16 @@ import java.util.List;
 public class PolicyApiResponse {
 
     @JacksonXmlProperty(localName = "totalCount")
-    private int totalCount;
+    // private int totalCount;
+    private String totalCount;
 
     @JacksonXmlProperty(localName = "pageNo")
-    private int pageNo;
+    // private int pageNo;
+    private String pageNo;
 
     @JacksonXmlProperty(localName = "numOfRows")
-    private int numOfRows;
+    // private int numOfRows;
+    private String numOfRows;
 
     @JacksonXmlProperty(localName = "resultCode")
     private String resultCode;
@@ -37,51 +40,50 @@ public class PolicyApiResponse {
     @Getter
     @NoArgsConstructor
     public static class PolicyItem {
-        @JacksonXmlProperty(localName = "aplyMtdNm")
-        private String applyMethod;
-
         @JacksonXmlProperty(localName = "bizChrDeptNm")
-        private String chargeDepartment;
+        private String bizChrDeptNm;  // 사업담당부서명
 
         @JacksonXmlProperty(localName = "ctpvNm")
-        private String targetRegion;
+        private String ctpvNm;        // 시도명
 
-        @JacksonXmlProperty(localName = "inqNum")
-        private Integer inquiryNumber;
-
-        @JacksonXmlProperty(localName = "intrsThemaNmArray")
-        private List<String> supportTypes;
-
-        @JacksonXmlProperty(localName = "lastModYmd")
-        @JsonFormat(pattern = "yyyyMMdd")
-        private LocalDateTime lastModifiedDate;
-
-        @JacksonXmlProperty(localName = "lifeNmArray")
-        private List<String> lifeArray;
+        @JacksonXmlProperty(localName = "sggNm")
+        private String sggNm;         // 시군구명
 
         @JacksonXmlProperty(localName = "servDgst")
-        private String serviceDigest;
+        private String servDgst;      // 서비스요약
 
         @JacksonXmlProperty(localName = "servDtlLink")
-        private String serviceDetailLink;
+        private String servDtlLink;   // 서비스상세링크
 
-        @JacksonXmlProperty(localName = "servId")
-        private String serviceId;
+        @JacksonXmlProperty(localName = "lifeNmArray")
+        private String lifeNmArray;   // 생애주기명
 
-        @JacksonXmlProperty(localName = "servNm")
-        private String serviceName;
+        @JacksonXmlProperty(localName = "intrsThemaNmArray")
+        private String intrsThemaNmArray;  // 관심주제명
 
         @JacksonXmlProperty(localName = "sprtCycNm")
-        private String supportCycle;
+        private String sprtCycNm;     // 지원주기명
 
         @JacksonXmlProperty(localName = "srvPvsnNm")
-        private String provisionType;
+        private String srvPvsnNm;     // 제공유형명
+
+        @JacksonXmlProperty(localName = "aplyMtdNm")
+        private String aplyMtdNm;     // 신청방법명
+
+        @JacksonXmlProperty(localName = "inqNum")
+        private String inqNum;        // 조회수
+
+        @JacksonXmlProperty(localName = "lastModYmd")
+        private String lastModYmd;    // 최종수정일자
+
+        @JacksonXmlProperty(localName = "servId")
+        private String servId;        // 서비스ID
+
+        @JacksonXmlProperty(localName = "servNm")
+        private String servNm;        // 서비스명
 
         @JacksonXmlProperty(localName = "trgterIndvdlNmArray")
-        private List<String> householdConditions;
-    }
+        private String trgterIndvdlNmArray;  // 가구상황명
 
-    public List<PolicyItem> getPolicyItems() {
-        return this.servList;
     }
-} 
+}
