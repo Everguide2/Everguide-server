@@ -36,25 +36,44 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
     public Mono<Void> fetchAndSavePolicies(PolicyApiRequest request) {
         return policyApiClient.fetchPolicies(request)
                 .doOnNext(response -> {
+                    if (response == null) {
+                        log.error("API response is null");
+                        return;
+                    }
+
+                    if (response.getServList() == null) {
+                        log.warn("No policies found in the response");
+                        return;
+                    }
+
+                    log.info("Fetched {} policies", response.getServList().size());
+                    
                     response.getServList().forEach(item -> {
-                        Policy policy = convertToPolicy(item);
-                        policyRepository.findByServiceId(policy.getServiceId())
-                                .ifPresentOrElse(
-                                        existingPolicy -> {
-                                            if (existingPolicy.getLastModifiedDate().isBefore(policy.getLastModifiedDate())) {
+                        try {
+                            Policy policy = convertToPolicy(item);
+                            policyRepository.findByServiceId(policy.getServiceId())
+                                    .ifPresentOrElse(
+                                            existingPolicy -> {
+                                                if (existingPolicy.getLastModifiedDate() != null && 
+                                                    policy.getLastModifiedDate() != null && 
+                                                    existingPolicy.getLastModifiedDate().isBefore(policy.getLastModifiedDate())) {
+                                                    policyRepository.save(policy);
+                                                    log.info("Policy updated: {}", policy.getServiceId());
+                                                } else {
+                                                    log.info("Policy already up to date: {}", policy.getServiceId());
+                                                }
+                                            },
+                                            () -> {
                                                 policyRepository.save(policy);
-                                                log.info("Policy updated: {}", policy.getServiceId());
-                                            } else {
-                                                log.info("Policy already up to date: {}", policy.getServiceId());
+                                                log.info("New policy saved: {}", policy.getServiceId());
                                             }
-                                        },
-                                        () -> {
-                                            policyRepository.save(policy);
-                                            log.info("New policy saved: {}", policy.getServiceId());
-                                        }
-                                );
+                                    );
+                        } catch (Exception e) {
+                            log.error("Error processing policy item: {}", e.getMessage(), e);
+                        }
                     });
                 })
+                .doOnError(error -> log.error("Error fetching policies: {}", error.getMessage(), error))
                 .then();
     }
 

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import reactor.netty.http.client.HttpClient;
@@ -33,18 +32,14 @@ public class WebClientConfig {
     // 정책 API WebClient 생성
     @Bean
     public WebClient policyWebClient() {
-        ExchangeStrategies strategies = ExchangeStrategies.builder()
+        return WebClient.builder()
+                .baseUrl(apiProperties.getPolicy().getBaseUrl())
+                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
                 .codecs(configurer -> {
                     configurer.defaultCodecs().maxInMemorySize(MAX_MEMORY_SIZE);
                     configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder());
                     configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
                 })
-                .build();
-
-        return WebClient.builder()
-                .baseUrl(apiProperties.getPolicy().getBaseUrl())
-                .exchangeStrategies(strategies)
-                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
                 .build();
     }
 

@@ -3,10 +3,12 @@ package com.example.everguide.web.dto.policy;
 import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
+@ToString
 @NoArgsConstructor
 @XmlRootElement(name = "OpenAPI_ServiceResponse")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -30,11 +32,12 @@ public class PolicyApiResponse {
     @XmlElement(name = "resultMessage")
     private String resultMessage;
 
-    @XmlElementWrapper(name = "servList")
-    @XmlElement(name = "servList")
+    @XmlElementWrapper(name = "wantedList")
+    @XmlElement(name = "item")
     private List<PolicyItem> servList;
 
     @Getter
+    @ToString
     @NoArgsConstructor
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class PolicyItem {
