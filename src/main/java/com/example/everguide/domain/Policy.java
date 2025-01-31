@@ -41,7 +41,7 @@ public class Policy extends BaseEntity {
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private Set<LifeCycleType> lifeCycleTypes;  // lifeArray 생애 주기
+    private Set<LifeCycleType> lifeCycleTypes;  // lifeNmArray 생애주기명
 
     @Column(nullable = false)
     private String applyMethod; // aplyMtdNm 신청방법명
@@ -71,26 +71,33 @@ public class Policy extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Set<HouseholdType> householdConditions; // trgterIndvdlNmArray 가구상황명
 
-    @Column(nullable = false)
-    private Integer deadline;
+    @Column
+    private Integer inquiryNumber; // inqNum 조회수
 
     @Column(nullable = false)
-    private LocalDateTime startDate; // enfcBgngYmd 시행시작일자
+    private LocalDateTime lastModifiedDate; // lastModYmd 최종수정일자
 
-    @Column(nullable = false)
-    private LocalDateTime endDate; // enfcEndYmd 시행종료일자
-
-    @Column(nullable = false, length = 500)
+    // 추가 정보 필드들 (nullable = true로 변경)
+    @Column(length = 500)
     private String supportTargetContent; // sprtTrgtCn 지원대상 내용
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String selectCriteriaContent; // slctCritCn 선정기준 내용
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String allowanceServiceContent; // alwServCn 급여서비스 내용
 
-    @Column(nullable = false, length = 500)
+    @Column(length = 500)
     private String applyMethodContent; // aplyMtdCn 신청방법 내용
+
+    @Column
+    private Integer deadline;
+
+    @Column
+    private LocalDateTime startDate; // enfcBgngYmd 시행시작일자
+
+    @Column
+    private LocalDateTime endDate; // enfcEndYmd 시행종료일자
 
     @OneToMany(mappedBy = "policy", fetch = FetchType.LAZY)
     private List<PolicyRelatedInfo> policyRelatedInfos;
