@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,14 +42,22 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
                         return;
                     }
 
-                    if (response.getServList() == null) {
+                    if (!"00".equals(response.getResultCode())) {
+                        log.error("API error - code: {}, message: {}", 
+                            response.getResultCode(), 
+                            response.getResultMessage());
+                        return;
+                    }
+
+                    List<PolicyApiResponse.PolicyInfo> policies = response.getServList();
+                    if (policies == null || policies.isEmpty()) {
                         log.warn("No policies found in the response");
                         return;
                     }
 
-                    log.info("Fetched {} policies", response.getServList().size());
+                    log.info("Fetched {} policies", policies.size());
                     
-                    response.getServList().forEach(item -> {
+                    policies.forEach(item -> {
                         try {
                             Policy policy = convertToPolicy(item);
                             policyRepository.findByServiceId(policy.getServiceId())
@@ -97,7 +106,7 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
         return existingPolicy;
     }
 
-    private Policy convertToPolicy(PolicyApiResponse.PolicyItem item) {
+    private Policy convertToPolicy(PolicyApiResponse.PolicyInfo item) {
         return Policy.builder()
                 .targetRegion(Region.fromString(item.getCtpvNm()))
                 .targetRegionDetail(item.getSggNm())
@@ -120,9 +129,8 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
     // 문자열로 된 배열을 List<String>으로 변환
     private List<String> parseArray(String arrayStr) {
         if (arrayStr == null || arrayStr.isEmpty()) {
-            return List.of();
+            return Collections.emptyList();
         }
-        // 쉼표로 구분된 문자열을 배열로 변환
         return Arrays.asList(arrayStr.split(","));
     }
 
@@ -152,22 +160,23 @@ public class PolicyCommandServiceImpl implements PolicyCommandService {
     }
 
     private Set<SupportType> convertToSupportTypes(List<String> supportTypes) {
+        if (supportTypes == null) return Collections.emptySet();
         return supportTypes.stream()
                 .map(SupportType::fromString)
                 .collect(Collectors.toSet());
     }
 
     private Set<LifeCycleType> convertToLifeCycleTypes(List<String> lifeCycleTypes) {
+        if (lifeCycleTypes == null) return Collections.emptySet();
         return lifeCycleTypes.stream()
                 .map(LifeCycleType::fromString)
                 .collect(Collectors.toSet());
     }
 
     private Set<HouseholdType> convertToHouseholdTypes(List<String> householdTypes) {
+        if (householdTypes == null) return Collections.emptySet();
         return householdTypes.stream()
                 .map(HouseholdType::fromString)
                 .collect(Collectors.toSet());
     }
-
-
 }

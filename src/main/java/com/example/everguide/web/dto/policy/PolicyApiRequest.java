@@ -17,8 +17,14 @@ public record PolicyApiRequest(
         String searchWrd,
         String arrgOrd
 ) {
+    public static PolicyApiRequest defaults() {
+        return PolicyApiRequest.builder()
+                .pageNo("1")
+                .numOfRows("10")
+                .build();
+    }
+
     public static PolicyApiRequest of(
-            String serviceKey,
             String pageNo,
             String numOfRows,
             String lifeArray,
@@ -32,7 +38,6 @@ public record PolicyApiRequest(
             String arrgOrd
     ) {
         return PolicyApiRequest.builder()
-                .serviceKey(serviceKey)
                 .pageNo(pageNo)
                 .numOfRows(numOfRows)
                 .lifeArray(lifeArray)

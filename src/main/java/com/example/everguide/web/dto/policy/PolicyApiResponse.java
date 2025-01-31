@@ -3,88 +3,80 @@ package com.example.everguide.web.dto.policy;
 import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
 @Getter
-@ToString
 @NoArgsConstructor
-@XmlRootElement(name = "OpenAPI_ServiceResponse")
+@XmlRootElement(name = "wantedList")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PolicyApiResponse {
-
-    @XmlElement(name = "totalCount")
-    // private int totalCount;
-    private String totalCount;
-
-    @XmlElement(name = "pageNo")
-    // private int pageNo;
-    private String pageNo;
-
-    @XmlElement(name = "numOfRows")
-    // private int numOfRows;
-    private String numOfRows;
-
+    
     @XmlElement(name = "resultCode")
     private String resultCode;
-
+    
     @XmlElement(name = "resultMessage")
     private String resultMessage;
-
-    @XmlElementWrapper(name = "wantedList")
-    @XmlElement(name = "item")
-    private List<PolicyItem> servList;
-
+    
+    @XmlElement(name = "numOfRows")
+    private String numOfRows;
+    
+    @XmlElement(name = "pageNo")
+    private String pageNo;
+    
+    @XmlElement(name = "totalCount")
+    private String totalCount;
+    
+    @XmlElement(name = "servList")
+    private List<PolicyInfo> servList;
+    
     @Getter
-    @ToString
     @NoArgsConstructor
     @XmlAccessorType(XmlAccessType.FIELD)
-    public static class PolicyItem {
+    public static class PolicyInfo {
         @XmlElement(name = "bizChrDeptNm")
-        private String bizChrDeptNm;  // 사업담당부서명
-
+        private String bizChrDeptNm;
+        
         @XmlElement(name = "ctpvNm")
-        private String ctpvNm;        // 시도명
-
+        private String ctpvNm;
+        
         @XmlElement(name = "sggNm")
-        private String sggNm;         // 시군구명
-
+        private String sggNm;
+        
         @XmlElement(name = "servDgst")
-        private String servDgst;      // 서비스요약
-
+        private String servDgst;
+        
         @XmlElement(name = "servDtlLink")
-        private String servDtlLink;   // 서비스상세링크
-
+        private String servDtlLink;
+        
         @XmlElement(name = "lifeNmArray")
-        private String lifeNmArray;   // 생애주기명
-
+        private String lifeNmArray;
+        
         @XmlElement(name = "intrsThemaNmArray")
-        private String intrsThemaNmArray;  // 관심주제명
-
+        private String intrsThemaNmArray;
+        
         @XmlElement(name = "sprtCycNm")
-        private String sprtCycNm;     // 지원주기명
-
+        private String sprtCycNm;
+        
         @XmlElement(name = "srvPvsnNm")
-        private String srvPvsnNm;     // 제공유형명
-
+        private String srvPvsnNm;
+        
         @XmlElement(name = "aplyMtdNm")
-        private String aplyMtdNm;     // 신청방법명
-
+        private String aplyMtdNm;
+        
         @XmlElement(name = "inqNum")
-        private String inqNum;        // 조회수
-
+        private String inqNum;
+        
         @XmlElement(name = "lastModYmd")
-        private String lastModYmd;    // 최종수정일자
-
+        private String lastModYmd;
+        
         @XmlElement(name = "servId")
-        private String servId;        // 서비스ID
-
+        private String servId;
+        
         @XmlElement(name = "servNm")
-        private String servNm;        // 서비스명
-
+        private String servNm;
+        
         @XmlElement(name = "trgterIndvdlNmArray")
-        private String trgterIndvdlNmArray;  // 가구상황명
-
+        private String trgterIndvdlNmArray;
     }
 }
