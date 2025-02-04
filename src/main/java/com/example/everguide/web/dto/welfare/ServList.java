@@ -1,4 +1,4 @@
-package com.example.server.dto.welfare;
+package com.example.everguide.web.dto.welfare;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
