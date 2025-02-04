@@ -1,8 +1,8 @@
-package com.example.server.service;
+package com.example.everguide.service.welfare;
 
-import com.example.server.dto.welfare.WantedListResponse;
-import com.example.server.entity.WelfareServiceEntity;
-import com.example.server.repository.WelfareServiceRepository;
+import com.example.everguide.domain.WelfareService;
+import com.example.everguide.repository.WelfareServiceRepository;
+import com.example.everguide.web.dto.welfare.WantedListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -26,7 +26,7 @@ public class WelfareDataService {
     private static final String API_ENDPOINT = "/LcgvWelfarelist";
 
     // 외부 API 호출 → DTO 매핑 → Entity 변환 및 DB 저장 과정을 수행
-    public Mono<List<WelfareServiceEntity>> fetchAndSaveWelfareData() {
+    public Mono<List<WelfareService>> fetchAndSaveWelfareData() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
@@ -39,7 +39,7 @@ public class WelfareDataService {
                 .bodyToMono(WantedListResponse.class)
                 .flatMap(response -> {
                     if ("0".equals(response.getResultCode())) {
-                        List<WelfareServiceEntity> entities = welfareMappingService.convert(response.getServList());
+                        List<WelfareService> entities = welfareMappingService.convert(response.getServList());
                         repository.saveAll(entities);
                         return Mono.just(entities);
                     } else {
@@ -48,7 +48,7 @@ public class WelfareDataService {
                 });
     }
 
-    // 스케줄러를 통한 주기적 호출이 필요하면, @Scheduled 어노테이션을 활용할 수 있습니다.
+    // 스케줄러를 통한 주기적 호출이 필요하면, @Scheduled 어노테이션을 활용
     // @Scheduled(cron = "0 0 0 * * *")
     // public void scheduledFetchAndSave() {
     //     fetchAndSaveWelfareData().subscribe();

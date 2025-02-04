@@ -1,8 +1,8 @@
-package com.example.server.service;
+package com.example.everguide.service.welfare;
 
 
-import com.example.server.dto.welfare.ServList;
-import com.example.server.entity.WelfareServiceEntity;
+import com.example.everguide.domain.WelfareService;
+import com.example.everguide.web.dto.welfare.ServList;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,14 +12,14 @@ import java.util.stream.Collectors;
 public class WelfareMappingService {
 
     // ServList DTO 리스트를 WelfareServiceEntity 리스트로 변환
-    public List<WelfareServiceEntity> convert(List<ServList> servLists) {
+    public List<WelfareService> convert(List<ServList> servLists) {
         return servLists.stream()
                 .map(this::mapToEntity)
                 .collect(Collectors.toList());
     }
 
-    private WelfareServiceEntity mapToEntity(ServList dto) {
-        WelfareServiceEntity entity = new WelfareServiceEntity();
+    private WelfareService mapToEntity(ServList dto) {
+        WelfareService entity = new WelfareService();
         entity.setServId(dto.getServId());
         entity.setServNm(dto.getServNm());
         entity.setServDgst(dto.getServDgst());
