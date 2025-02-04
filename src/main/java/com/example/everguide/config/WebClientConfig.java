@@ -1,4 +1,4 @@
-package com.example.server.config;
+package com.example.everguide.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class WebClientConfig {
                 .build();
 
         return webClientBuilder
-                .baseUrl("http://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations")
+                .baseUrl("https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations")
                 .exchangeStrategies(strategies)
                 .filter(logRequest())
                 .filter(logResponse())
