@@ -34,8 +34,6 @@ public class QJob extends EntityPathBase<Job> {
 
     public final EnumPath<com.example.everguide.domain.enums.JobType> jobType = createEnum("jobType", com.example.everguide.domain.enums.JobType.class);
 
-    public final StringPath location = createString("location");
-
     public final DatePath<java.time.LocalDate> postingEndDate = createDate("postingEndDate", java.time.LocalDate.class);
 
     public final DatePath<java.time.LocalDate> postingStartDate = createDate("postingStartDate", java.time.LocalDate.class);
@@ -51,7 +49,9 @@ public class QJob extends EntityPathBase<Job> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
-    public final StringPath wage = createString("wage");
+    public final NumberPath<Integer> wage = createNumber("wage", Integer.class);
+
+    public final StringPath workPlace = createString("workPlace");
 
     public QJob(String variable) {
         super(Job.class, forVariable(variable));

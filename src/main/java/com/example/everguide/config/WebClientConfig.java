@@ -30,7 +30,7 @@ public class WebClientConfig {
                 .build();
 
         return webClientBuilder
-                .baseUrl("http://apis.data.go.kr/B552474/JobBsnInfoService/getJobBsnRecruitList")
+                .baseUrl("http://apis.data.go.kr/B552474/JobBsnInfoService")
                 .exchangeStrategies(strategies) //위에서 정한 설정 추가
                 .filter(logRequest()) // 요청 로그 기록 필터
                 .filter(logResponse()) // 응답 로그 기록 필터

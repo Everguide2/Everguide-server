@@ -1,6 +1,7 @@
 package com.example.everguide.web.dto.job;
 
 import com.example.everguide.domain.enums.HireType;
+import com.example.everguide.domain.enums.JobType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -43,8 +44,14 @@ public class JobItem {
 
     @XmlElement(name = "trnStatNm")
     @Enumerated(EnumType.STRING)
-    private HireType hireType; // 구인상태
+    private String hireType; // 구인상태
+
+    @XmlElement(name = "jobType")
+    @Enumerated(EnumType.STRING)
+    private String jobType; // 유형
 
     @XmlElement(name = "workPlace")
-    private String location; // 위치
+    private String workPlace; //workPlace
+
+
 }
