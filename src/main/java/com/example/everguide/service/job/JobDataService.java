@@ -12,7 +12,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -42,13 +44,30 @@ public class JobDataService {
                     if ("00".equals(response.getHeader().getResultCode())) {
                         //응답이 정상이라면, 변환
                         List<Job> jobList = jobMappingService.convert(response.getBody().getJobList());
-                        jobRepository.saveAll(jobList); //db에 저장
-                        return Mono.just(jobList);
+                        //중복처리
+                        List<Job> filteredJobList = filterDuplicateJobs(jobList);
+                        jobRepository.saveAll(filteredJobList); //db에 저장
+                        return Mono.just(filteredJobList);
                     } else {
                         return Mono.error(new RuntimeException("API 호출 실패 : " + response.getHeader().getResultMessage()));
                     }
                 });
 
+    }
+
+    //DB에 중복되는 직업을 제외한 직업을 리스트에 담아 리턴
+    private List<Job> filterDuplicateJobs(List<Job> newJobList) {
+        List<String> newJobCodeList = newJobList.stream().map(Job::getJobCode).toList(); //새로운 직업 리스트에서 직업 코드만 추출
+        Set<String> duplicateJobCodeSet = jobRepository.findDuplicateJobCodeList(newJobCodeList); //DB에 이미 존재하는 직업 코드만 필터링
+        List<Job> filteredJobs = new ArrayList<>();
+        newJobList.forEach(job -> {
+            if (duplicateJobCodeSet.contains(job.getJobCode())) {
+                log.info("Duplicate jobCode found: " + job.getJobCode()); //중복되면 로그 처리
+            } else {
+                filteredJobs.add(job);
+            }
+        });
+        return filteredJobs;
     }
 
 }

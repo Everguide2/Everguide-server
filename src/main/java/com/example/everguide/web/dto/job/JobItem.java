@@ -1,7 +1,5 @@
 package com.example.everguide.web.dto.job;
 
-import com.example.everguide.domain.enums.HireType;
-import com.example.everguide.domain.enums.JobType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.xml.bind.annotation.XmlAccessType;
