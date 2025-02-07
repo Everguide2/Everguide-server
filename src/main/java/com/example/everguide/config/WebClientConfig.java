@@ -23,33 +23,33 @@ public class WebClientConfig {
     public WebClient webClient(WebClient.Builder webClientBuilder) {
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> {
-                    configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder()); //xml 디코더 설정
-                    configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder()); //xml 인코더 설정
-                    configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024); // 최대 메모리 크기 16MB
+                    configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder());
+                    configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
+                    configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024); // 16MB
                 })
                 .build();
 
         return webClientBuilder
-                .baseUrl("http://apis.data.go.kr/B552474/JobBsnInfoService")
-                .exchangeStrategies(strategies) //위에서 정한 설정 추가
-                .filter(logRequest()) // 요청 로그 기록 필터
-                .filter(logResponse()) // 응답 로그 기록 필터
-                .filter(ExchangeFilterFunction.ofRequestProcessor(request -> { //요청 전처리
-                    String originalUrl = request.url().toString(); //요청의 url을 문자열로 변환
-
+                .baseUrl("https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations")
+                .exchangeStrategies(strategies)
+                .filter(logRequest())
+                .filter(logResponse())
+                .filter(ExchangeFilterFunction.ofRequestProcessor(request -> {
+                    String originalUrl = request.url().toString();
+                    
                     // URL을 두 번 디코딩하여 중복 인코딩 해결
                     String decodedUrl = URLDecoder.decode(
                             URLDecoder.decode(originalUrl, StandardCharsets.UTF_8),
                             StandardCharsets.UTF_8
                     );
-
-                    log.info("Final Request URL: {}", decodedUrl); //디코딩 된 url 기록
-
+                    
+                    log.info("Final Request URL: {}", decodedUrl);
+                    
                     return Mono.just(
                             ClientRequest.from(request)
                                     .url(URI.create(decodedUrl))
                                     .build()
-                    ); // 최종 url로 요청 재구성
+                    );
                 }))
                 .build();
     }

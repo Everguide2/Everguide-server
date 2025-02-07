@@ -14,12 +14,18 @@ public enum SuccessStatus implements BaseCode {
     _OK(HttpStatus.OK, "COMMON200", "OK"),
     _CREATED(HttpStatus.CREATED, "COMMON201", "생성 완료"),
     _ACCEPTED(HttpStatus.ACCEPTED, "COMMON202", "요청 수락됨"),
-    _NO_CONTENT(HttpStatus.NO_CONTENT, "COMMON204", "콘텐츠 없음")
+    _NO_CONTENT(HttpStatus.NO_CONTENT, "COMMON204", "콘텐츠 없음"),
 
     //멤버 관련 응답
 
-    ;
+    // 정책 관련 
+    _POLICY_SYNC_SUCCESS(HttpStatus.OK, "POLICY_2000", "정책 데이터 동기화가 성공적으로 완료되었습니다."),
+    POLICY_SYNC_SUCCESS(HttpStatus.OK, "POLICY2001", "정책 데이터 동기화가 완료되었습니다.");
 
+
+    // 교육 관련
+    
+    // 일자리 관련
 
     private final HttpStatus httpStatus;
     private final String code;
