@@ -5,6 +5,7 @@ import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.JobType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @DynamicInsert
 @DynamicUpdate
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Job extends BaseEntity {
@@ -23,13 +25,15 @@ public class Job extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String jobCode;    // API에서 projNo를 받아 저장
+
     private String companyName; // orgName 기관명
     private Integer projectYear; // prjYear 사업년도
-    private String location;    // workPlace 위치
+    private String workPlace;    // workPlace 위치
     private String regionSido;  // dstrCd1Nm 시도
     private String regionSigungu; // dstrCd2Nm 시군구
-    private String wage;        // intCd1 임금
+    private int wage;        // intCd1 임금
 
     @Enumerated(EnumType.STRING)
     private JobType jobType;    // jobType 인턴,연수 여부 [INT, TRN, ALL]
