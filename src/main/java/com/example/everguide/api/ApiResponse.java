@@ -63,4 +63,5 @@ public class ApiResponse<T> {
         this.message = status.getMessage();
         this.code = status.getCode();
         this.result = result;
+    }
 }
