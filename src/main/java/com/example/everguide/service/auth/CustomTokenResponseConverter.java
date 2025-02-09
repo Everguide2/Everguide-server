@@ -20,8 +20,8 @@ public class CustomTokenResponseConverter implements Converter<Map<String, Objec
 
         String accessToken = (String) tokenResponseParameters.get(OAuth2ParameterNames.ACCESS_TOKEN);
         String refreshToken = (String) tokenResponseParameters.get(OAuth2ParameterNames.REFRESH_TOKEN);
-        Object expiresInObj = tokenResponseParameters.get(OAuth2ParameterNames.EXPIRES_IN);
-        long expiresIn = ((Number) expiresInObj).longValue();
+        String expiresInStr = (String) tokenResponseParameters.get(OAuth2ParameterNames.EXPIRES_IN);
+        long expiresIn = Long.parseLong(expiresInStr);
 
         Set<String> scopes = Collections.emptySet();
         if (tokenResponseParameters.containsKey(OAuth2ParameterNames.SCOPE)) {

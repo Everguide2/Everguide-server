@@ -6,6 +6,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.domain.enums.Role;
+import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.oauth.*;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -23,9 +24,11 @@ import java.util.Optional;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
+    private final RedisUtils redisUtils;
 
-    public CustomOAuth2UserService(MemberRepository memberRepository) {
+    public CustomOAuth2UserService(MemberRepository memberRepository, RedisUtils redisUtils) {
         this.memberRepository = memberRepository;
+        this.redisUtils = redisUtils;
     }
 
     // 네이버, 카카오 받은 userRequest 데이터에 대한 후처리 되는 함수
@@ -51,6 +54,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String userId = oAuth2Response.getProviderType().name()+"_"+oAuth2Response.getProviderId();
+
+        String socialAccessToken = userRequest.getAccessToken().getTokenValue();
+        String socialRefreshToken = (String) userRequest.getAdditionalParameters().get(OAuth2ParameterNames.REFRESH_TOKEN);
+        redisUtils.setSocialAccessToken(userId, socialAccessToken);
+        redisUtils.setSocialRefreshToken(userId, socialRefreshToken);
+
         Optional<Member> existMemberOptional = memberRepository.findByUserId(userId);
 
         if (existMemberOptional.isEmpty()) {

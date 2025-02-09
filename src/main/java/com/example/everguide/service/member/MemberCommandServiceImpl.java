@@ -7,7 +7,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.repository.BookmarkRepository;
-import com.example.everguide.service.redis.RedisUtils;
+import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
 import com.example.everguide.web.dto.MemberRequest;
@@ -115,9 +115,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public void changeRefreshToken(String userId, String refreshToken, Long expiredMs) {
+    public void changeRefreshToken(String accessToken, String refreshToken, Long expiredMs) {
 
-        redisUtils.deleteToken(userId);
-        redisUtils.setToken(userId, refreshToken, expiredMs);
+        redisUtils.deleteLocalRefreshToken(accessToken);
+        redisUtils.setLocalRefreshToken(accessToken, refreshToken, expiredMs);
     }
 } 

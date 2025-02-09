@@ -1,6 +1,6 @@
 package com.example.everguide.jwt;
 
-import com.example.everguide.service.redis.RedisUtils;
+import com.example.everguide.redis.RedisUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,7 +58,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt(userId, role, "local", "access", 60000*10L);
         String refresh = jwtUtil.createJwt(userId, role, "local", "refresh", 60000*60*24L);
 
-        redisUtils.setToken(userId, refresh, 60000*60*24L);
+        redisUtils.setLocalRefreshToken(access, refresh, 60000*60*24L);
 
         response.addHeader("Authorization", "Bearer " + access);
         response.addCookie(createCookie("refresh", refresh));

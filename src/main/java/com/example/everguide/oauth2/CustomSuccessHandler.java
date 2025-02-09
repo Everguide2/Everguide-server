@@ -1,7 +1,7 @@
 package com.example.everguide.oauth2;
 
 import com.example.everguide.jwt.JWTUtil;
-import com.example.everguide.service.redis.RedisUtils;
+import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -42,8 +42,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         String refresh = jwtUtil.createJwt(userId, role, "social", "refresh", 60000*60*24L);
-
-        redisUtils.setToken(userId, refresh, 60000*60*24L);
 
         response.addCookie(createCookie("refresh", refresh));
         response.sendRedirect("http://localhost:3000/cookie-to-header");

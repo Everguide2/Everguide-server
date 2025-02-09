@@ -3,8 +3,9 @@ package com.example.everguide.web.controller;
 import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.jwt.JWTUtil;
+import com.example.everguide.redis.RedisTokenRepository;
 import com.example.everguide.service.member.MemberCommandService;
-import com.example.everguide.service.redis.RedisUtils;
+import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.web.dto.MemberRequest;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,11 +22,13 @@ public class MemberController {
     private final MemberCommandService memberCommandService;
     private final JWTUtil jwtUtil;
     private final RedisUtils redisUtils;
+    private final RedisTokenRepository redisTokenRepository;
 
-    public MemberController(MemberCommandService memberCommandService, JWTUtil jwtUtil, RedisUtils redisUtils) {
+    public MemberController(MemberCommandService memberCommandService, JWTUtil jwtUtil, RedisUtils redisUtils, RedisTokenRepository redisTokenRepository) {
         this.memberCommandService = memberCommandService;
         this.jwtUtil = jwtUtil;
         this.redisUtils = redisUtils;
+        this.redisTokenRepository = redisTokenRepository;
     }
 
     @PostMapping("/cookie-to-header")
@@ -71,8 +74,10 @@ public class MemberController {
         //make new JWT
         String access = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
 
+        redisUtils.setLocalRefreshToken(access, refresh, 60000*60*24L);
+
         //response
-        response.addHeader("Authorization", "Bearer " + access);
+        response.setHeader("Authorization", "Bearer " + access);
         response.setStatus(HttpStatus.OK.value());
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._CREATED));
@@ -118,8 +123,8 @@ public class MemberController {
         String role = jwtUtil.getRole(refresh);
         String social = jwtUtil.getSocial(refresh);
 
-        String redisRefreshToken = redisUtils.getToken(userId);
-        if (redisRefreshToken != null) {
+        Boolean isExist = redisUtils.existsLocalRefreshToken(refresh);
+        if (!isExist) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.onFailure("500", "invalid refresh token", null));
@@ -127,29 +132,13 @@ public class MemberController {
 
         //make new JWT
         String newAccess = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
-        String newRefresh = jwtUtil.createJwt(userId, role, social, "refresh", 60000*60*24L);
-
-        // refresh 토큰 저장
-        memberCommandService.changeRefreshToken(userId, newRefresh, 60000*60*24L);
 
         //response
-        response.addHeader("Authorization", "Bearer " + newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+        response.setHeader("Authorization", "Bearer " + newAccess);
         response.setStatus(HttpStatus.OK.value());
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._CREATED));
 
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-//        cookie.setSecure(true);
-//        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 
     @PostMapping("/signup")
