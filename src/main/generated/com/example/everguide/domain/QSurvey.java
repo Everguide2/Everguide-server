@@ -45,7 +45,7 @@ public class QSurvey extends EntityPathBase<Survey> {
 
     public final EnumPath<com.example.everguide.domain.enums.Region> region = createEnum("region", com.example.everguide.domain.enums.Region.class);
 
-    public final SetPath<com.example.everguide.domain.enums.survey.ResourceType, EnumPath<com.example.everguide.domain.enums.survey.ResourceType>> resourceTypes = this.<com.example.everguide.domain.enums.survey.ResourceType, EnumPath<com.example.everguide.domain.enums.survey.ResourceType>>createSet("resourceTypes", com.example.everguide.domain.enums.survey.ResourceType.class, EnumPath.class, PathInits.DIRECT2);
+    public final SetPath<com.example.everguide.domain.enums.survey.SupportType, EnumPath<com.example.everguide.domain.enums.survey.SupportType>> supportTypes = this.<com.example.everguide.domain.enums.survey.SupportType, EnumPath<com.example.everguide.domain.enums.survey.SupportType>>createSet("supportTypes", com.example.everguide.domain.enums.survey.SupportType.class, EnumPath.class, PathInits.DIRECT2);
 
     public final EnumPath<com.example.everguide.domain.enums.survey.SurveyTarget> target = createEnum("target", com.example.everguide.domain.enums.survey.SurveyTarget.class);
 

@@ -2,6 +2,8 @@ package com.example.everguide.domain;
 
 import com.example.everguide.domain.common.BaseEntity;
 import com.example.everguide.domain.enums.Gender;
+import com.example.everguide.domain.enums.ProviderType;
+import com.example.everguide.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -11,7 +13,8 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Builder
+@Setter
+@Builder(toBuilder = true)
 @DynamicUpdate
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,26 +23,38 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, unique = true)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
+//    @Column(nullable = false, length = 20)
     private String name;
 
-    @Column(nullable = false, length = 50, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
+    //    @Column(nullable = false)
     private LocalDate birth;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private Gender gender;
 
-    @Column(nullable = false)
+    //    @Column(nullable = false)
     private String phoneNumber;
+
+    @Column(length = 50)
+//    @Column(nullable = false, length = 50, unique = true)
+    private String email;
+
+//    @Column(nullable = false)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false)
+    private ProviderType providerType;
+
+//    @Column(nullable = false)
+    private String userId;
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */
 }

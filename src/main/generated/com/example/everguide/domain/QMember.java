@@ -38,8 +38,14 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath phoneNumber = createString("phoneNumber");
 
+    public final EnumPath<com.example.everguide.domain.enums.ProviderType> providerType = createEnum("providerType", com.example.everguide.domain.enums.ProviderType.class);
+
+    public final EnumPath<com.example.everguide.domain.enums.Role> role = createEnum("role", com.example.everguide.domain.enums.Role.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final StringPath userId = createString("userId");
 
     public QMember(String variable) {
         super(Member.class, forVariable(variable));
