@@ -64,20 +64,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (existMemberOptional.isEmpty()) {
 
-            if (oAuth2Response.getProviderType().equals(ProviderType.NAVER)) {
-                Member member = naverSaveMember(oAuth2Response, userId);
-
-            } else if (oAuth2Response.getProviderType().equals(ProviderType.KAKAO)) {
-                Member member = kakaoSaveMember(oAuth2Response, userId);
-
-            } else {
-                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
-            }
-
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.setUserId(userId);
             memberDTO.setName(oAuth2Response.getName());
             memberDTO.setRole(Role.ROLE_MEMBER.name());
+
+            if (oAuth2Response.getProviderType().equals(ProviderType.NAVER)) {
+                Member member = naverSaveMember(oAuth2Response, userId);
+                memberDTO.setSocial("naver");
+
+            } else if (oAuth2Response.getProviderType().equals(ProviderType.KAKAO)) {
+                Member member = kakaoSaveMember(oAuth2Response, userId);
+                memberDTO.setSocial("kakao");
+
+            } else {
+                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
+            }
 
             return new CustomOAuth2User(memberDTO);
 
@@ -85,20 +87,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             Member existMember = existMemberOptional.get();
 
-            if (existMember.getProviderType().equals(ProviderType.NAVER)) {
-                Member member = naverUpdateMember(existMember, oAuth2Response, userId);
-
-            } else if (existMember.getProviderType().equals(ProviderType.KAKAO)) {
-                Member member = kakaoUpdateMember(existMember, oAuth2Response, userId);
-
-            } else {
-                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
-            }
-
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.setUserId(existMember.getUserId());
             memberDTO.setName(existMember.getName());
             memberDTO.setRole(existMember.getRole().name());
+
+            if (existMember.getProviderType().equals(ProviderType.NAVER)) {
+                Member member = naverUpdateMember(existMember, oAuth2Response, userId);
+                memberDTO.setSocial("naver");
+
+            } else if (existMember.getProviderType().equals(ProviderType.KAKAO)) {
+                Member member = kakaoUpdateMember(existMember, oAuth2Response, userId);
+                memberDTO.setSocial("kakao");
+
+            } else {
+                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
+            }
 
             return new CustomOAuth2User(memberDTO);
         }

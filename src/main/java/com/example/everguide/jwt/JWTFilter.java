@@ -105,6 +105,7 @@ public class JWTFilter extends OncePerRequestFilter {
         MemberDTO memberDTO = new MemberDTO();
         memberDTO.setUserId(userId);
         memberDTO.setRole(role);
+        memberDTO.setSocial(social);
 
         // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(member);

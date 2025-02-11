@@ -46,4 +46,9 @@ public class CustomOAuth2User implements OAuth2User {
 
         return memberDTO.getUserId();
     }
+
+    public String getSocial() {
+
+        return memberDTO.getSocial();
+    }
 }
