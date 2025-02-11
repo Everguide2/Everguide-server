@@ -152,9 +152,9 @@ public class MemberController {
         }
     }
 
-    @DeleteMapping("/member/{id}")
+    @DeleteMapping("/member/{user_id}")
     public ResponseEntity<ApiResponse<String>> deleteMember(
-            @PathVariable(name="id") Long memberId,
+            @PathVariable(name="user_id") String userId,
             HttpServletRequest request, HttpServletResponse response
     ) {
 
@@ -181,7 +181,7 @@ public class MemberController {
         if (!category.equals("access")) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.onFailure("500", "not refresh token", null));
+                    .body(ApiResponse.onFailure("500", "not access token", null));
         }
 
         String social = jwtUtil.getSocial(accessToken);
@@ -190,12 +190,20 @@ public class MemberController {
 
             boolean memberDeleteSuccess = false;
             if (social.equals("local")) {
-                memberDeleteSuccess = memberCommandService.deleteLocalMember(memberId);
+                memberDeleteSuccess = memberCommandService.deleteLocalMember(userId, accessToken);
             } else {
-                memberDeleteSuccess = memberCommandService.deleteSocialMember(memberId);
+                memberDeleteSuccess = memberCommandService.deleteSocialMember(userId, accessToken);
             }
 
             if (memberDeleteSuccess) {
+
+                // Refresh 토큰 Cookie 값 0
+                Cookie cookie = new Cookie("refresh", null);
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+
+                response.addCookie(cookie);
+
                 return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

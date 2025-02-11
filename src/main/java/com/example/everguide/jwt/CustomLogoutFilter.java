@@ -1,5 +1,7 @@
 package com.example.everguide.jwt;
 
+import com.example.everguide.api.code.status.ErrorStatus;
+import com.example.everguide.api.exception.handler.MemberExceptionHandler;
 import com.example.everguide.redis.RedisUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -11,10 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -159,6 +158,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 String.class
         );
 
+        if (response.getStatusCode() != HttpStatus.OK) {
+
+            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+        }
+
         return (String) response.getBody();
     }
 
@@ -181,6 +185,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 naverLogoutRequest,
                 String.class
         );
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+
+            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+        }
 
         return (String) response.getBody();
     }

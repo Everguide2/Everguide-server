@@ -6,9 +6,9 @@ public interface MemberCommandService {
 
     boolean localSignUp(MemberRequest.SignupDTO signupDTO);
 
-    boolean deleteLocalMember(Long memberId);
+    boolean deleteLocalMember(String userId, String accessToken);
 
-    boolean deleteSocialMember(Long memberId);
+    boolean deleteSocialMember(String userId, String accessToken);
 
     void changeRefreshToken(String userId, String refreshToken, Long expiredMs);
 }

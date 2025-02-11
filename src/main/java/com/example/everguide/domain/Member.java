@@ -55,6 +55,7 @@ public class Member extends BaseEntity {
     private ProviderType providerType;
 
 //    @Column(nullable = false)
+    @Column(unique = true)
     private String userId;
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */
 }
