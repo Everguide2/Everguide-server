@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @RedisHash(value = "local")
-public class RedisToken {
+public class RedisLocalToken {
 
     @Id
     private String accessToken;

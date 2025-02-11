@@ -26,7 +26,11 @@ public enum ErrorStatus implements BaseErrorCode {
     _JSON_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SOCIAL5001", "JSON 프로세싱 중 오류 발생"),
     _PROVIDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "SOCIAL4001", "providerType을 찾을 수 없습니다."),
     _USED_EMAIL(HttpStatus.BAD_REQUEST, "SOCIAL4002", "이미 사용된 이메일입니다."),
-    _INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SOCIAL4003", "사용가능한 Token이 아닙니다."),
+    _LOCAL_INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SOCIAL4003", "로컬에 존재하지 않는 토큰입니다."),
+    _SOCIAL_INVALID_TOKEN(HttpStatus.BAD_REQUEST, "SOCIAL4003", "소셜 로그인에 유효하지 않은 토큰입니다."),
+    _TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "SOCIAL4004", "만료된 토큰입니다."),
+    _TOKEN_NULL(HttpStatus.BAD_REQUEST, "SOCIAL4005", "토큰이 null입니다."),
+    _NO_TOKEN(HttpStatus.BAD_REQUEST, "SOCIAL4006", "토큰이 헤더에 존재하지 않습니다."),
 
     // 네이버 소셜 로그인 관련 에러
     _NAVER_SIGN_IN_INTEGRATION_FAILED(HttpStatus.UNAUTHORIZED, "NAVER4001", "네이버 로그인 연동에 실패하였습니다."),

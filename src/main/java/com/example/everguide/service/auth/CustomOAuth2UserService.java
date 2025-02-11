@@ -1,7 +1,7 @@
 package com.example.everguide.service.auth;
 
 import com.example.everguide.api.code.status.ErrorStatus;
-import com.example.everguide.api.exception.handler.MemberExceptionHandler;
+import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
@@ -57,8 +57,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String socialAccessToken = userRequest.getAccessToken().getTokenValue();
         String socialRefreshToken = (String) userRequest.getAdditionalParameters().get(OAuth2ParameterNames.REFRESH_TOKEN);
-        redisUtils.setSocialAccessToken(userId, socialAccessToken);
-        redisUtils.setSocialRefreshToken(userId, socialRefreshToken);
+        redisUtils.setSocialAccessToken(userId, socialAccessToken, 1L);
+        redisUtils.setSocialRefreshToken(userId, socialRefreshToken, 1L);
 
         Optional<Member> existMemberOptional = memberRepository.findByUserId(userId);
 
@@ -78,7 +78,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 memberDTO.setSocial("kakao");
 
             } else {
-                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
+                throw new MemberBadRequestException(ErrorStatus._INVALID_PROVIDER_TYPE.getMessage());
             }
 
             return new CustomOAuth2User(memberDTO);
@@ -101,7 +101,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 memberDTO.setSocial("kakao");
 
             } else {
-                throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
+                throw new MemberBadRequestException(ErrorStatus._INVALID_PROVIDER_TYPE.getMessage());
             }
 
             return new CustomOAuth2User(memberDTO);

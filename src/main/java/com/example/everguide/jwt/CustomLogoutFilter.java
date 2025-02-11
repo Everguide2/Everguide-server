@@ -1,7 +1,5 @@
 package com.example.everguide.jwt;
 
-import com.example.everguide.api.code.status.ErrorStatus;
-import com.example.everguide.api.exception.handler.MemberExceptionHandler;
 import com.example.everguide.redis.RedisUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -13,7 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -123,11 +124,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         if (social.equals("kakao")) {
             kakaoSocialLogout(userId, socialAccessToken);
+            redisUtils.deleteSocialTokens(userId);
+
         } else if (social.equals("naver")) {
             naverSocialLogout(socialAccessToken);
+            redisUtils.deleteSocialTokens(userId);
         }
-
-        redisUtils.deleteSocialTokens(userId);
 
         // Refresh 토큰 Cookie 값 0
         Cookie cookie = new Cookie("refresh", null);
@@ -147,7 +149,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("target_id_type", "user_id");
-        params.add("target_id", userId.substring(6));
+        params.add("target_id", userId.substring(7));
 
         HttpEntity<MultiValueMap<String, String>> kakaoLogoutRequest = new HttpEntity<>(params, headers);
 
@@ -157,11 +159,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 kakaoLogoutRequest,
                 String.class
         );
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
-        }
 
         return (String) response.getBody();
     }
@@ -185,11 +182,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 naverLogoutRequest,
                 String.class
         );
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
-        }
 
         return (String) response.getBody();
     }

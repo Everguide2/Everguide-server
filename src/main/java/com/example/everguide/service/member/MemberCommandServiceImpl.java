@@ -1,21 +1,32 @@
 package com.example.everguide.service.member;
 
+import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
-import com.example.everguide.api.exception.handler.MemberExceptionHandler;
+import com.example.everguide.api.code.status.SuccessStatus;
+import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
+import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
 import com.example.everguide.web.dto.MemberRequest;
+import com.example.everguide.web.dto.oauth.OAuthToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,6 +62,108 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final BookmarkRepository bookmarkRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisUtils redisUtils;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final JWTUtil jwtUtil;
+
+    @Override
+    public boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
+
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+
+            if (cookie.getName().equals("refresh")) {
+
+                refresh = cookie.getValue();
+            }
+        }
+
+        if (refresh == null) {
+
+            throw new MemberBadRequestException("Token이 null입니다.");
+        }
+
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException("만료된 토큰입니다.");
+        }
+
+        String category = jwtUtil.getCategory(refresh);
+
+        if (!category.equals("refresh")) {
+
+            throw new MemberBadRequestException("Refresh Token이 아닙니다.");
+        }
+
+        String userId = jwtUtil.getUserId(refresh);
+        String role = jwtUtil.getRole(refresh);
+        String social = jwtUtil.getSocial(refresh);
+
+        //make new JWT
+        String access = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
+
+        redisUtils.setLocalRefreshToken(access, refresh, 60000*60*24L);
+
+        //response
+        response.setHeader("Authorization", "Bearer " + access);
+        response.setStatus(HttpStatus.OK.value());
+
+        return true;
+    }
+
+    @Override
+    public boolean reissue(HttpServletRequest request, HttpServletResponse response) {
+
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+
+            if (cookie.getName().equals("refresh")) {
+
+                refresh = cookie.getValue();
+            }
+        }
+
+        if (refresh == null) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_NULL.getMessage());
+        }
+
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
+        }
+
+        String category = jwtUtil.getCategory(refresh);
+
+        if (!category.equals("refresh")) {
+
+            throw new MemberBadRequestException("Refresh Token이 아닙니다.");
+        }
+
+        String userId = jwtUtil.getUserId(refresh);
+        String role = jwtUtil.getRole(refresh);
+        String social = jwtUtil.getSocial(refresh);
+
+        Boolean isExist = redisUtils.existsLocalRefreshToken(refresh);
+        if (!isExist) {
+
+            throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
+        }
+
+        //make new JWT
+        String newAccess = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
+
+        //response
+        response.setHeader("Authorization", "Bearer " + newAccess);
+        response.setStatus(HttpStatus.OK.value());
+
+        return true;
+    }
 
     @Override
     @Transactional
@@ -89,21 +202,71 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public boolean deleteLocalMember(String userId, String accessToken) {
+    public boolean deleteMember(HttpServletRequest request, HttpServletResponse response, String userId) {
+
+        String authorization = request.getHeader("Authorization");
+
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+
+            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
+        }
+
+        String accessToken = authorization.split(" ")[1];
+
+        try {
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
+        }
+
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            throw new MemberBadRequestException("Access Token이 아닙니다.");
+        }
+
+        String social = jwtUtil.getSocial(accessToken);
+
+        boolean memberDeleteSuccess = false;
+        if (social.equals("local")) {
+            memberDeleteSuccess = deleteLocalMember(userId, accessToken);
+        } else {
+            memberDeleteSuccess = deleteSocialMember(userId, accessToken);
+        }
+
+        if (memberDeleteSuccess) {
+
+            // Refresh 토큰 Cookie 값 0
+            Cookie cookie = new Cookie("refresh", null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+
+            response.addCookie(cookie);
+
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    private boolean deleteLocalMember(String userId, String accessToken) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String currentUserId = customUserDetails.getUsername();
 
         if (!currentUserId.equals(userId)) {
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_CREDENTIALS);
+            throw new MemberBadRequestException(ErrorStatus._INVALID_CREDENTIALS.getMessage());
         }
 
         // Redis에 저장되어 있는지 확인
         String redisRefreshToken = redisUtils.getLocalRefreshToken(accessToken);
         if (redisRefreshToken == null) {
 
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+            throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
 
         // Refresh 토큰 Redis에서 제거
@@ -118,23 +281,21 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         return true;
     }
 
-    @Override
-    @Transactional
-    public boolean deleteSocialMember(String userId, String accessToken) {
+    private boolean deleteSocialMember(String userId, String accessToken) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String currentUserId = customOAuth2User.getUserId();
 
         if (!currentUserId.equals(userId)) {
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_CREDENTIALS);
+            throw new MemberBadRequestException(ErrorStatus._INVALID_CREDENTIALS.getMessage());
         }
 
         // Redis에 저장되어 있는지 확인
         String redisRefreshToken = redisUtils.getLocalRefreshToken(accessToken);
         if (redisRefreshToken == null) {
 
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+            throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
 
         // Refresh 토큰 Redis에서 제거
@@ -152,7 +313,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             kakaoSocialDisconnect(userId, socialAccessToken);
 
         } else {
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_PROVIDER_TYPE);
+            throw new MemberBadRequestException(ErrorStatus._INVALID_PROVIDER_TYPE.getMessage());
         }
 
         redisUtils.deleteSocialTokens(userId);
@@ -187,7 +348,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         if (responseRenew.getStatusCode() != HttpStatus.OK) {
 
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+            throw new MemberBadRequestException(ErrorStatus._SOCIAL_INVALID_TOKEN.getMessage());
         }
 
         RestTemplate rt = new RestTemplate();
@@ -209,7 +370,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         if (response.getStatusCode() != HttpStatus.OK) {
 
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+            throw new MemberBadRequestException(ErrorStatus._SOCIAL_INVALID_TOKEN.getMessage());
         }
 
         return (String) response.getBody();
@@ -237,7 +398,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         if (response.getStatusCode() != HttpStatus.OK) {
 
-            throw new MemberExceptionHandler(ErrorStatus._INVALID_TOKEN);
+            throw new MemberBadRequestException(ErrorStatus._SOCIAL_INVALID_TOKEN.getMessage());
         }
 
         return (String) response.getBody();
@@ -249,5 +410,116 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         redisUtils.deleteLocalRefreshToken(accessToken);
         redisUtils.setLocalRefreshToken(accessToken, refreshToken, expiredMs);
+    }
+
+    @Override
+    @Transactional
+    public void updateRedis() {
+
+        ScanOptions scanOptions = ScanOptions.scanOptions().match("*").count(10).build();
+        Cursor<byte[]> keys = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions);
+
+        while (keys.hasNext()) {
+            String key = new String(keys.next());
+            int index = key.indexOf("_");
+
+            String provider = key.substring(0, index);
+//            String providerId = key.substring(index + 1);
+
+            renewTokens(provider, key);
+        }
+    }
+
+    private void renewTokens(String provider, String userId) {
+
+        String socialRefreshToken = redisUtils.getSocialRefreshToken(userId);
+
+        if (provider.equals("KAKAO")) {
+            kakaoRenew(userId, socialRefreshToken);
+        } else if (provider.equals("NAVER")) {
+            naverRenew(userId, socialRefreshToken);
+        }
+    }
+
+    private String kakaoRenew(String userId, String socialRefreshToken) {
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "refresh_token");
+        params.add("client_id", kakaoClientId);
+        params.add("refresh_token", socialRefreshToken);
+        params.add("client_secret", kakaoClientSecret);
+
+        HttpEntity<MultiValueMap<String, String>> kakaoRenewRequest = new HttpEntity<>(params, headers);
+
+        ResponseEntity<String> response = rt.exchange(
+                "https://kauth.kakao.com/oauth/token",
+                HttpMethod.POST,
+                kakaoRenewRequest,
+                String.class
+        );
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+
+            throw new MemberBadRequestException(ErrorStatus._SOCIAL_INVALID_TOKEN.getMessage());
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        OAuthToken oAuthToken = null;
+        try {
+            oAuthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);
+
+        } catch (JsonProcessingException e) {
+            return e.getMessage();
+        }
+
+        redisUtils.setSocialAccessToken(userId, oAuthToken.getAccessToken(), 1L);
+        if (oAuthToken.getRefreshToken() != null) {
+            redisUtils.setSocialRefreshToken(userId, oAuthToken.getRefreshToken(), 1L);
+        }
+
+        return (String) response.getBody();
+    }
+
+    private String naverRenew(String userId, String socialRefreshToken) {
+
+        RestTemplate rt = new RestTemplate();
+
+        String url = "https://nid.naver.com/oauth2.0/token?grant_type=refresh_token&client_id=" + naverClientId
+                + "&client_secret=" + naverClientSecret
+                + "&refresh_token=" + socialRefreshToken;
+
+        HttpHeaders headers = new HttpHeaders();
+
+        HttpEntity<MultiValueMap<String, String>> naverLogoutRequest = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = rt.exchange(
+                url,
+                HttpMethod.POST,
+                naverLogoutRequest,
+                String.class
+        );
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+
+            throw new MemberBadRequestException(ErrorStatus._SOCIAL_INVALID_TOKEN.getMessage());
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        OAuthToken oAuthToken = null;
+        try {
+            oAuthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);
+
+        } catch (JsonProcessingException e) {
+            return e.getMessage();
+        }
+
+        redisUtils.setSocialAccessToken(userId, oAuthToken.getAccessToken(), 1L);
+
+        return (String) response.getBody();
     }
 } 

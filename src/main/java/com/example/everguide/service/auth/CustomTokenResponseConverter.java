@@ -20,8 +20,15 @@ public class CustomTokenResponseConverter implements Converter<Map<String, Objec
 
         String accessToken = (String) tokenResponseParameters.get(OAuth2ParameterNames.ACCESS_TOKEN);
         String refreshToken = (String) tokenResponseParameters.get(OAuth2ParameterNames.REFRESH_TOKEN);
-        String expiresInStr = (String) tokenResponseParameters.get(OAuth2ParameterNames.EXPIRES_IN);
-        long expiresIn = Long.parseLong(expiresInStr);
+        long expiresIn;
+        if (tokenResponseParameters.containsKey("refresh_token_expires_in")) { // 카카오
+            Object expiresInObj = tokenResponseParameters.get(OAuth2ParameterNames.EXPIRES_IN);
+            expiresIn = ((Number) expiresInObj).longValue();
+
+        } else { // 네이버
+            String expiresInStr = (String) tokenResponseParameters.get(OAuth2ParameterNames.EXPIRES_IN);
+            expiresIn = Long.parseLong(expiresInStr);
+        }
 
         Set<String> scopes = Collections.emptySet();
         if (tokenResponseParameters.containsKey(OAuth2ParameterNames.SCOPE)) {
