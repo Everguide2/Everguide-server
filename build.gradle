@@ -52,6 +52,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // 전화번호 인증
+    implementation 'net.nurigo:sdk:4.2.7'
 }
 
 tasks.named('test') {

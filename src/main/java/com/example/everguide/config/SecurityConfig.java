@@ -131,7 +131,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                                 .requestMatchers("/", "/login", "/signup", "/noauth").permitAll()
-                                .requestMatchers("/reissue", "/cookie-to-header").permitAll()
+                                .requestMatchers("/reissue", "/cookie-to-header", "/sms/**").permitAll()
                                 .requestMatchers("/member/**").hasAnyRole("MEMBER")
                                 .requestMatchers("/signup/additional-info", "/signup/test").hasAnyRole("PRE_MEMBER")
                                 .anyRequest().authenticated()

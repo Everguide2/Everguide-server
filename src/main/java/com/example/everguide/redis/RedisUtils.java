@@ -1,25 +1,50 @@
 package com.example.everguide.redis;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class RedisUtils {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisLocalTokenRepository redisLocalTokenRepository;
     private final RedisSocialAccessTokenRepository redisSocialAccessTokenRepository;
     private final RedisSocialRefreshTokenRepository redisSocialRefreshTokenRepository;
+    private final SmsCertificationCodeRepository smsCertificationCodeRepository;
 
-    public RedisUtils(RedisTemplate<String, Object> redisTemplate, RedisLocalTokenRepository redisLocalTokenRepository, RedisSocialAccessTokenRepository redisSocialAccessTokenRepository, RedisSocialRefreshTokenRepository redisSocialRefreshTokenRepository) {
-        this.redisTemplate = redisTemplate;
-        this.redisLocalTokenRepository = redisLocalTokenRepository;
-        this.redisSocialAccessTokenRepository = redisSocialAccessTokenRepository;
-        this.redisSocialRefreshTokenRepository = redisSocialRefreshTokenRepository;
+    public void setSmsCertificationCode(String toPhoneNumber, String certificationCode) {
+
+        SmsCertificationCode smsCertificationCode = SmsCertificationCode.builder()
+                .toPhoneNumber(toPhoneNumber)
+                .certificationCode(certificationCode)
+                .build();
+        smsCertificationCodeRepository.save(smsCertificationCode);
     }
+
+    public String getSmsCertificationCode(String toPhoneNumber){
+
+        Optional<SmsCertificationCode> smsCertificationCodeOpt = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber);
+
+        if (smsCertificationCodeOpt.isPresent()){
+            return smsCertificationCodeOpt.get().getCertificationCode();
+        } else {
+            return null;
+        }
+    }
+
+    public void deleteSmsCertificationCode(String toPhoneNumber){
+
+        SmsCertificationCode smsCertificationCode = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber).orElseThrow(EntityNotFoundException::new);
+        smsCertificationCodeRepository.delete(smsCertificationCode);
+    }
+
+    // - - - - -
 
     public void setLocalRefreshToken(String accessToken, String refreshToken, Long expiredTime){
 
