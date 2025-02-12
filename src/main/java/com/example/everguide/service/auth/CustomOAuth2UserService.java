@@ -9,6 +9,9 @@ import com.example.everguide.domain.enums.Role;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.oauth.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -21,15 +24,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    @Value("${social-login.password}")
+    private String socialPwd;
 
     private final MemberRepository memberRepository;
     private final RedisUtils redisUtils;
-
-    public CustomOAuth2UserService(MemberRepository memberRepository, RedisUtils redisUtils) {
-        this.memberRepository = memberRepository;
-        this.redisUtils = redisUtils;
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 네이버, 카카오 받은 userRequest 데이터에 대한 후처리 되는 함수
     @Override
@@ -54,6 +57,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String userId = oAuth2Response.getProviderType().name()+"_"+oAuth2Response.getProviderId();
+        String encPassword = bCryptPasswordEncoder.encode(socialPwd);
 
         String socialAccessToken = userRequest.getAccessToken().getTokenValue();
         String socialRefreshToken = (String) userRequest.getAdditionalParameters().get(OAuth2ParameterNames.REFRESH_TOKEN);
@@ -67,14 +71,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.setUserId(userId);
             memberDTO.setName(oAuth2Response.getName());
-            memberDTO.setRole(Role.ROLE_MEMBER.name());
+            memberDTO.setRole(Role.ROLE_PRE_MEMBER.name());
 
             if (oAuth2Response.getProviderType().equals(ProviderType.NAVER)) {
-                Member member = naverSaveMember(oAuth2Response, userId);
+                Member member = naverSaveMember(oAuth2Response, userId, encPassword);
                 memberDTO.setSocial("naver");
 
             } else if (oAuth2Response.getProviderType().equals(ProviderType.KAKAO)) {
-                Member member = kakaoSaveMember(oAuth2Response, userId);
+                Member member = kakaoSaveMember(oAuth2Response, userId, encPassword);
                 memberDTO.setSocial("kakao");
 
             } else {
@@ -108,7 +112,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private Member kakaoSaveMember(OAuth2Response oAuth2Response, String userId) {
+    private Member kakaoSaveMember(OAuth2Response oAuth2Response, String userId, String encPassword) {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
@@ -133,7 +137,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         String phoneNumber = oAuth2Response.getPhoneNumber();
         if (phoneNumber != null) {
-            phoneNumber = "0" + phoneNumber.substring(4);
+            phoneNumber = "0" + phoneNumber.substring(4,6) + phoneNumber.substring(7, 11) + phoneNumber.substring(12);
         }
         ProviderType providerType = oAuth2Response.getProviderType();
 
@@ -143,7 +147,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .gender(gender)
                 .birth(birth)
                 .phoneNumber(phoneNumber)
-                .role(Role.ROLE_MEMBER)
+                .password(encPassword)
+                .role(Role.ROLE_PRE_MEMBER)
                 .providerType(providerType)
                 .userId(userId)
                 .build();
@@ -151,7 +156,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return memberRepository.save(member);
     }
 
-    private Member naverSaveMember(OAuth2Response oAuth2Response, String userId) {
+    private Member naverSaveMember(OAuth2Response oAuth2Response, String userId, String encPassword) {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
@@ -173,6 +178,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             birth = null;
         }
         String phoneNumber = oAuth2Response.getPhoneNumber();
+        phoneNumber = phoneNumber.substring(0, 3) + phoneNumber.substring(4,8) + phoneNumber.substring(9);
         ProviderType providerType = oAuth2Response.getProviderType();
 
         Member member = Member.builder()
@@ -181,7 +187,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .gender(gender)
                 .birth(birth)
                 .phoneNumber(phoneNumber)
-                .role(Role.ROLE_MEMBER)
+                .password(encPassword)
+                .role(Role.ROLE_PRE_MEMBER)
                 .providerType(providerType)
                 .userId(userId)
                 .build();
@@ -214,7 +221,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         String phoneNumber = oAuth2Response.getPhoneNumber();
         if (phoneNumber != null) {
-            phoneNumber = "0" + phoneNumber.substring(4);
+            phoneNumber = "0" + phoneNumber.substring(4,6) + phoneNumber.substring(7, 11) + phoneNumber.substring(12);
         }
 
         existMember.setEmail(email);
@@ -249,6 +256,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             birth = null;
         }
         String phoneNumber = oAuth2Response.getPhoneNumber();
+        phoneNumber = phoneNumber.substring(0, 3) + phoneNumber.substring(4,8) + phoneNumber.substring(9);
 
         existMember.setEmail(email);
         existMember.setName(name);

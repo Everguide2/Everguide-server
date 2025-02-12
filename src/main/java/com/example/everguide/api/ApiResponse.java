@@ -53,6 +53,9 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> onFailure(ErrorStatus code, String message){
+        return new ApiResponse<>(false, code.getCode(), message, null);
+    }
+    public static <T> ApiResponse<T> onFailure(ErrorStatus code){
         return new ApiResponse<>(false, code.getCode(), code.getMessage(), null);
     }
 

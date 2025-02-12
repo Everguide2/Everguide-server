@@ -1,8 +1,6 @@
 package com.example.everguide.service.member;
 
-import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
-import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Member;
@@ -11,6 +9,7 @@ import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
+import com.example.everguide.web.dto.MemberResponse;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
 import com.example.everguide.web.dto.MemberRequest;
@@ -31,6 +30,7 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.everguide.domain.enums.Role;
@@ -40,6 +40,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -66,7 +68,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final JWTUtil jwtUtil;
 
     @Override
-    public boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
+    public Boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
         Cookie[] cookies = request.getCookies();
@@ -102,15 +104,23 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String social = jwtUtil.getSocial(refresh);
 
         //make new JWT
-        String access = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
+        String access = jwtUtil.createJwt(userId, role, social, "access", 60000 * 10L);
 
-        redisUtils.setLocalRefreshToken(access, refresh, 60000*60*24L);
+        redisUtils.setLocalRefreshToken(access, refresh, 60000 * 60 * 24L);
 
         //response
         response.setHeader("Authorization", "Bearer " + access);
         response.setStatus(HttpStatus.OK.value());
 
-        return true;
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+
+        Boolean full = (member.getName() != null)
+                && (member.getBirth() != null)
+                && (member.getGender() != null)
+                && (member.getPhoneNumber() != null)
+                && (member.getEmail() != null);
+
+        return full;
     }
 
     @Override
@@ -198,6 +208,118 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         memberRepository.save(member);
 
         return true;
+    }
+
+    @Override
+    public MemberResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response) {
+
+        String authorization = request.getHeader("Authorization");
+
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+
+            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
+        }
+
+        String accessToken = authorization.split(" ")[1];
+
+        try {
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
+        }
+
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            throw new MemberBadRequestException("Access Token이 아닙니다.");
+        }
+
+        String userId = jwtUtil.getUserId(accessToken);
+
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        String gender;
+        if (member.getGender() != null) {
+            gender = member.getGender().name();
+        } else {
+            gender = null;
+        }
+
+        return MemberResponse.SignupAdditionalDTO.builder()
+                .name(member.getName())
+                .birth(member.getBirth())
+                .gender(gender)
+                .phoneNumber(member.getPhoneNumber())
+                .email(member.getEmail())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public boolean registerSignupAdditionalInfo(
+            HttpServletRequest request, HttpServletResponse response,
+            MemberRequest.SignupAdditionalDTO signupAdditionalDTO) {
+
+        String authorization = request.getHeader("Authorization");
+
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+
+            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
+        }
+
+        String accessToken = authorization.split(" ")[1];
+
+        try {
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
+        }
+
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            throw new MemberBadRequestException("Access Token이 아닙니다.");
+        }
+
+        String userId = jwtUtil.getUserId(accessToken);
+        String social = jwtUtil.getSocial(accessToken);
+
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+
+        member.setName(signupAdditionalDTO.getName());
+        LocalDate birth = LocalDate.parse(signupAdditionalDTO.getBirth(), DateTimeFormatter.BASIC_ISO_DATE);
+        member.setBirth(birth);
+        member.setGender(Gender.valueOf(signupAdditionalDTO.getGender()));
+        member.setPhoneNumber(signupAdditionalDTO.getPhoneNumber());
+        member.setEmail(signupAdditionalDTO.getEmail());
+        member.setRole(Role.ROLE_MEMBER);
+
+        memberRepository.save(member);
+
+        String access = jwtUtil.createJwt(userId, Role.ROLE_MEMBER.name(), social, "access", 60000*10L);
+        String refresh = jwtUtil.createJwt(userId, Role.ROLE_MEMBER.name(), social, "refresh", 60000*60*24L);
+
+        redisUtils.changeLocalRefreshToken(accessToken, access, refresh, 60000*60*24L);
+
+        response.addHeader("Authorization", "Bearer " + access);
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
+
+        return true;
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+//        cookie.setSecure(true);
+//        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 
     @Override

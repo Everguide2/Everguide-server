@@ -31,6 +31,19 @@ public class RedisUtils {
         redisLocalTokenRepository.save(redisLocalToken);
     }
 
+    public void changeLocalRefreshToken(String originalAccessToken, String accessToken, String refreshToken, Long expiredTime){
+
+        RedisLocalToken originalRedisLocalToken = redisLocalTokenRepository.findByAccessToken(originalAccessToken).orElseThrow(EntityNotFoundException::new);
+        redisLocalTokenRepository.delete(originalRedisLocalToken);
+
+        RedisLocalToken redisLocalToken = RedisLocalToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .ttl(expiredTime)
+                .build();
+        redisLocalTokenRepository.save(redisLocalToken);
+    }
+
     public String getLocalRefreshToken(String accessToken){
 
         Optional<RedisLocalToken> redisTokenOptional = redisLocalTokenRepository.findByAccessToken(accessToken);

@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -52,11 +51,6 @@ public class SecurityConfig {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.redisUtils = redisUtils;
-    }
-
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -128,6 +122,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                                 .tokenEndpoint((token) -> token
                                         .accessTokenResponseClient(this.accessTokenResponseClient()))
+                                .loginPage("/noauth")
                                 .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                         .userService(customOAuth2UserService))
                                 .successHandler(customSuccessHandler)
@@ -135,8 +130,11 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
+                                .requestMatchers("/", "/login", "/signup", "/noauth").permitAll()
+                                .requestMatchers("/reissue", "/cookie-to-header").permitAll()
                                 .requestMatchers("/member/**").hasAnyRole("MEMBER")
-                                .anyRequest().permitAll()
+                                .requestMatchers("/signup/additional-info", "/signup/test").hasAnyRole("PRE_MEMBER")
+                                .anyRequest().authenticated()
                 );
 
         // 세션 설정

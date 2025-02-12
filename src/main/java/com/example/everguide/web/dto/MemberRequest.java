@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 public class MemberRequest {
 
     @Builder
@@ -19,5 +21,18 @@ public class MemberRequest {
         String phoneNumber;
         String email;
         String password;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SignupAdditionalDTO {
+
+        String name;
+        String birth;
+        String gender;
+        String phoneNumber;
+        String email;
     }
 }
