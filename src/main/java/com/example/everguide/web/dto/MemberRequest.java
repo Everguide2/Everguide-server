@@ -27,6 +27,15 @@ public class MemberRequest {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class SignupEmailDTO {
+
+        String email;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class SignupAdditionalDTO {
 
         String name;
