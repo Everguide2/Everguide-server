@@ -58,4 +58,17 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String userId;
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */
+
+    // 프로필 정보 수정
+    public void updateProfile(String name, LocalDate birth, String phoneNumber, String email) {
+        this.name = name;
+        this.birth = birth;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    // 비밀번호 변경
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }

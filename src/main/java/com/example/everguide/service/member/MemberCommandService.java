@@ -23,4 +23,8 @@ public interface MemberCommandService {
     void changeRefreshToken(String userId, String refreshToken, Long expiredMs);
 
     void updateRedis();
+
+    boolean updateProfile(String userId, MemberRequest.UpdateProfileDTO request);
+    
+    boolean updatePassword(String userId, MemberRequest.UpdatePasswordDTO request);
 }

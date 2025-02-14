@@ -644,4 +644,53 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         return (String) response.getBody();
     }
+
+    @Override
+    @Transactional
+    public boolean updateProfile(String userId, MemberRequest.UpdateProfileDTO request) {
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 이메일 중복 체크 (현재 사용자의 이메일은 제외)
+        if (!member.getEmail().equals(request.getEmail())) {
+            memberRepository.findByEmail(request.getEmail())
+                    .ifPresent(m -> {
+                        throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+                    });
+        }
+
+        member.updateProfile(
+                request.getName(),
+                LocalDate.parse(request.getBirth()),
+                request.getPhoneNumber(),
+                request.getEmail()
+        );
+
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean updatePassword(String userId, MemberRequest.UpdatePasswordDTO request) {
+        Member member = memberRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 소셜 로그인 회원인 경우 비밀번호 변경 불가
+        if (member.getProviderType() != ProviderType.LOCAL) {
+            throw new IllegalStateException("소셜 로그인 회원은 비밀번호를 변경할 수 없습니다.");
+        }
+
+        // 현재 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(request.getCurrentPassword(), member.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호와 확인 비밀번호 일치 여부 확인
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+        }
+
+        member.updatePassword(bCryptPasswordEncoder.encode(request.getNewPassword()));
+        return true;
+    }
 } 
