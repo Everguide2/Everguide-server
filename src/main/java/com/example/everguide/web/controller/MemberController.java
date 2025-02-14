@@ -4,12 +4,15 @@ import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
+import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.service.member.MemberCommandService;
+import com.example.everguide.service.member.MemberQueryService;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +22,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/everguide")
 public class MemberController {
 
     private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
+    private final JWTUtil jwtUtil;
 
     @GetMapping("/member")
     public String memberP() {
@@ -154,5 +160,56 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, e.getMessage()));
         }
+    }
+
+    /* ------------------------------회원 정보 조회 및 수정------------------------------ */
+
+    @GetMapping("/members/profile")
+    public ResponseEntity<ApiResponse<MemberResponse.ProfileDTO>> getProfile(HttpServletRequest request) {
+        String userId = getUserIdFromToken(request);
+        MemberResponse.ProfileDTO profile = memberQueryService.getProfile(userId);
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus.GET_PROFILE_SUCCESS, profile));
+    }
+
+    @PutMapping("/members/profile")
+    public ResponseEntity<ApiResponse<Void>> updateProfile(
+            HttpServletRequest request,
+            @Valid @RequestBody MemberRequest.UpdateProfileDTO updateProfileDTO) {
+        String userId = getUserIdFromToken(request);
+        boolean isUpdated = memberCommandService.updateProfile(userId, updateProfileDTO);
+        
+        if (!isUpdated) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), 
+                            ErrorStatus._BAD_REQUEST.getMessage(), null));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus.UPDATE_PROFILE_SUCCESS));
+    }
+
+    @PutMapping("/members/password")
+    public ResponseEntity<ApiResponse<Void>> updatePassword(
+            HttpServletRequest request,
+            @Valid @RequestBody MemberRequest.UpdatePasswordDTO updatePasswordDTO) {
+        String userId = getUserIdFromToken(request);
+        boolean isUpdated = memberCommandService.updatePassword(userId, updatePasswordDTO);
+        
+        if (!isUpdated) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST.getCode(), 
+                            ErrorStatus._BAD_REQUEST.getMessage(), null));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus.UPDATE_PASSWORD_SUCCESS));
+    }
+
+    private String getUserIdFromToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+        }
+        
+        String accessToken = authorization.split(" ")[1];
+        return jwtUtil.getUserId(accessToken);
     }
 }
