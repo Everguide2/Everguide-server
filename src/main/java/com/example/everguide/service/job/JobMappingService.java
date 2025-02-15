@@ -4,6 +4,7 @@ import com.example.everguide.domain.Job;
 import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
 import com.example.everguide.web.dto.job.JobItem;
+import com.example.everguide.web.dto.job.JobResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,6 +14,34 @@ import java.util.stream.Collectors;
 
 @Service
 public class JobMappingService {
+
+    public static JobResponse.GetJobList toJobListDto(List<Job> jobs) {
+        List<JobResponse.JobDto> jobList = jobs.stream().map(JobMappingService::toJobDto).collect(Collectors.toList());
+        return JobResponse.GetJobList.builder()
+                .jobDtoList(jobList)
+                .count(jobList.size())
+                .build();
+    }
+
+
+    public static JobResponse.JobDto toJobDto(Job job) {
+        return JobResponse.JobDto.builder()
+                .jobId(job.getId())
+                .jobName(job.getName())
+                .dDay(calcDday(job.getEndDate()))
+                .startDate(String.valueOf(job.getStartDate()))
+                .endDate(String.valueOf(job.getEndDate()))
+                .hireType(job.getHireType().name())
+                .company(job.getOrganName())
+                .build();
+    }
+
+    private static String calcDday(LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+        long daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(today, endDate);
+        // 날짜 차이가 0 미만이면 -1 반환, 그 외에는 남은 일수를 반환
+        return daysRemaining < 0 ? "-1" : String.valueOf(daysRemaining);
+    }
 
     //xml 결과를 엔티티 리스트로 변환
     public List<Job> convert(List<JobItem> jobLists) {
@@ -29,7 +58,7 @@ public class JobMappingService {
                 .organName(dto.getOranNm()) //기업명
                 .hireType(HireType.toHireType(dto.getDeadline())) //마감여부
                 .startDate(stringToDate(dto.getFrDd())) //시작일
-                .EndDate(stringToDate(dto.getToDd())) // 마감일
+                .endDate(stringToDate(dto.getToDd())) // 마감일
                 .name(dto.getRecrtTitle()) //채용제목
                 .region(classifyRegion(dto.getWorkPlc())) //지역
                 .build();

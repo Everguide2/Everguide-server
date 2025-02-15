@@ -40,7 +40,7 @@ public class Job extends BaseEntity {
 
     private LocalDate startDate;//시작 접수일
 
-    private LocalDate EndDate;// 종료 점수일
+    private LocalDate endDate;// 종료 점수일
 
 
 
