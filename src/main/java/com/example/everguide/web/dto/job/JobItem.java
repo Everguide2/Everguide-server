@@ -13,43 +13,29 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JobItem {
 
-    @XmlElement(name = "dstrCd1Nm")
-    private String regionSido;  // 시도
 
-    @XmlElement(name = "dstrCd2Nm")
-    private String regionSigungu; // 시군구
 
-    @XmlElement(name = "hpInvtCnt")
-    private int recruitCnt; // 구직인원
+    @XmlElement(name = "deadline")
+    private String deadline; // 마감 여부
 
-    @XmlElement(name = "hpNotiEdate")
-    private String postingEndDate; // 공고 종료일
+    @XmlElement(name = "jobId")
+    private String jobId; // 마감 여부
 
-    @XmlElement(name = "hpNotiSdate")
-    private String postingStartDate; // 공고 시작일
+    @XmlElement(name = "frDd")
+    private String frDd; // 시작 접수일
 
-    @XmlElement(name = "intCnt")
-    private int wage; // 임금
 
-    @XmlElement(name = "orgName")
-    private String companyName; // 기관명
+    @XmlElement(name = "oranNm")
+    private String oranNm; // 기업명
 
-    @XmlElement(name = "projNo")
-    private String jobCode; // 프로젝트 번호
+    @XmlElement(name = "recrtTitle")
+    private String recrtTitle; // 채용 제목
 
-    @XmlElement(name = "projYear")
-    private int projectYear; // 사업년도
+    @XmlElement(name = "toDd")
+    private String toDd; // 종료 접수일
 
-    @XmlElement(name = "trnStatNm")
-    @Enumerated(EnumType.STRING)
-    private String hireType; // 구인상태
-
-    @XmlElement(name = "jobType")
-    @Enumerated(EnumType.STRING)
-    private String jobType; // 유형
-
-    @XmlElement(name = "workPlace")
-    private String workPlace; //workPlace
+    @XmlElement(name = "workPlc")
+    private String workPlc; // 근무지명
 
 
 }

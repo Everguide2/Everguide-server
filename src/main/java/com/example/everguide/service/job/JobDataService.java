@@ -25,7 +25,7 @@ public class JobDataService {
     private final JobMappingService jobMappingService;
     @Value("${api.service.jobKey}")
     private String jobServiceKey;
-    private static final String API_ENDPOINT = "/getJobBsnRecruitList";
+    private static final String API_ENDPOINT = "/getJobList";
 
     @Transactional
     // 외부 API 호출 → DTO 매핑 → Entity 변환 및 DB 저장 과정을 수행

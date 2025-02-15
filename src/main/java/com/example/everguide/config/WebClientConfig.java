@@ -30,7 +30,8 @@ public class WebClientConfig {
                 .build();
 
         return webClientBuilder
-                .baseUrl("http://apis.data.go.kr/B552474/JobBsnInfoService")                .exchangeStrategies(strategies)
+                .baseUrl("http://apis.data.go.kr/B552474/SenuriService/")
+                .exchangeStrategies(strategies)
                 .filter(logRequest())
                 .filter(logResponse())
                 .filter(ExchangeFilterFunction.ofRequestProcessor(request -> {
