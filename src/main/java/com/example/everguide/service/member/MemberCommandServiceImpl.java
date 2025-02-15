@@ -4,11 +4,11 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Member;
-import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
+import com.example.everguide.service.mail.MailService;
 import com.example.everguide.web.dto.MemberResponse;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
@@ -30,7 +30,6 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.everguide.domain.enums.Role;
@@ -40,11 +39,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +63,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final RedisUtils redisUtils;
     private final RedisTemplate<String, Object> redisTemplate;
     private final JWTUtil jwtUtil;
+    private final MailService mailService;
 
     @Override
     public Boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
@@ -114,11 +112,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
-        Boolean full = (member.getName() != null)
+        Boolean full = (member.getName() != null && !member.getName().isBlank())
                 && (member.getBirth() != null)
-                && (member.getGender() != null)
-                && (member.getPhoneNumber() != null)
-                && (member.getEmail() != null);
+                && (member.getPhoneNumber() != null && !member.getPhoneNumber().isBlank())
+                && (member.getEmail() != null && !member.getEmail().isBlank());
 
         return full;
     }
@@ -181,22 +178,20 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         String name = signupDTO.getName();
         String birth = signupDTO.getBirth();
-        String gender = signupDTO.getGender();
         String phoneNumber = signupDTO.getPhoneNumber();
         String email = signupDTO.getEmail();
         String password = signupDTO.getPassword();
         String userId = "LOCAL_" + email;
 
-        Boolean isExist = memberRepository.existsByUserId(userId);
+        checkEmailExist(userId);
 
-        if (isExist) {
-            return false;
-        }
+        checkPhoneNumberExist(phoneNumber);
+
+        checkSmsVerify(phoneNumber);
 
         Member member = Member.builder()
                 .name(name)
                 .birth(LocalDate.parse(birth, DateTimeFormatter.BASIC_ISO_DATE))
-                .gender(Gender.valueOf(gender))
                 .phoneNumber(phoneNumber)
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
@@ -208,6 +203,42 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         memberRepository.save(member);
 
         return true;
+    }
+
+    private Boolean checkSmsVerify(String phoneNumber) {
+
+        String savedCode = redisUtils.getSmsAuthCode(phoneNumber);
+        String verifyCode = redisUtils.getSmsAuthCodeVerify(phoneNumber);
+
+        if (savedCode == null || verifyCode == null) {
+            throw new MemberBadRequestException("인증코드를 찾을 수 없습니다.");
+        }
+
+        if (!savedCode.equals(verifyCode)) {
+            throw new MemberBadRequestException("인증코드가 일치하지 않습니다.");
+        }
+
+        return true;
+    }
+
+    private Boolean checkEmailExist(String userId) {
+
+        if (memberRepository.existsByUserId(userId)) {
+            throw new MemberBadRequestException("이미 존재하는 이메일입니다.");
+
+        } else {
+            return true;
+        }
+    }
+
+    private Boolean checkPhoneNumberExist(String phoneNumber) {
+
+        if (memberRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new MemberBadRequestException("이미 존재하는 전화번호입니다.");
+
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -239,17 +270,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String userId = jwtUtil.getUserId(accessToken);
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        String gender;
-        if (member.getGender() != null) {
-            gender = member.getGender().name();
-        } else {
-            gender = null;
-        }
 
         return MemberResponse.SignupAdditionalDTO.builder()
                 .name(member.getName())
                 .birth(member.getBirth())
-                .gender(gender)
                 .phoneNumber(member.getPhoneNumber())
                 .email(member.getEmail())
                 .build();
@@ -292,7 +316,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         member.setName(signupAdditionalDTO.getName());
         LocalDate birth = LocalDate.parse(signupAdditionalDTO.getBirth(), DateTimeFormatter.BASIC_ISO_DATE);
         member.setBirth(birth);
-        member.setGender(Gender.valueOf(signupAdditionalDTO.getGender()));
         member.setPhoneNumber(signupAdditionalDTO.getPhoneNumber());
         member.setEmail(signupAdditionalDTO.getEmail());
         member.setRole(Role.ROLE_MEMBER);
@@ -320,6 +343,82 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    @Override
+    @Transactional
+    public boolean changePwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO) {
+
+        String authorization = request.getHeader("Authorization");
+
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+
+            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
+        }
+
+        String accessToken = authorization.split(" ")[1];
+
+        try {
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
+
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
+        }
+
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            throw new MemberBadRequestException("Access Token이 아닙니다.");
+        }
+
+        String userId = jwtUtil.getUserId(accessToken);
+        String newPwd = bCryptPasswordEncoder.encode(changePwdDTO.getNewPwd());
+
+        int success = memberRepository.updatePasswordByUserId(userId, newPwd);
+
+        return success != 0;
+    }
+
+    @Override
+    @Transactional
+    public MemberResponse.FindEmailDTO findEmail(MemberRequest.FindEmailDTO findEmailDTO) {
+
+        String name = findEmailDTO.getName();
+        String phoneNumber = findEmailDTO.getPhoneNumber();
+
+        checkSmsVerify(phoneNumber);
+
+        List<Member> memberList = memberRepository.findByNameAndPhoneNumberAndProviderType(name, phoneNumber, ProviderType.LOCAL);
+        List<String> emailList = new ArrayList<>();
+        for (Member member : memberList) {
+            emailList.add(member.getEmail());
+        }
+
+        return MemberResponse.FindEmailDTO.builder()
+                .name(name)
+                .emailList(emailList)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public Boolean findPwd(MemberRequest.FindPwdDTO findPwdDTO) {
+
+        String email = findPwdDTO.getEmail();
+        String name = findPwdDTO.getName();
+        String phoneNumber = findPwdDTO.getPhoneNumber();
+        String userId = "LOCAL_" + email;
+
+        checkSmsVerify(phoneNumber);
+
+        Member member = memberRepository.findByEmailAndNameAndPhoneNumberAndProviderType(email, name, phoneNumber, ProviderType.LOCAL).orElseThrow(EntityNotFoundException::new);
+
+        String code = mailService.sendEmail(member.getEmail());
+
+        int success = memberRepository.updatePasswordByUserId(userId, bCryptPasswordEncoder.encode(code));
+
+        return success != 0;
     }
 
     @Override
@@ -524,14 +623,6 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         return (String) response.getBody();
-    }
-
-    @Override
-    @Transactional
-    public void changeRefreshToken(String accessToken, String refreshToken, Long expiredMs) {
-
-        redisUtils.deleteLocalRefreshToken(accessToken);
-        redisUtils.setLocalRefreshToken(accessToken, refreshToken, expiredMs);
     }
 
     @Override

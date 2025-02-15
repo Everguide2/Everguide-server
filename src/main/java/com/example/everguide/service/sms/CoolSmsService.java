@@ -33,19 +33,19 @@ public class CoolSmsService {
 
     public String sendSMS(String toPhoneNumber) throws NurigoMessageNotReceivedException, NurigoEmptyResponseException, NurigoUnknownException {
 
-        String certificationCode = generateCertificationCode();
+        String authCode = generateAuthCode();
 
         Message message = new Message();
         message.setFrom(fromPhoneNumber);
         message.setTo(toPhoneNumber);
-        message.setText("본인확인 인증번호는 " + certificationCode + "입니다.");
+        message.setText("본인확인 인증번호는 " + authCode + "입니다.");
 
 
         messageService.send(message);
-        return certificationCode;
+        return authCode;
     }
 
-    private String generateCertificationCode() {
+    private String generateAuthCode() {
 
         Random random = new Random();
         int ranNum = 0;

@@ -4,7 +4,8 @@ import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+
+import java.util.Map;
 
 public interface MemberCommandService {
 
@@ -18,9 +19,13 @@ public interface MemberCommandService {
 
     boolean registerSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
 
+    boolean changePwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO);
+
     boolean deleteMember(HttpServletRequest request, HttpServletResponse response, String userId);
 
-    void changeRefreshToken(String userId, String refreshToken, Long expiredMs);
+    MemberResponse.FindEmailDTO findEmail(MemberRequest.FindEmailDTO findEmailDTO);
+
+    Boolean findPwd(MemberRequest.FindPwdDTO findPwdDTO);
 
     void updateRedis();
 }

@@ -6,7 +6,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -16,32 +15,53 @@ public class RedisUtils {
     private final RedisLocalTokenRepository redisLocalTokenRepository;
     private final RedisSocialAccessTokenRepository redisSocialAccessTokenRepository;
     private final RedisSocialRefreshTokenRepository redisSocialRefreshTokenRepository;
-    private final SmsCertificationCodeRepository smsCertificationCodeRepository;
+    private final SmsAuthCodeRepository smsAuthCodeRepository;
+    private final SmsAuthCodeVerifyRepository smsAuthCodeVerifyRepository;
 
-    public void setSmsCertificationCode(String toPhoneNumber, String certificationCode) {
+    public void setSmsAuthCode(String toPhoneNumber, String authCode, Long expiredTime) {
 
-        SmsCertificationCode smsCertificationCode = SmsCertificationCode.builder()
+        SmsAuthCode smsAuthCode = SmsAuthCode.builder()
                 .toPhoneNumber(toPhoneNumber)
-                .certificationCode(certificationCode)
+                .authCode(authCode)
                 .build();
-        smsCertificationCodeRepository.save(smsCertificationCode);
+        smsAuthCodeRepository.save(smsAuthCode);
     }
 
-    public String getSmsCertificationCode(String toPhoneNumber){
+    public void setSmsAuthCodeVerify(String toPhoneNumber, String authCode) {
 
-        Optional<SmsCertificationCode> smsCertificationCodeOpt = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber);
+        SmsAuthCodeVerify smsAuthCodeVerify = SmsAuthCodeVerify.builder()
+                .toPhoneNumber(toPhoneNumber)
+                .authCode(authCode)
+                .build();
+        smsAuthCodeVerifyRepository.save(smsAuthCodeVerify);
+    }
 
-        if (smsCertificationCodeOpt.isPresent()){
-            return smsCertificationCodeOpt.get().getCertificationCode();
+    public String getSmsAuthCode(String toPhoneNumber){
+
+        Optional<SmsAuthCode> smsAuthCodeOpt = smsAuthCodeRepository.findByToPhoneNumber(toPhoneNumber);
+
+        if (smsAuthCodeOpt.isPresent()){
+            return smsAuthCodeOpt.get().getAuthCode();
         } else {
             return null;
         }
     }
 
-    public void deleteSmsCertificationCode(String toPhoneNumber){
+    public String getSmsAuthCodeVerify(String toPhoneNumber){
 
-        SmsCertificationCode smsCertificationCode = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber).orElseThrow(EntityNotFoundException::new);
-        smsCertificationCodeRepository.delete(smsCertificationCode);
+        Optional<SmsAuthCodeVerify> smsAuthCodeVerifyOpt = smsAuthCodeVerifyRepository.findByToPhoneNumber(toPhoneNumber);
+
+        if (smsAuthCodeVerifyOpt.isPresent()){
+            return smsAuthCodeVerifyOpt.get().getAuthCode();
+        } else {
+            return null;
+        }
+    }
+
+    public void deleteSmsAuthCode(String toPhoneNumber){
+
+        SmsAuthCode smsAuthCode = smsAuthCodeRepository.findByToPhoneNumber(toPhoneNumber).orElseThrow(EntityNotFoundException::new);
+        smsAuthCodeRepository.delete(smsAuthCode);
     }
 
     // - - - - -
