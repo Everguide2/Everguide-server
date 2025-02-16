@@ -11,7 +11,6 @@ import com.example.everguide.validation.ChangePasswordValidator;
 import com.example.everguide.validation.RegisterValidator;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
-import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -248,13 +247,18 @@ public class MemberController {
                     .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, "값이 validate 실패했습니다.", validatorResult));
         }
 
-        if (memberCommandService.changePwd(request, response, changePwdDTO)) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(ApiResponse.onSuccess(SuccessStatus._OK));
+        try {
+            if (memberCommandService.changePwd(request, response, changePwdDTO)) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(ApiResponse.onSuccess(SuccessStatus._OK));
 
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.onFailure(ErrorStatus._INTERNAL_SERVER_ERROR, "비밀번호 업데이트에 실패했습니다."));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ApiResponse.onFailure(ErrorStatus._INTERNAL_SERVER_ERROR, "비밀번호 업데이트에 실패했습니다."));
+            }
+        } catch (MemberBadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, e.getMessage()));
         }
     }
 

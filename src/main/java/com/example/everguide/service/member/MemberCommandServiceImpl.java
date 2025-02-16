@@ -372,6 +372,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new MemberBadRequestException("Access Token이 아닙니다.");
         }
 
+        if (changePwdDTO.getNewPwd().equals(changePwdDTO.getOriginalPwd())) {
+
+            throw new MemberBadRequestException("기존 비밀번호와 새로 입력한 비밀번호가 같습니다.");
+        }
+
         String userId = jwtUtil.getUserId(accessToken);
         String newPwd = bCryptPasswordEncoder.encode(changePwdDTO.getNewPwd());
 
@@ -629,17 +634,28 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public void updateRedis() {
 
+        System.out.println("update Redis");
+
         ScanOptions scanOptions = ScanOptions.scanOptions().match("*").count(10).build();
         Cursor<byte[]> keys = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions);
 
         while (keys.hasNext()) {
+
             String key = new String(keys.next());
-            int index = key.indexOf("_");
 
-            String provider = key.substring(0, index);
-//            String providerId = key.substring(index + 1);
+            if (key.startsWith("SocialRefresh:")) {
 
-            renewTokens(provider, key);
+                if (!key.endsWith(":phantom")) {
+
+                    int indexUnderscore = key.indexOf("_");
+                    int indexColon = key.indexOf(":");
+
+                    String provider = key.substring(indexColon+1, indexUnderscore);
+                    String userId = key.substring(indexColon+1);
+
+                    renewTokens(provider, userId);
+                }
+            }
         }
     }
 
@@ -690,8 +706,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             return e.getMessage();
         }
 
+        redisUtils.deleteSocialAccessToken(userId);
         redisUtils.setSocialAccessToken(userId, oAuthToken.getAccessToken(), 1L);
         if (oAuthToken.getRefreshToken() != null) {
+            redisUtils.deleteSocialRefreshToken(userId);
             redisUtils.setSocialRefreshToken(userId, oAuthToken.getRefreshToken(), 1L);
         }
 
@@ -731,6 +749,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             return e.getMessage();
         }
 
+        redisUtils.deleteSocialAccessToken(userId);
         redisUtils.setSocialAccessToken(userId, oAuthToken.getAccessToken(), 1L);
 
         return (String) response.getBody();

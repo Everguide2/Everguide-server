@@ -45,7 +45,7 @@ public class SmsController {
 
             String authCode = coolSmsService.sendSMS(toPhoneNumber);
 
-            redisUtils.setSmsAuthCode(toPhoneNumber, authCode, 5L);
+            redisUtils.setSmsAuthCode(toPhoneNumber, authCode, 60000*5L);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK));
@@ -71,8 +71,8 @@ public class SmsController {
         if (savedCode != null) {
             if (savedCode.equals(verifyCode)) {
                 redisUtils.deleteSmsAuthCode(toPhoneNumber);
-                redisUtils.setSmsAuthCode(toPhoneNumber, savedCode, 60L);
-                redisUtils.setSmsAuthCodeVerify(toPhoneNumber, verifyCode);
+                redisUtils.setSmsAuthCode(toPhoneNumber, savedCode, 60000*60L);
+                redisUtils.setSmsAuthCodeVerify(toPhoneNumber, verifyCode, 60000*60L);
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));

@@ -19,6 +19,6 @@ public class SmsAuthCode {
 
     private String authCode;
 
-    @TimeToLive(unit = TimeUnit.MINUTES)
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long ttl;
 }

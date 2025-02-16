@@ -23,15 +23,17 @@ public class RedisUtils {
         SmsAuthCode smsAuthCode = SmsAuthCode.builder()
                 .toPhoneNumber(toPhoneNumber)
                 .authCode(authCode)
+                .ttl(expiredTime)
                 .build();
         smsAuthCodeRepository.save(smsAuthCode);
     }
 
-    public void setSmsAuthCodeVerify(String toPhoneNumber, String authCode) {
+    public void setSmsAuthCodeVerify(String toPhoneNumber, String authCode, Long expiredTime) {
 
         SmsAuthCodeVerify smsAuthCodeVerify = SmsAuthCodeVerify.builder()
                 .toPhoneNumber(toPhoneNumber)
                 .authCode(authCode)
+                .ttl(expiredTime)
                 .build();
         smsAuthCodeVerifyRepository.save(smsAuthCodeVerify);
     }
@@ -153,6 +155,18 @@ public class RedisUtils {
                 .ttl(expiredTime)
                 .build();
         redisSocialRefreshTokenRepository.save(redisSocialRefreshToken);
+    }
+
+    public void deleteSocialAccessToken(String userId){
+
+        RedisSocialAccessToken redisSocialAccessToken = redisSocialAccessTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        redisSocialAccessTokenRepository.delete(redisSocialAccessToken);
+    }
+
+    public void deleteSocialRefreshToken(String userId){
+
+        RedisSocialRefreshToken redisSocialRefreshToken = redisSocialRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        redisSocialRefreshTokenRepository.delete(redisSocialRefreshToken);
     }
 
     public void deleteSocialTokens(String userId){
