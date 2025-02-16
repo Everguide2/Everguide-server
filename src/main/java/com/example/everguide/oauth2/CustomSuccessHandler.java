@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -46,6 +45,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String social = customUserDetails.getSocial();
 
         String refresh = jwtUtil.createJwt(userId, role, social, "refresh", 60000*60*24L);
+
+        redisUtils.setLocalRefreshToken(userId, refresh, 60000*60*24L);
 
         response.addCookie(createCookie("refresh", refresh));
         response.sendRedirect("http://localhost:3000/cookie-to-header");

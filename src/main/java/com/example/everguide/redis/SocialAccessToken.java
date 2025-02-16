@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @RedisHash(value = "SocialAccess")
-public class RedisSocialAccessToken {
+public class SocialAccessToken {
 
     @Id
     private String userId;

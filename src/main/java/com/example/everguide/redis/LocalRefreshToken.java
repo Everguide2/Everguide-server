@@ -12,14 +12,14 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@RedisHash(value = "SocialRefresh")
-public class RedisSocialRefreshToken {
+@RedisHash(value = "LocalRefresh")
+public class LocalRefreshToken {
 
     @Id
     private String userId;
 
     private String refreshToken;
 
-    @TimeToLive(unit = TimeUnit.DAYS)
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long ttl;
 }

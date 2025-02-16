@@ -66,6 +66,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final MailService mailService;
 
     @Override
+    @Transactional
     public Boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
@@ -102,9 +103,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String social = jwtUtil.getSocial(refresh);
 
         //make new JWT
-        String access = jwtUtil.createJwt(userId, role, social, "access", 60000 * 10L);
-
-        redisUtils.setLocalRefreshToken(access, refresh, 60000 * 60 * 24L);
+        String access = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
 
         //response
         response.setHeader("Authorization", "Bearer " + access);
@@ -121,6 +120,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    @Transactional
     public boolean reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
@@ -156,7 +156,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String role = jwtUtil.getRole(refresh);
         String social = jwtUtil.getSocial(refresh);
 
-        Boolean isExist = redisUtils.existsLocalRefreshToken(refresh);
+        Boolean isExist = redisUtils.existsLocalRefreshToken(userId);
         if (!isExist) {
 
             throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
@@ -164,9 +164,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         //make new JWT
         String newAccess = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
+        String newRefresh = jwtUtil.createJwt(userId, role, social, "refresh", 60000*60*24L);
+
+        redisUtils.changeLocalRefreshToken(userId, newRefresh, 60000*60*24L);
 
         //response
         response.setHeader("Authorization", "Bearer " + newAccess);
+        response.addCookie(createCookie("refresh", newRefresh));
         response.setStatus(HttpStatus.OK.value());
 
         return true;
@@ -187,7 +191,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         checkPhoneNumberExist(phoneNumber);
 
-        checkSmsVerify(phoneNumber);
+//        checkSmsVerify(phoneNumber);
 
         Member member = Member.builder()
                 .name(name)
@@ -242,6 +246,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    @Transactional
     public MemberResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response) {
 
         String authorization = request.getHeader("Authorization");
@@ -325,7 +330,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String access = jwtUtil.createJwt(userId, Role.ROLE_MEMBER.name(), social, "access", 60000*10L);
         String refresh = jwtUtil.createJwt(userId, Role.ROLE_MEMBER.name(), social, "refresh", 60000*60*24L);
 
-        redisUtils.changeLocalRefreshToken(accessToken, access, refresh, 60000*60*24L);
+        redisUtils.changeLocalRefreshToken(userId, refresh, 60000*60*24L);
 
         response.addHeader("Authorization", "Bearer " + access);
         response.addCookie(createCookie("refresh", refresh));
@@ -457,9 +462,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         boolean memberDeleteSuccess = false;
         if (social.equals("local")) {
-            memberDeleteSuccess = deleteLocalMember(userId, accessToken);
+            memberDeleteSuccess = deleteLocalMember(userId);
         } else {
-            memberDeleteSuccess = deleteSocialMember(userId, accessToken);
+            memberDeleteSuccess = deleteSocialMember(userId);
         }
 
         if (memberDeleteSuccess) {
@@ -478,7 +483,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
     }
 
-    private boolean deleteLocalMember(String userId, String accessToken) {
+    private boolean deleteLocalMember(String userId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -489,14 +494,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         // Redis에 저장되어 있는지 확인
-        String redisRefreshToken = redisUtils.getLocalRefreshToken(accessToken);
+        String redisRefreshToken = redisUtils.getLocalRefreshToken(userId);
         if (redisRefreshToken == null) {
 
             throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
 
         // Refresh 토큰 Redis에서 제거
-        redisUtils.deleteLocalRefreshToken(accessToken);
+        redisUtils.deleteLocalRefreshToken(userId);
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
         List<Bookmark> bookmarkList = bookmarkRepository.findByMemberId(member.getId());
@@ -507,7 +512,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         return true;
     }
 
-    private boolean deleteSocialMember(String userId, String accessToken) {
+    private boolean deleteSocialMember(String userId) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
@@ -518,14 +523,14 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         }
 
         // Redis에 저장되어 있는지 확인
-        String redisRefreshToken = redisUtils.getLocalRefreshToken(accessToken);
+        String redisRefreshToken = redisUtils.getLocalRefreshToken(userId);
         if (redisRefreshToken == null) {
 
             throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
 
         // Refresh 토큰 Redis에서 제거
-        redisUtils.deleteLocalRefreshToken(accessToken);
+        redisUtils.deleteLocalRefreshToken(userId);
 
         String socialAccessToken = redisUtils.getSocialAccessToken(userId);
         String socialRefreshToken = redisUtils.getSocialRefreshToken(userId);

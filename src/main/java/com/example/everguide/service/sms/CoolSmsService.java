@@ -50,7 +50,7 @@ public class CoolSmsService {
         Random random = new Random();
         int ranNum = 0;
         String ranStr = "";
-        int letterNum = 6;
+        int letterNum = 7;
         StringBuilder resultStr = new StringBuilder();
 
         for (int i = 0; i < letterNum; i++) {

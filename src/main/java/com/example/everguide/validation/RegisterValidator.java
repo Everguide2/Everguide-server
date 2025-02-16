@@ -30,7 +30,7 @@ public class RegisterValidator implements Validator {
     private static final Pattern BIRTH_PATTERN = Pattern.compile("^\\d{8}$");
     private static final Pattern PHONE_PATTERN = Pattern.compile("^010\\d{8}$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,128}$");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,13}$");
 
     private final MessageSource messageSource;
 

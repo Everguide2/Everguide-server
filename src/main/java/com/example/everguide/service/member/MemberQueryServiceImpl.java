@@ -1,7 +1,5 @@
 package com.example.everguide.service.member;
 
-
-import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Member;
@@ -13,8 +11,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
