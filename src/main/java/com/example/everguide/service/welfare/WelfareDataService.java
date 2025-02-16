@@ -20,8 +20,8 @@ public class WelfareDataService {
     private final WelfareMappingService welfareMappingService;
     private final WelfareServiceRepository repository;
 
-//    @Value("${api.service.key}")
-//    private String serviceKey;
+   @Value("${api.service.key}")
+   private String serviceKey;
 
     private static final String API_ENDPOINT = "/LcgvWelfarelist";
 

@@ -2,7 +2,7 @@ package com.example.everguide.service.job;
 
 import com.example.everguide.domain.Job;
 import com.example.everguide.domain.enums.HireType;
-import com.example.everguide.domain.enums.JobType;
+import com.example.everguide.domain.enums.Region;
 import com.example.everguide.web.dto.job.JobItem;
 import org.springframework.stereotype.Service;
 
@@ -25,23 +25,79 @@ public class JobMappingService {
     private Job mapToEntity(JobItem dto) {
         Job entity = new Job();
         return entity.builder()
-                .jobCode(dto.getJobCode())
-                .companyName(dto.getCompanyName())
-                .projectYear(dto.getProjectYear())
-                .regionSido(dto.getRegionSido())
-                .regionSigungu(dto.getRegionSigungu())
-                .wage(dto.getWage())
-                .jobType(JobType.toJobType(dto.getJobType()))
-                .workPlace(dto.getWorkPlace())
-                .recruitCnt(dto.getRecruitCnt())
-                .hireType(HireType.toHireType(dto.getHireType()))
-                .postingEndDate(stringToDate(dto.getPostingStartDate()))
-                .postingStartDate(stringToDate(dto.getPostingStartDate()))
+                .jobCode(dto.getJobId())
+                .organName(dto.getOranNm()) //기업명
+                .hireType(HireType.toHireType(dto.getDeadline())) //마감여부
+                .startDate(stringToDate(dto.getFrDd())) //시작일
+                .EndDate(stringToDate(dto.getToDd())) // 마감일
+                .name(dto.getRecrtTitle()) //채용제목
+                .region(classifyRegion(dto.getWorkPlc())) //지역
                 .build();
+
     }
 
     private LocalDate stringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(date, formatter);
+    }
+
+
+    //지역코드
+    public static Region classifyRegion(String code) {
+        // 서울특별시 (010000 ~ 010250)
+        if (code.startsWith("010")) {
+            return Region.SEOUL;
+        }
+        // 인천광역시 (110000 ~ 110100)
+        else if (code.startsWith("110")) {
+            return Region.INCHEON;
+        }
+        // 부산광역시 (090000 ~ 090150)
+        else if (code.startsWith("090")) {
+            return Region.BUSAN;
+        }
+        // 경기도 (030000 ~ 030530)
+        else if (code.startsWith("030")) {
+            return Region.GYEONGGI;
+        }
+        // 충청남도 (150000 ~ 150110)
+        else if (code.startsWith("150")) {
+            return Region.CHUNGNAM;
+        }
+        // 충청북도 (160000 ~ 160140)
+        else if (code.startsWith("160")) {
+            return Region.CHUNGBUK;
+        }
+        // 전라남도 (120000 ~ 120190)
+        else if (code.startsWith("120")) {
+            return Region.JEONNAM;
+        }
+        // 전라북도 (130000 ~ 130160)
+        else if (code.startsWith("130")) {
+            return Region.JEONBUK;
+        }
+        // 경상북도 (050000 ~ 050250)
+        else if (code.startsWith("050")) {
+            return Region.GYEONGBUK;
+        }
+        // 경상남도 (040000 ~ 040180)
+        else if (code.startsWith("040")) {
+            return Region.GYEONGNAM;
+        }
+        // 강원도 (020000 ~ 020180)
+        else if (code.startsWith("020")) {
+            return Region.GANGWON;
+        }
+        // 제주특별자치도 (140000 ~ 140010)
+        else if (code.startsWith("140")) {
+            return Region.JEJU;
+        }
+        // 세종특별자치시 (170000)
+        else if (code.startsWith("170")) {
+            return Region.SEJONG;
+        }
+
+        // 기본적으로 알 수 없는 경우는 null 반환
+        return null;
     }
 }
