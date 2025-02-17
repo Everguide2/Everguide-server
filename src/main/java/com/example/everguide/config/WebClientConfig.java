@@ -3,6 +3,7 @@ package com.example.everguide.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -19,25 +20,35 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 public class WebClientConfig {
 
-    @Bean
-    public WebClient webClient(WebClient.Builder webClientBuilder) {
+    private static final String WELFARE_API_BASE_URL = "https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations";
+    private static final String JOB_API_BASE_URL = "https://apis.data.go.kr/B552474/SenuriService";
+
+    @Bean("welfareWebClient")
+    public WebClient welfareWebClient() {
+        return createWebClient(WELFARE_API_BASE_URL);
+    }
+
+    @Bean("jobWebClient")
+    public WebClient jobWebClient() {
+        return createWebClient(JOB_API_BASE_URL);
+    }
+
+    private WebClient createWebClient(String baseUrl) {
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> {
                     configurer.defaultCodecs().jaxb2Decoder(new Jaxb2XmlDecoder());
                     configurer.defaultCodecs().jaxb2Encoder(new Jaxb2XmlEncoder());
-                    configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024); // 16MB
+                    configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024);
                 })
                 .build();
 
-        return webClientBuilder
-                .baseUrl("http://apis.data.go.kr/B552474/SenuriService/")
+        return WebClient.builder()
+                .baseUrl(baseUrl)
                 .exchangeStrategies(strategies)
                 .filter(logRequest())
                 .filter(logResponse())
                 .filter(ExchangeFilterFunction.ofRequestProcessor(request -> {
                     String originalUrl = request.url().toString();
-                    
-                    // URL을 두 번 디코딩하여 중복 인코딩 해결
                     String decodedUrl = URLDecoder.decode(
                             URLDecoder.decode(originalUrl, StandardCharsets.UTF_8),
                             StandardCharsets.UTF_8

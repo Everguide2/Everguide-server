@@ -1,7 +1,7 @@
 package com.example.everguide.domain.enums;
 
 public enum NotifyType {
-    POLICY,
+    WELFARE,
     EVENT_AND_EDUCATION,
     JOB
 }

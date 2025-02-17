@@ -42,16 +42,18 @@ public class JobController {
 
     }
 
-    @GetMapping("/jobs")
-    public ResponseEntity<ApiResponse<JobResponse.GetJobList>> getJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
-                                                                          @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
-                                                                          @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                          @RequestParam(value = "size", required = false, defaultValue = "21") Integer size) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
-        List<Job> jobList = jobService.getJobList(regionList, sortBy, isRecruiting, pageable);
-        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, JobMappingService.toJobListDto(jobList)));
-    }
+//    @GetMapping("/jobs")
+//    public ResponseEntity<ApiResponse<JobResponse.GetJobList>> getJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
+//                                                                          @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
+//                                                                          @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
+//                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+//                                                                          @RequestParam(value = "size", required = false, defaultValue = "21") Integer size) {
+//        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
+//
+//        Member
+//        List<Job> jobList = jobService.getJobList(regionList, sortBy, isRecruiting, pageable);
+//        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, JobMappingService.toJobListDto(jobList)));
+//    }
 
 
     @GetMapping("/jobs/thisWeekJob")

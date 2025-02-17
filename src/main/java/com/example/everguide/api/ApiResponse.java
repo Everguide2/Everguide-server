@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -35,18 +36,38 @@ public class ApiResponse<T> {
 
     }
 
-    // 성공한 경우 응답 생성 (Void 타입 지원)
-    public static ApiResponse<Void> onSuccess(SuccessStatus code) {
+    public static <T> ApiResponse<T> onSuccess(SuccessStatus code, String message){
+        return new ApiResponse<>(true, code.getCode(), message, null);
+    }
+
+    public static <T> ApiResponse<T> onSuccess(SuccessStatus code){
         return new ApiResponse<>(true, code.getCode(), code.getMessage(), null);
     }
+
+//    // 성공한 경우 응답 생성 (Void 타입 지원)
+//    public static ApiResponse<Void> onSuccess(SuccessStatus code) {
+//        return new ApiResponse<>(true, code.getCode(), code.getMessage(), null);
+//    }
 
     public static <T> ApiResponse<T> of(BaseCode code, T result) {
         return new ApiResponse<>(true, code.getReasonHttpStatus().getCode(), code.getReasonHttpStatus().getMessage(), result);
     }
-    
+
     // 실패한 경우 응답 생성
     public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);
+    }
+
+    public static <T> ApiResponse<T> onFailure(ErrorStatus code, String message, T data) {
+        return new ApiResponse<>(false, code.getCode(), message, data);
+    }
+
+    public static <T> ApiResponse<T> onFailure(ErrorStatus code, String message){
+        return new ApiResponse<>(false, code.getCode(), message, null);
+    }
+
+    public static <T> ApiResponse<T> onFailure(ErrorStatus code){
+        return new ApiResponse<>(false, code.getCode(), code.getMessage(), null);
     }
 
     public ApiResponse(ErrorStatus status) {

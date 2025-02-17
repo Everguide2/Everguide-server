@@ -27,8 +27,8 @@ public class JobService {
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional(readOnly = true)
-    public List<Job> getJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
-        return jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable);
+    public List<Job> getJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member) {
+        return jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
     }
 
 

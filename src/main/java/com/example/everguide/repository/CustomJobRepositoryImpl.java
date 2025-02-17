@@ -1,6 +1,8 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.Job;
+import com.example.everguide.domain.Member;
+import com.example.everguide.domain.QBookmark;
 import com.example.everguide.domain.QJob;
 import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
@@ -22,45 +24,55 @@ import java.util.List;
 public class CustomJobRepositoryImpl implements CustomJobRepository {
     private final JPAQueryFactory jpaQueryFactory; //쿼리 자동생성
     private final QJob job = QJob.job;
+    private final QBookmark bookmark = QBookmark.bookmark;
 
 
-    @Override
-    public List<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
-        BooleanBuilder predicate = new BooleanBuilder();
 
-    //필터링 조건 추가
-        //지역
-        if (regionList != null && !regionList.isEmpty()) {
-            predicate.and(job.region.in(regionList));
-        }
+        @Override
+        public List<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member) {
+            BooleanBuilder predicate = new BooleanBuilder();
 
-        // 접수 중 여부
-        if (isRecruiting != null) {
-            if (isRecruiting) {
-                predicate.and(job.hireType.eq(HireType.RECRUITING)); //접수중인 것만 가져오기
-            } //접수중인 것만 조회하는 경우
-
-        }
-        // 쿼리 작성 + 위의 필터링 조건 적용
-        JPQLQuery<Job> query =  jpaQueryFactory.selectFrom(job).where(predicate);
-
-    //정렬 조건 추가
-        if (sortBy != null) {
-            if (sortBy.equals("startDate")) { //시작일 정렬
-                query.orderBy(job.startDate.asc()); //일단 오름차순으로
-            }else if(sortBy.equals("endDate")) { //마감일 정렬
-                query.orderBy(job.endDate.asc()); //일단 오름차순으로
+            // 필터링 조건 추가
+            // 지역
+            if (regionList != null && !regionList.isEmpty()) {
+                predicate.and(job.region.in(regionList)); // regionList에 포함된 지역에 해당하는 일자리만 필터링
             }
+
+            // 접수 중 여부 (isRecruiting 필터링)
+            if (isRecruiting != null) {
+                if (isRecruiting) {
+                    predicate.and(job.hireType.eq(HireType.RECRUITING)); // 접수중인 일자리만 필터링
+                }
+            }
+
+            // 북마크 여부 우선순위 추가
+
+            JPQLQuery<Job> query = jpaQueryFactory.selectFrom(job)
+                    .leftJoin(bookmark).on(bookmark.job.eq(job).and(bookmark.member.eq(member))) // 북마크된 일자리인지 확인
+                    .where(predicate); // 필터링 조건 적용
+
+            // 정렬 조건 추가
+            if (sortBy != null) {
+                if (sortBy.equals("startDate")) { // 시작일 정렬
+                    query.orderBy(job.startDate.asc()); // 시작일 오름차순 정렬
+                } else if (sortBy.equals("endDate")) { // 마감일 정렬
+                    query.orderBy(job.endDate.asc()); // 마감일 오름차순 정렬
+                }
+            }
+
+            // 북마크된 일자리 우선 정렬
+            query.orderBy(bookmark.isNull().asc()); // 북마크된 일자리가 먼저 나옴 (북마크된 일자리는 isNull()이 false이므로 먼저 나오고, 없는 일자리는 isNull()이 true이므로 뒤로 정렬)
+
+            // 쿼리에 페이징 설정 추가
+            query.offset(pageable.getOffset()).limit(pageable.getPageSize()); // 페이징 처리
+
+            return query.fetch(); // 결과 반환
         }
 
-    //쿼리에 페이징 설정 추가
-        query.offset(pageable.getOffset()).limit(pageable.getPageSize());
-        return  query.fetch();
-    }
 
 
 
-    //모집 기한이 이번주에 끝나는 일자리 정보를 리스트로 배열 + d-day 순으로 정렬
+        //모집 기한이 이번주에 끝나는 일자리 정보를 리스트로 배열 + d-day 순으로 정렬
     @Override
     public List<Job> findThisWeekJobList() {
         LocalDate today = LocalDate.now(); // 오늘 날짜
