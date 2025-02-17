@@ -4,6 +4,7 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Member;
 import com.example.everguide.jwt.JWTUtil;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,6 +33,7 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     private final MemberRepository memberRepository;
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private final SecurityUtil securityUtil;
 
     @Override
     public Map<String, String> validateHandling(Errors errors) {
@@ -143,32 +145,9 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     }
 
     @Override
-    public Boolean checkOriginalPwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO) {
+    public Boolean checkOriginalPwd(MemberRequest.ChangePwdDTO changePwdDTO) {
 
-        String authorization = request.getHeader("Authorization");
-
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-
-            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
-        }
-
-        String accessToken = authorization.split(" ")[1];
-
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
-        }
-
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals("access")) {
-
-            throw new MemberBadRequestException("Access Token이 아닙니다.");
-        }
-
-        String userId = jwtUtil.getUserId(accessToken);
+        String userId = securityUtil.getUserIdInSecurityContext();
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 

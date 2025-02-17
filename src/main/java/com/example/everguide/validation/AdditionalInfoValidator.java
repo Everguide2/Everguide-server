@@ -19,14 +19,14 @@ import java.util.regex.Pattern;
 public class AdditionalInfoValidator implements Validator {
 
     private static final Pattern BIRTH_PATTERN = Pattern.compile("^\\d{8}$");
-    private static final Pattern PHONE_PATTERN = Pattern.compile("^010\\d{8}$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^010\\d{8}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$");
 
     private final MessageSource messageSource;
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(MemberRequest.SignupAdditionalDTO.class);
+        return MemberRequest.SignupAdditionalDTO.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class AdditionalInfoValidator implements Validator {
         MemberRequest.SignupAdditionalDTO signupAdditionalDTO = (MemberRequest.SignupAdditionalDTO) target;
 
         // 이름
-        if (isNullOrBlank(signupAdditionalDTO.getName())) {
+        if (valueNullOrBlank(signupAdditionalDTO.getName())) {
             errors.rejectValue("name", "blank.name", getMessage("blank.name"));
         }
 
@@ -49,14 +49,14 @@ public class AdditionalInfoValidator implements Validator {
         }
 
         // 전화번호
-        if (isNullOrBlank(signupAdditionalDTO.getPhoneNumber())) {
+        if (valueNullOrBlank(signupAdditionalDTO.getPhoneNumber())) {
             errors.rejectValue("phoneNumber", "blank.phoneNumber", getMessage("blank.phoneNumber"));
-        } else if (!PHONE_PATTERN.matcher(signupAdditionalDTO.getPhoneNumber()).matches()) {
+        } else if (!PHONE_NUMBER_PATTERN.matcher(signupAdditionalDTO.getPhoneNumber()).matches()) {
             errors.rejectValue("phoneNumber", "invalid.phoneNumber", getMessage("invalid.phoneNumber"));
         }
 
         // 이메일
-        if (isNullOrBlank(signupAdditionalDTO.getEmail())) {
+        if (valueNullOrBlank(signupAdditionalDTO.getEmail())) {
             errors.rejectValue("email", "blank.email", getMessage("blank.email"));
         } else if (!EMAIL_PATTERN.matcher(signupAdditionalDTO.getEmail()).matches()) {
             errors.rejectValue("email", "invalid.email", getMessage("invalid.email"));
@@ -74,7 +74,7 @@ public class AdditionalInfoValidator implements Validator {
         return !((years < 0) || (months < 0) || (days < 0));
     }
 
-    private boolean isNullOrBlank(String value) {
+    private boolean valueNullOrBlank(String value) {
         return value == null || value.isBlank();
     }
 
