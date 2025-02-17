@@ -21,10 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WelfareDataService {
 
+    private final WelfareServiceRepository repository;
+    private final WelfareMappingService welfareMappingService;
+
     @Qualifier("welfareWebClient")
     private final WebClient welfareWebClient;
-    private final WelfareMappingService welfareMappingService;
-    private final WelfareServiceRepository repository;
 
     @Value("${api.service.welfare-key}")
     private String serviceKey;
@@ -38,6 +39,8 @@ public class WelfareDataService {
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
                         .queryParam("serviceKey", serviceKey)
+                        .queryParam("numOfRows", 20)
+                        .queryParam("pageNo",1)
                         .build())
                 .accept(MediaType.APPLICATION_XML)
                 .retrieve()

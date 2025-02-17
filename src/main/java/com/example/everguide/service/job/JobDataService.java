@@ -25,11 +25,11 @@ import java.util.Set;
 public class JobDataService {
     
     private final JobRepository jobRepository;
-    
+    private final JobMappingService jobMappingService;
+
     @Qualifier("jobWebClient")
     private final WebClient jobWebClient;
-    private final JobMappingService jobMappingService;
-    
+
     @Value("${api.service.job-key}")
     private String serviceKey;
     private static final String API_ENDPOINT = "/getJobList";
@@ -37,7 +37,8 @@ public class JobDataService {
     @Transactional
     // 외부 API 호출 → DTO 매핑 → Entity 변환 및 DB 저장 과정을 수행
     public Mono<List<Job>> fetchAndSaveJobData() {
-        return jobWebClient.get() //get 요청
+        return jobWebClient
+                .get() //get 요청
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
                         .queryParam("serviceKey", serviceKey)
