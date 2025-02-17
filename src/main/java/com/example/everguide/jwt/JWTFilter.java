@@ -4,7 +4,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Role;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
 import com.example.everguide.web.dto.oauth.CustomOAuth2User;
-import com.example.everguide.web.dto.oauth.SocialMemberDTO;
+import com.example.everguide.web.dto.oauth.MemberDTO;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -102,14 +102,14 @@ public class JWTFilter extends OncePerRequestFilter {
                 .build();
 
         // MemberDTO를 생성하여 값 set
-        SocialMemberDTO socialMemberDTO = new SocialMemberDTO();
-        socialMemberDTO.setUserId(userId);
-        socialMemberDTO.setRole(role);
-        socialMemberDTO.setSocial(social);
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserId(userId);
+        memberDTO.setRole(role);
+        memberDTO.setSocial(social);
 
         // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(member);
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(socialMemberDTO);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(memberDTO);
 
         // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken;
