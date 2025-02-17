@@ -67,17 +67,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (existMemberOptional.isEmpty()) {
 
-            MemberDTO memberDTO = new MemberDTO();
-            memberDTO.setUserId(userId);
-            memberDTO.setName(oAuth2Response.getName());
+            SocialMemberDTO socialMemberDTO = new SocialMemberDTO();
+            socialMemberDTO.setUserId(userId);
+            socialMemberDTO.setName(oAuth2Response.getName());
 
-            memberDTO.setRole(Role.ROLE_PRE_MEMBER.name());
+            socialMemberDTO.setRole(Role.ROLE_PRE_MEMBER.name());
             if (oAuth2Response.getName() != null && !oAuth2Response.getName().isBlank()) {
                 if (oAuth2Response.getBirthyear() != null && !oAuth2Response.getBirthyear().isBlank()) {
                     if (oAuth2Response.getBirthday() != null && !oAuth2Response.getBirthday().isBlank()) {
                         if (oAuth2Response.getEmail() != null && !oAuth2Response.getEmail().isBlank()) {
                             if (oAuth2Response.getPhoneNumber() != null && !oAuth2Response.getPhoneNumber().isBlank()) {
-                                memberDTO.setRole(Role.ROLE_MEMBER.name());
+                                socialMemberDTO.setRole(Role.ROLE_MEMBER.name());
                             }
                         }
                     }
@@ -86,40 +86,40 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             if (oAuth2Response.getProviderType().equals(ProviderType.NAVER)) {
                 Member member = naverSaveMember(oAuth2Response, userId, encPassword);
-                memberDTO.setSocial("naver");
+                socialMemberDTO.setSocial("naver");
 
             } else if (oAuth2Response.getProviderType().equals(ProviderType.KAKAO)) {
                 Member member = kakaoSaveMember(oAuth2Response, userId, encPassword);
-                memberDTO.setSocial("kakao");
+                socialMemberDTO.setSocial("kakao");
 
             } else {
                 throw new MemberBadRequestException(ErrorStatus._INVALID_PROVIDER_TYPE.getMessage());
             }
 
-            return new CustomOAuth2User(memberDTO);
+            return new CustomOAuth2User(socialMemberDTO);
 
         } else {
 
             Member existMember = existMemberOptional.get();
 
-            MemberDTO memberDTO = new MemberDTO();
-            memberDTO.setUserId(existMember.getUserId());
-            memberDTO.setName(existMember.getName());
-            memberDTO.setRole(existMember.getRole().name());
+            SocialMemberDTO socialMemberDTO = new SocialMemberDTO();
+            socialMemberDTO.setUserId(existMember.getUserId());
+            socialMemberDTO.setName(existMember.getName());
+            socialMemberDTO.setRole(existMember.getRole().name());
 
             if (existMember.getProviderType().equals(ProviderType.NAVER)) {
                 Member member = naverUpdateMember(existMember, oAuth2Response, userId);
-                memberDTO.setSocial("naver");
+                socialMemberDTO.setSocial("naver");
 
             } else if (existMember.getProviderType().equals(ProviderType.KAKAO)) {
                 Member member = kakaoUpdateMember(existMember, oAuth2Response, userId);
-                memberDTO.setSocial("kakao");
+                socialMemberDTO.setSocial("kakao");
 
             } else {
                 throw new MemberBadRequestException(ErrorStatus._INVALID_PROVIDER_TYPE.getMessage());
             }
 
-            return new CustomOAuth2User(memberDTO);
+            return new CustomOAuth2User(socialMemberDTO);
         }
     }
 

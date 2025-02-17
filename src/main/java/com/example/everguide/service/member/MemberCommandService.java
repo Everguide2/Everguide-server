@@ -19,7 +19,7 @@ public interface MemberCommandService {
 
     boolean registerSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
 
-    boolean changePwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO);
+    boolean changePwd(MemberRequest.ChangePwdDTO changePwdDTO);
 
     boolean deleteMember(HttpServletRequest request, HttpServletResponse response, String userId);
 

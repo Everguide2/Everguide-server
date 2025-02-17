@@ -1,18 +1,9 @@
 package com.example.everguide.validation;
 
-import com.example.everguide.api.ApiResponse;
-import com.example.everguide.api.code.status.ErrorStatus;
-import com.example.everguide.api.code.status.SuccessStatus;
-import com.example.everguide.api.exception.MemberBadRequestException;
-import com.example.everguide.domain.Member;
-import com.example.everguide.redis.RedisUtils;
-import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.MemberRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -28,15 +19,15 @@ import java.util.regex.Pattern;
 public class RegisterValidator implements Validator {
 
     private static final Pattern BIRTH_PATTERN = Pattern.compile("^\\d{8}$");
-    private static final Pattern PHONE_PATTERN = Pattern.compile("^010\\d{8}$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("^010\\d{8}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,13}$");
 
     private final MessageSource messageSource;
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return clazz.isAssignableFrom(MemberRequest.SignupDTO.class);
+        return MemberRequest.SignupDTO.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -45,7 +36,7 @@ public class RegisterValidator implements Validator {
         MemberRequest.SignupDTO signupDTO = (MemberRequest.SignupDTO) target;
 
         // 이름
-        if (isNullOrBlank(signupDTO.getName())) {
+        if (valueNullOrBlank(signupDTO.getName())) {
             errors.rejectValue("name", "blank.name", getMessage("blank.name"));
         }
 
@@ -59,28 +50,30 @@ public class RegisterValidator implements Validator {
         }
 
         // 전화번호
-        if (isNullOrBlank(signupDTO.getPhoneNumber())) {
+        if (valueNullOrBlank(signupDTO.getPhoneNumber())) {
             errors.rejectValue("phoneNumber", "blank.phoneNumber", getMessage("blank.phoneNumber"));
-        } else if (!PHONE_PATTERN.matcher(signupDTO.getPhoneNumber()).matches()) {
+        } else if (!PHONE_NUMBER_PATTERN.matcher(signupDTO.getPhoneNumber()).matches()) {
             errors.rejectValue("phoneNumber", "invalid.phoneNumber", getMessage("invalid.phoneNumber"));
         }
 
         // 이메일
-        if (isNullOrBlank(signupDTO.getEmail())) {
+        if (valueNullOrBlank(signupDTO.getEmail())) {
             errors.rejectValue("email", "blank.email", getMessage("blank.email"));
         } else if (!EMAIL_PATTERN.matcher(signupDTO.getEmail()).matches()) {
             errors.rejectValue("email", "invalid.email", getMessage("invalid.email"));
         }
 
         // 비밀번호
-        if (isNullOrBlank(signupDTO.getPassword())) {
+        if (valueNullOrBlank(signupDTO.getPassword())) {
             errors.rejectValue("password", "blank.password", getMessage("blank.password"));
         } else if (!PASSWORD_PATTERN.matcher(signupDTO.getPassword()).matches()) {
             errors.rejectValue("password", "invalid.password", getMessage("invalid.password"));
         }
 
         // 비밀번호 재입력
-        if (!signupDTO.getPassword().equals(signupDTO.getRewritePassword())) {
+        if (valueNullOrBlank(signupDTO.getRewritePassword())) {
+            errors.rejectValue("rewritePassword", "blank.rewritePassword", getMessage("blank.rewritePassword"));
+        } else if (!signupDTO.getPassword().equals(signupDTO.getRewritePassword())) {
             errors.rejectValue("rewritePassword", "invalid.rewritePassword", getMessage("invalid.rewritePassword"));
         }
     }
@@ -96,7 +89,7 @@ public class RegisterValidator implements Validator {
         return !((years < 0) || (months < 0) || (days < 0));
     }
 
-    private boolean isNullOrBlank(String value) {
+    private boolean valueNullOrBlank(String value) {
         return value == null || value.isBlank();
     }
 
