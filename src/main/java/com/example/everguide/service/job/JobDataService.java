@@ -3,8 +3,11 @@ package com.example.everguide.service.job;
 import com.example.everguide.domain.Job;
 import com.example.everguide.repository.JobRepository;
 import com.example.everguide.web.dto.job.JobListResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,20 +23,24 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class JobDataService {
+    
     private final JobRepository jobRepository;
-    private final WebClient webClient;
+    
+    @Qualifier("jobWebClient")
+    private final WebClient jobWebClient;
     private final JobMappingService jobMappingService;
-    @Value("${api.service.jobKey}")
-    private String jobServiceKey;
+    
+    @Value("${api.service.job-key}")
+    private String serviceKey;
     private static final String API_ENDPOINT = "/getJobList";
 
     @Transactional
     // 외부 API 호출 → DTO 매핑 → Entity 변환 및 DB 저장 과정을 수행
     public Mono<List<Job>> fetchAndSaveJobData() {
-        return webClient.get() //get 요청
+        return jobWebClient.get() //get 요청
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
-                        .queryParam("ServiceKey", jobServiceKey)
+                        .queryParam("serviceKey", serviceKey)
 //                        .queryParam("numOfRows", 10)
 //                        .queryParam("pageNo",1)
                         .build())
@@ -47,9 +54,11 @@ public class JobDataService {
                         //중복처리
                         List<Job> filteredJobList = filterDuplicateJobs(jobList);
                         jobRepository.saveAll(filteredJobList); //db에 저장
+                        log.info("Successfully fetched and saved {} jobs", filteredJobList.size());
                         return Mono.just(filteredJobList);
                     } else {
-                        return Mono.error(new RuntimeException("API 호출 실패 : " + response.getHeader().getResultMessage()));
+                        log.error("API call failed: {}", response.getHeader().getResultMessage());
+                        return Mono.error(new RuntimeException("API 호출 실패: " + response.getHeader().getResultMessage()));
                     }
                 });
 
@@ -62,7 +71,7 @@ public class JobDataService {
         List<Job> filteredJobs = new ArrayList<>();
         newJobList.forEach(job -> {
             if (duplicateJobCodeSet.contains(job.getJobCode())) {
-                log.info("Duplicate jobCode found: " + job.getJobCode()); //중복되면 로그 처리
+                log.info("Duplicate jobCode found: {}", job.getJobCode()); //중복되면 로그 처리
             } else {
                 filteredJobs.add(job);
             }
