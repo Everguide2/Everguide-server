@@ -29,7 +29,6 @@ public class WelfareDataService {
 
     @Value("${api.service.welfare-key}")
     private String serviceKey;
-
     private static final String API_ENDPOINT = "/LcgvWelfarelist";
 
     @Transactional

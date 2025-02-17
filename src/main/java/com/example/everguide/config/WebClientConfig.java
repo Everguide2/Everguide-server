@@ -21,10 +21,9 @@ import java.nio.charset.StandardCharsets;
 public class WebClientConfig {
 
     private static final String WELFARE_API_BASE_URL = "https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations";
-    private static final String JOB_API_BASE_URL = "http://apis.data.go.kr/B552474/JobBsnInfoService";
+    private static final String JOB_API_BASE_URL = "https://apis.data.go.kr/B552474/SenuriService";
 
     @Bean("welfareWebClient")
-    @Primary
     public WebClient welfareWebClient() {
         return createWebClient(WELFARE_API_BASE_URL);
     }
