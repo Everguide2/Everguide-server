@@ -31,6 +31,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "SOCIAL4004", "만료된 토큰입니다."),
     _TOKEN_NULL(HttpStatus.BAD_REQUEST, "SOCIAL4005", "토큰이 null입니다."),
     _NO_TOKEN(HttpStatus.BAD_REQUEST, "SOCIAL4006", "토큰이 헤더에 존재하지 않습니다."),
+    _UNFULL_ADDITIONAL_INFO(HttpStatus.NOT_FOUND, "SOCIAL4007", "회원정보가 전부 채워지지 않았습니다."),
 
     // 네이버 소셜 로그인 관련 에러
     _NAVER_SIGN_IN_INTEGRATION_FAILED(HttpStatus.UNAUTHORIZED, "NAVER4001", "네이버 로그인 연동에 실패하였습니다."),

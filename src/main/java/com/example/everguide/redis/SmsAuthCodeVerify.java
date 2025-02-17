@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,14 +11,14 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@RedisHash(value = "SocialAccess")
-public class RedisSocialAccessToken {
+@RedisHash(value = "smsVerify")
+public class SmsAuthCodeVerify {
 
     @Id
-    private String userId;
+    private String toPhoneNumber;
 
-    private String accessToken;
+    private String authCode;
 
-    @TimeToLive(unit = TimeUnit.HOURS)
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long ttl;
 }

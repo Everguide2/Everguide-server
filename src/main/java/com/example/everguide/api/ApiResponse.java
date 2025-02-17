@@ -34,6 +34,10 @@ public class ApiResponse<T> {
 
     }
 
+    public static <T> ApiResponse<T> onSuccess(SuccessStatus code, String message){
+        return new ApiResponse<>(true, code.getCode(), message, null);
+    }
+
     public static <T> ApiResponse<T> onSuccess(SuccessStatus code){
         return new ApiResponse<>(true, code.getCode(), code.getMessage(), null);
     }
@@ -52,9 +56,14 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, code, message, data);
     }
 
+    public static <T> ApiResponse<T> onFailure(ErrorStatus code, String message, T data) {
+        return new ApiResponse<>(false, code.getCode(), message, data);
+    }
+
     public static <T> ApiResponse<T> onFailure(ErrorStatus code, String message){
         return new ApiResponse<>(false, code.getCode(), message, null);
     }
+
     public static <T> ApiResponse<T> onFailure(ErrorStatus code){
         return new ApiResponse<>(false, code.getCode(), code.getMessage(), null);
     }

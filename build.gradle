@@ -55,6 +55,9 @@ dependencies {
 
     // 전화번호 인증
     implementation 'net.nurigo:sdk:4.2.7'
+
+    // 이메일 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

@@ -109,7 +109,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String social = jwtUtil.getSocial(accessToken);
 
         // Redis에 저장되어 있는지 확인
-        String redisRefreshToken = redisUtils.getLocalRefreshToken(accessToken);
+        String redisRefreshToken = redisUtils.getLocalRefreshToken(userId);
         if (redisRefreshToken == null) {
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -118,7 +118,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // 로그아웃 진행
         // Refresh 토큰 Redis에서 제거
-        redisUtils.deleteLocalRefreshToken(accessToken);
+        redisUtils.deleteLocalRefreshToken(userId);
 
         String socialAccessToken = redisUtils.getSocialAccessToken(userId);
 

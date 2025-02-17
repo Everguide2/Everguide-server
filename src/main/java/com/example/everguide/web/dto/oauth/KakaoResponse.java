@@ -45,16 +45,6 @@ public class KakaoResponse implements OAuth2Response {
     }
 
     @Override
-    public String getGender() {
-
-        if (!attribute.containsKey("gender")) {
-            return null;
-        }
-
-        return attribute.get("gender").toString();
-    }
-
-    @Override
     public String getPhoneNumber() {
 
         if (!attribute.containsKey("phone_number")) {

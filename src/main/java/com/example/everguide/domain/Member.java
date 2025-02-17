@@ -1,7 +1,6 @@
 package com.example.everguide.domain;
 
 import com.example.everguide.domain.common.BaseEntity;
-import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.domain.enums.Role;
 import jakarta.persistence.*;
@@ -26,24 +25,15 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(length = 20)
-//    @Column(nullable = false, length = 20)
     private String name;
 
-    //    @Column(nullable = false)
     private LocalDate birth;
 
-    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-    private Gender gender;
-
-    //    @Column(nullable = false)
     private String phoneNumber;
 
     @Column(length = 50)
-//    @Column(nullable = false, length = 50, unique = true)
     private String email;
 
-//    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -51,10 +41,9 @@ public class Member extends BaseEntity {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
+    @Column(nullable = false)
     private ProviderType providerType;
 
-//    @Column(nullable = false)
     @Column(unique = true)
     private String userId;
     /* ----------------------------- 연관관계 메소드 ------------------------------------- */

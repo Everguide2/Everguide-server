@@ -6,72 +6,94 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class RedisUtils {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisLocalTokenRepository redisLocalTokenRepository;
-    private final RedisSocialAccessTokenRepository redisSocialAccessTokenRepository;
-    private final RedisSocialRefreshTokenRepository redisSocialRefreshTokenRepository;
-    private final SmsCertificationCodeRepository smsCertificationCodeRepository;
+    private final LocalRefreshTokenRepository localRefreshTokenRepository;
+    private final SocialAccessTokenRepository socialAccessTokenRepository;
+    private final SocialRefreshTokenRepository socialRefreshTokenRepository;
+    private final SmsAuthCodeRepository smsAuthCodeRepository;
+    private final SmsAuthCodeVerifyRepository smsAuthCodeVerifyRepository;
 
-    public void setSmsCertificationCode(String toPhoneNumber, String certificationCode) {
+    public void setSmsAuthCode(String toPhoneNumber, String authCode, Long expiredTime) {
 
-        SmsCertificationCode smsCertificationCode = SmsCertificationCode.builder()
+        SmsAuthCode smsAuthCode = SmsAuthCode.builder()
                 .toPhoneNumber(toPhoneNumber)
-                .certificationCode(certificationCode)
+                .authCode(authCode)
+                .ttl(expiredTime)
                 .build();
-        smsCertificationCodeRepository.save(smsCertificationCode);
+        smsAuthCodeRepository.save(smsAuthCode);
     }
 
-    public String getSmsCertificationCode(String toPhoneNumber){
+    public void setSmsAuthCodeVerify(String toPhoneNumber, String authCode, Long expiredTime) {
 
-        Optional<SmsCertificationCode> smsCertificationCodeOpt = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber);
+        SmsAuthCodeVerify smsAuthCodeVerify = SmsAuthCodeVerify.builder()
+                .toPhoneNumber(toPhoneNumber)
+                .authCode(authCode)
+                .ttl(expiredTime)
+                .build();
+        smsAuthCodeVerifyRepository.save(smsAuthCodeVerify);
+    }
 
-        if (smsCertificationCodeOpt.isPresent()){
-            return smsCertificationCodeOpt.get().getCertificationCode();
+    public String getSmsAuthCode(String toPhoneNumber){
+
+        Optional<SmsAuthCode> smsAuthCodeOpt = smsAuthCodeRepository.findByToPhoneNumber(toPhoneNumber);
+
+        if (smsAuthCodeOpt.isPresent()){
+            return smsAuthCodeOpt.get().getAuthCode();
         } else {
             return null;
         }
     }
 
-    public void deleteSmsCertificationCode(String toPhoneNumber){
+    public String getSmsAuthCodeVerify(String toPhoneNumber){
 
-        SmsCertificationCode smsCertificationCode = smsCertificationCodeRepository.findByToPhoneNumber(toPhoneNumber).orElseThrow(EntityNotFoundException::new);
-        smsCertificationCodeRepository.delete(smsCertificationCode);
+        Optional<SmsAuthCodeVerify> smsAuthCodeVerifyOpt = smsAuthCodeVerifyRepository.findByToPhoneNumber(toPhoneNumber);
+
+        if (smsAuthCodeVerifyOpt.isPresent()){
+            return smsAuthCodeVerifyOpt.get().getAuthCode();
+        } else {
+            return null;
+        }
+    }
+
+    public void deleteSmsAuthCode(String toPhoneNumber){
+
+        SmsAuthCode smsAuthCode = smsAuthCodeRepository.findByToPhoneNumber(toPhoneNumber).orElseThrow(EntityNotFoundException::new);
+        smsAuthCodeRepository.delete(smsAuthCode);
     }
 
     // - - - - -
 
-    public void setLocalRefreshToken(String accessToken, String refreshToken, Long expiredTime){
+    public void setLocalRefreshToken(String userId, String refreshToken, Long expiredTime){
 
-        RedisLocalToken redisLocalToken = RedisLocalToken.builder()
-                                        .accessToken(accessToken)
+        LocalRefreshToken localRefreshToken = LocalRefreshToken.builder()
+                                        .userId(userId)
                                         .refreshToken(refreshToken)
                                         .ttl(expiredTime)
                                         .build();
-        redisLocalTokenRepository.save(redisLocalToken);
+        localRefreshTokenRepository.save(localRefreshToken);
     }
 
-    public void changeLocalRefreshToken(String originalAccessToken, String accessToken, String refreshToken, Long expiredTime){
+    public void changeLocalRefreshToken(String userId, String refreshToken, Long expiredTime){
 
-        RedisLocalToken originalRedisLocalToken = redisLocalTokenRepository.findByAccessToken(originalAccessToken).orElseThrow(EntityNotFoundException::new);
-        redisLocalTokenRepository.delete(originalRedisLocalToken);
+        LocalRefreshToken originalLocalRefreshToken = localRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        localRefreshTokenRepository.delete(originalLocalRefreshToken);
 
-        RedisLocalToken redisLocalToken = RedisLocalToken.builder()
-                .accessToken(accessToken)
+        LocalRefreshToken localRefreshToken = LocalRefreshToken.builder()
+                .userId(userId)
                 .refreshToken(refreshToken)
                 .ttl(expiredTime)
                 .build();
-        redisLocalTokenRepository.save(redisLocalToken);
+        localRefreshTokenRepository.save(localRefreshToken);
     }
 
-    public String getLocalRefreshToken(String accessToken){
+    public String getLocalRefreshToken(String userId){
 
-        Optional<RedisLocalToken> redisTokenOptional = redisLocalTokenRepository.findByAccessToken(accessToken);
+        Optional<LocalRefreshToken> redisTokenOptional = localRefreshTokenRepository.findByUserId(userId);
 
         if (redisTokenOptional.isPresent()){
             return redisTokenOptional.get().getRefreshToken();
@@ -80,22 +102,22 @@ public class RedisUtils {
         }
     }
 
-    public Boolean existsLocalRefreshToken(String refreshToken){
+    public Boolean existsLocalRefreshToken(String userId){
 
-        return redisLocalTokenRepository.findByRefreshToken(refreshToken).isPresent();
+        return localRefreshTokenRepository.findByUserId(userId).isPresent();
     }
 
-    public void deleteLocalRefreshToken(String accessToken){
+    public void deleteLocalRefreshToken(String userId){
 
-        RedisLocalToken redisLocalToken = redisLocalTokenRepository.findByAccessToken(accessToken).orElseThrow(EntityNotFoundException::new);
-        redisLocalTokenRepository.delete(redisLocalToken);
+        LocalRefreshToken localRefreshToken = localRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        localRefreshTokenRepository.delete(localRefreshToken);
     }
 
     // - - - - -
 
     public String getSocialAccessToken(String userId) {
 
-        Optional<RedisSocialAccessToken> redisSocialAccessTokenOpt = redisSocialAccessTokenRepository.findByUserId(userId);
+        Optional<SocialAccessToken> redisSocialAccessTokenOpt = socialAccessTokenRepository.findByUserId(userId);
 
         if (redisSocialAccessTokenOpt.isPresent()){
             return redisSocialAccessTokenOpt.get().getAccessToken();
@@ -106,7 +128,7 @@ public class RedisUtils {
 
     public String getSocialRefreshToken(String userId) {
 
-        Optional<RedisSocialRefreshToken> redisSocialRefreshTokenOpt = redisSocialRefreshTokenRepository.findByUserId(userId);
+        Optional<SocialRefreshToken> redisSocialRefreshTokenOpt = socialRefreshTokenRepository.findByUserId(userId);
 
         if (redisSocialRefreshTokenOpt.isPresent()){
             return redisSocialRefreshTokenOpt.get().getRefreshToken();
@@ -117,30 +139,42 @@ public class RedisUtils {
 
     public void setSocialAccessToken(String userId, String accessToken, Long expiredTime) {
 
-        RedisSocialAccessToken redisSocialAccessToken = RedisSocialAccessToken.builder()
+        SocialAccessToken socialAccessToken = SocialAccessToken.builder()
                 .userId(userId)
                 .accessToken(accessToken)
                 .ttl(expiredTime)
                 .build();
-        redisSocialAccessTokenRepository.save(redisSocialAccessToken);
+        socialAccessTokenRepository.save(socialAccessToken);
     }
 
     public void setSocialRefreshToken(String userId, String refreshToken, Long expiredTime) {
 
-        RedisSocialRefreshToken redisSocialRefreshToken = RedisSocialRefreshToken.builder()
+        SocialRefreshToken socialRefreshToken = SocialRefreshToken.builder()
                 .userId(userId)
                 .refreshToken(refreshToken)
                 .ttl(expiredTime)
                 .build();
-        redisSocialRefreshTokenRepository.save(redisSocialRefreshToken);
+        socialRefreshTokenRepository.save(socialRefreshToken);
+    }
+
+    public void deleteSocialAccessToken(String userId){
+
+        SocialAccessToken socialAccessToken = socialAccessTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        socialAccessTokenRepository.delete(socialAccessToken);
+    }
+
+    public void deleteSocialRefreshToken(String userId){
+
+        SocialRefreshToken socialRefreshToken = socialRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        socialRefreshTokenRepository.delete(socialRefreshToken);
     }
 
     public void deleteSocialTokens(String userId){
 
-        RedisSocialAccessToken redisSocialAccessToken = redisSocialAccessTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        redisSocialAccessTokenRepository.delete(redisSocialAccessToken);
+        SocialAccessToken socialAccessToken = socialAccessTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        socialAccessTokenRepository.delete(socialAccessToken);
 
-        RedisSocialRefreshToken redisSocialRefreshToken = redisSocialRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        redisSocialRefreshTokenRepository.delete(redisSocialRefreshToken);
+        SocialRefreshToken socialRefreshToken = socialRefreshTokenRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        socialRefreshTokenRepository.delete(socialRefreshToken);
     }
 }

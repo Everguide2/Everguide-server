@@ -3,7 +3,6 @@ package com.example.everguide.service.auth;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Member;
-import com.example.everguide.domain.enums.Gender;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.domain.enums.Role;
 import com.example.everguide.redis.RedisUtils;
@@ -71,7 +70,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             MemberDTO memberDTO = new MemberDTO();
             memberDTO.setUserId(userId);
             memberDTO.setName(oAuth2Response.getName());
+
             memberDTO.setRole(Role.ROLE_PRE_MEMBER.name());
+            if (oAuth2Response.getName() != null && !oAuth2Response.getName().isBlank()) {
+                if (oAuth2Response.getBirthyear() != null && !oAuth2Response.getBirthyear().isBlank()) {
+                    if (oAuth2Response.getBirthday() != null && !oAuth2Response.getBirthday().isBlank()) {
+                        if (oAuth2Response.getEmail() != null && !oAuth2Response.getEmail().isBlank()) {
+                            if (oAuth2Response.getPhoneNumber() != null && !oAuth2Response.getPhoneNumber().isBlank()) {
+                                memberDTO.setRole(Role.ROLE_MEMBER.name());
+                            }
+                        }
+                    }
+                }
+            }
 
             if (oAuth2Response.getProviderType().equals(ProviderType.NAVER)) {
                 Member member = naverSaveMember(oAuth2Response, userId, encPassword);
@@ -116,17 +127,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
-        String genderString = oAuth2Response.getGender();
-        Gender gender;
-        if (genderString != null) {
-            if (genderString.equals("male")) {
-                gender = Gender.MALE;
-            } else {
-                gender = Gender.FEMALE;
-            }
-        } else {
-            gender = null;
-        }
         String birthday = oAuth2Response.getBirthday();
         String birthyear = oAuth2Response.getBirthyear();
         LocalDate birth;
@@ -139,16 +139,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (phoneNumber != null) {
             phoneNumber = "0" + phoneNumber.substring(4,6) + phoneNumber.substring(7, 11) + phoneNumber.substring(12);
         }
+        Role role = Role.ROLE_PRE_MEMBER;
+        if (oAuth2Response.getName() != null && !oAuth2Response.getName().isBlank()) {
+            if (oAuth2Response.getBirthyear() != null && !oAuth2Response.getBirthyear().isBlank()) {
+                if (oAuth2Response.getBirthday() != null && !oAuth2Response.getBirthday().isBlank()) {
+                    if (oAuth2Response.getEmail() != null && !oAuth2Response.getEmail().isBlank()) {
+                        if (oAuth2Response.getPhoneNumber() != null && !oAuth2Response.getPhoneNumber().isBlank()) {
+                            role = Role.ROLE_MEMBER;
+                        }
+                    }
+                }
+            }
+        }
         ProviderType providerType = oAuth2Response.getProviderType();
 
         Member member = Member.builder()
                 .email(email)
                 .name(name)
-                .gender(gender)
                 .birth(birth)
                 .phoneNumber(phoneNumber)
                 .password(encPassword)
-                .role(Role.ROLE_PRE_MEMBER)
+                .role(role)
                 .providerType(providerType)
                 .userId(userId)
                 .build();
@@ -160,15 +171,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
-        String genderString = oAuth2Response.getGender();
-        Gender gender;
-        if (genderString.equals("M")) {
-            gender = Gender.MALE;
-        } else if (genderString.equals("F")) {
-            gender = Gender.FEMALE;
-        } else {
-            gender = null;
-        }
         String birthday = oAuth2Response.getBirthday();
         String birthyear = oAuth2Response.getBirthyear();
         LocalDate birth;
@@ -179,16 +181,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         String phoneNumber = oAuth2Response.getPhoneNumber();
         phoneNumber = phoneNumber.substring(0, 3) + phoneNumber.substring(4,8) + phoneNumber.substring(9);
+        Role role = Role.ROLE_PRE_MEMBER;
+        if (oAuth2Response.getName() != null && !oAuth2Response.getName().isBlank()) {
+            if (oAuth2Response.getBirthyear() != null && !oAuth2Response.getBirthyear().isBlank()) {
+                if (oAuth2Response.getBirthday() != null && !oAuth2Response.getBirthday().isBlank()) {
+                    if (oAuth2Response.getEmail() != null && !oAuth2Response.getEmail().isBlank()) {
+                        if (oAuth2Response.getPhoneNumber() != null && !oAuth2Response.getPhoneNumber().isBlank()) {
+                            role = Role.ROLE_MEMBER;
+                        }
+                    }
+                }
+            }
+        }
         ProviderType providerType = oAuth2Response.getProviderType();
 
         Member member = Member.builder()
                 .email(email)
                 .name(name)
-                .gender(gender)
                 .birth(birth)
                 .phoneNumber(phoneNumber)
                 .password(encPassword)
-                .role(Role.ROLE_PRE_MEMBER)
+                .role(role)
                 .providerType(providerType)
                 .userId(userId)
                 .build();
@@ -200,17 +213,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
-        String genderString = oAuth2Response.getGender();
-        Gender gender;
-        if (genderString != null) {
-            if (genderString.equals("male")) {
-                gender = Gender.MALE;
-            } else {
-                gender = Gender.FEMALE;
-            }
-        } else {
-            gender = null;
-        }
         String birthday = oAuth2Response.getBirthday();
         String birthyear = oAuth2Response.getBirthyear();
         LocalDate birth;
@@ -226,7 +228,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         existMember.setEmail(email);
         existMember.setName(name);
-        existMember.setGender(gender);
         existMember.setBirth(birth);
         existMember.setPhoneNumber(phoneNumber);
         existMember.setUserId(userId);
@@ -238,15 +239,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuth2Response.getEmail();
         String name = oAuth2Response.getName();
-        String genderString = oAuth2Response.getGender();
-        Gender gender;
-        if (genderString.equals("M")) {
-            gender = Gender.MALE;
-        } else if (genderString.equals("F")) {
-            gender = Gender.FEMALE;
-        } else {
-            gender = null;
-        }
         String birthday = oAuth2Response.getBirthday();
         String birthyear = oAuth2Response.getBirthyear();
         LocalDate birth;
@@ -260,7 +252,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         existMember.setEmail(email);
         existMember.setName(name);
-        existMember.setGender(gender);
         existMember.setBirth(birth);
         existMember.setPhoneNumber(phoneNumber);
         existMember.setUserId(userId);
