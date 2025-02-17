@@ -20,9 +20,9 @@ jobs:
       - name: Make application.yml  # application.yml 파일 생성
         run: |
           mkdir -p src/main/resources
-          cat > src/main/resources/application.yml <<EOF
-${{ secrets.APPLICATION_YML }}
-EOF
+          cat > src/main/resources/application.yml <<'EOF'
+          ${{ secrets.APPLICATION_YML }}
+          EOF
         shell: bash
 
       - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
