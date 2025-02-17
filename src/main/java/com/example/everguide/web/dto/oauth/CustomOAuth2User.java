@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class CustomOAuth2User implements OAuth2User {
 
-    private final SocialMemberDTO socialMemberDTO;
+    private final MemberDTO memberDTO;
 
-    public CustomOAuth2User(SocialMemberDTO socialMemberDTO) {
-        this.socialMemberDTO = socialMemberDTO;
+    public CustomOAuth2User(MemberDTO memberDTO) {
+        this.memberDTO = memberDTO;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class CustomOAuth2User implements OAuth2User {
             @Override
             public String getAuthority() {
 
-                return socialMemberDTO.getRole();
+                return memberDTO.getRole();
             }
         });
 
@@ -41,16 +41,16 @@ public class CustomOAuth2User implements OAuth2User {
     @Override
     public String getName() {
 
-        return socialMemberDTO.getName();
+        return memberDTO.getName();
     }
 
     public String getUserId() {
 
-        return socialMemberDTO.getUserId();
+        return memberDTO.getUserId();
     }
 
     public String getSocial() {
 
-        return socialMemberDTO.getSocial();
+        return memberDTO.getSocial();
     }
 }
