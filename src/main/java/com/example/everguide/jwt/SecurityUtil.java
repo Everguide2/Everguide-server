@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityUtil {
 
-    public String getUserIdInSecurityContext() {
+    public String getCurrentUserId() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId;

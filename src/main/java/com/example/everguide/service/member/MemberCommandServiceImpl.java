@@ -356,7 +356,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     @Transactional
     public boolean changePwd(MemberRequest.ChangePwdDTO changePwdDTO) {
 
-        String userId = securityUtil.getUserIdInSecurityContext();
+        String userId = securityUtil.getCurrentUserId();
         String newPwd = bCryptPasswordEncoder.encode(changePwdDTO.getNewPwd());
 
         int success = memberRepository.updatePasswordByUserId(userId, newPwd);
@@ -482,9 +482,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         // Refresh 토큰 Redis에서 제거
         redisUtils.deleteLocalRefreshToken(userId);
 
-        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        List<Bookmark> bookmarkList = bookmarkRepository.findByMemberId(member.getId());
-        bookmarkRepository.deleteAll(bookmarkList);
+        List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(userId);
+        bookmarkRepository.deleteAllInBatch(bookmarkList);
 
         memberRepository.deleteByUserId(userId);
 
@@ -528,9 +527,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         redisUtils.deleteSocialTokens(userId);
 
-        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        List<Bookmark> bookmarkList = bookmarkRepository.findByMemberId(member.getId());
-        bookmarkRepository.deleteAll(bookmarkList);
+        List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(userId);
+        bookmarkRepository.deleteAllInBatch(bookmarkList);
 
         memberRepository.deleteByUserId(userId);
 

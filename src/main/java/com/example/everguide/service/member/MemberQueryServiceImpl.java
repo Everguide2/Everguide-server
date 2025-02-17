@@ -147,7 +147,7 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     @Override
     public Boolean checkOriginalPwd(MemberRequest.ChangePwdDTO changePwdDTO) {
 
-        String userId = securityUtil.getUserIdInSecurityContext();
+        String userId = securityUtil.getCurrentUserId();
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
