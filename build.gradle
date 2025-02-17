@@ -49,15 +49,10 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-
-    // Jackson XML 의존성 추가
-    //implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:Jackson2XmlDecoder2.15.2'
-
-    // JAXB 의존성 추가
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'com.h2database:h2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
