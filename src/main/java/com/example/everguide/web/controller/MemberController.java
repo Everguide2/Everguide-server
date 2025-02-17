@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -34,19 +36,6 @@ public class MemberController {
     private final RegisterValidator registerValidator;
     private final AdditionalInfoValidator additionalInfoValidator;
     private final ChangePasswordValidator changePasswordValidator;
-
-    // 테스트용
-    @GetMapping("/member")
-    public String memberP() {
-
-        return "Member Test Controller";
-    }
-
-    @GetMapping("/signup/test")
-    public String signupTest() {
-
-        return "Signup Test Controller";
-    }
 
     // OAuth2 기본 로그인 창 띄우지 않기 위함
     @GetMapping("/noauth")
@@ -227,11 +216,10 @@ public class MemberController {
     // 비밀번호 변경
     @PutMapping("/member/change-pwd")
     public ResponseEntity<ApiResponse<Map<String, String>>> changePassword(
-            HttpServletRequest request, HttpServletResponse response,
             @RequestBody @Valid MemberRequest.ChangePwdDTO changePwdDTO,
             BindingResult bindingResult) {
 
-        if (!memberQueryService.checkOriginalPwd(request, response, changePwdDTO)) {
+        if (!memberQueryService.checkOriginalPwd(changePwdDTO)) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, "기존 비밀번호와 같지 않습니다."));
@@ -248,7 +236,7 @@ public class MemberController {
         }
 
         try {
-            if (memberCommandService.changePwd(request, response, changePwdDTO)) {
+            if (memberCommandService.changePwd(changePwdDTO)) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
 
@@ -306,7 +294,7 @@ public class MemberController {
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/member/{user_id}")
+    @DeleteMapping("/member")
     public ResponseEntity<ApiResponse<String>> deleteMember(
             @RequestParam(name="user_id") String userId,
             HttpServletRequest request, HttpServletResponse response

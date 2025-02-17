@@ -17,5 +17,5 @@ public interface MemberQueryService {
 
     MemberResponse.AdditionalNotValidateDTO checkInfoEqual(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
 
-    Boolean checkOriginalPwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO);
+    Boolean checkOriginalPwd(MemberRequest.ChangePwdDTO changePwdDTO);
 }
