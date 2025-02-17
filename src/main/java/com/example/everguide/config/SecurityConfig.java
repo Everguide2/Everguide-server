@@ -120,23 +120,19 @@ public class SecurityConfig {
 
         http
                 .oauth2Login((oauth2) -> oauth2
-                                .tokenEndpoint((token) -> token
-                                        .accessTokenResponseClient(this.accessTokenResponseClient()))
-                                .loginPage("/noauth")
-                                .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                        .userService(customOAuth2UserService))
-                                .successHandler(customSuccessHandler)
+                        .tokenEndpoint((token) -> token
+                                .accessTokenResponseClient(this.accessTokenResponseClient()))
+                        .loginPage("/noauth")
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                .userService(customOAuth2UserService))
+                        .successHandler(customSuccessHandler)
                 );
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/", "/login", "/signup", "/signup/verify-email", "/noauth").permitAll()
-                                .requestMatchers("/reissue", "/cookie-to-header", "/sms/**").permitAll()
-                                .requestMatchers("/find-email", "/find-pwd").permitAll()
-                                .requestMatchers("/api/welfare/**", "/api/job/**").permitAll()
-                                .requestMatchers("/member/**").hasAnyRole("MEMBER")
-                                .requestMatchers("/signup/additional-info", "/signup/test").hasAnyRole("PRE_MEMBER")
-                                .anyRequest().authenticated()
+                        .requestMatchers("/member/**").hasAnyRole("MEMBER")
+                        .requestMatchers("/signup/additional-info").hasAnyRole("PRE_MEMBER")
+                        .anyRequest().permitAll()
                 );
 
         // 세션 설정
