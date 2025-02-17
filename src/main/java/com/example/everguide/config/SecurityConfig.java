@@ -134,7 +134,7 @@ public class SecurityConfig {
                                 .requestMatchers("/reissue", "/cookie-to-header", "/sms/**").permitAll()
                                 .requestMatchers("/find-email", "/find-pwd").permitAll()
                                 .requestMatchers("/member/**").hasAnyRole("MEMBER")
-                                .requestMatchers("/signup/additional-info", "/signup/test").hasAnyRole("PRE_MEMBER")
+                                .requestMatchers("/signup/additional-info").hasAnyRole("PRE_MEMBER")
                                 .anyRequest().authenticated()
                 );
 

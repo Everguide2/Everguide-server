@@ -6,6 +6,7 @@ import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.jwt.JWTUtil;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.service.mail.MailService;
@@ -64,6 +65,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JWTUtil jwtUtil;
     private final MailService mailService;
+    private final SecurityUtil securityUtil;
 
     @Override
     @Transactional
@@ -352,37 +354,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     @Transactional
-    public boolean changePwd(HttpServletRequest request, HttpServletResponse response, MemberRequest.ChangePwdDTO changePwdDTO) {
+    public boolean changePwd(MemberRequest.ChangePwdDTO changePwdDTO) {
 
-        String authorization = request.getHeader("Authorization");
-
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-
-            throw new MemberBadRequestException(ErrorStatus._NO_TOKEN.getMessage());
-        }
-
-        String accessToken = authorization.split(" ")[1];
-
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
-        }
-
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals("access")) {
-
-            throw new MemberBadRequestException("Access Token이 아닙니다.");
-        }
-
-        if (changePwdDTO.getNewPwd().equals(changePwdDTO.getOriginalPwd())) {
-
-            throw new MemberBadRequestException("기존 비밀번호와 새로 입력한 비밀번호가 같습니다.");
-        }
-
-        String userId = jwtUtil.getUserId(accessToken);
+        String userId = securityUtil.getUserIdInSecurityContext();
         String newPwd = bCryptPasswordEncoder.encode(changePwdDTO.getNewPwd());
 
         int success = memberRepository.updatePasswordByUserId(userId, newPwd);
@@ -458,7 +432,12 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             throw new MemberBadRequestException("Access Token이 아닙니다.");
         }
 
+        String currentUserId = jwtUtil.getUserId(accessToken);
         String social = jwtUtil.getSocial(accessToken);
+
+        if (!currentUserId.equals(userId)) {
+            throw new MemberBadRequestException("현재 로그인한 회원이 아닙니다.");
+        }
 
         boolean memberDeleteSuccess = false;
         if (social.equals("local")) {

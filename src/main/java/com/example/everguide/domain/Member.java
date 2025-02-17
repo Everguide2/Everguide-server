@@ -46,5 +46,4 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String userId;
-    /* ----------------------------- 연관관계 메소드 ------------------------------------- */
 }
