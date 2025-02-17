@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SocialMemberDTO {
+public class MemberDTO {
 
     private String role;
     private String name;
