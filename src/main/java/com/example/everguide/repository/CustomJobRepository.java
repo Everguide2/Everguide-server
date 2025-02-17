@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface CustomJobRepository {
     List<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable);
+    List<Job> findThisWeekJobList();
 }

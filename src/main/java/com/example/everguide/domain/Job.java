@@ -3,6 +3,7 @@ package com.example.everguide.domain;
 import com.example.everguide.domain.common.BaseEntity;
 import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
+import com.example.everguide.domain.enums.RegionDetail;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,9 @@ public class Job extends BaseEntity {
     private HireType hireType; //마감여부
 
     @Enumerated(EnumType.STRING)
-    private Region region;//지역
+    private Region region;//지역 시
+
+    private RegionDetail regionDetail; //상세 지역 (구, 군 .동. 등...)  REGION_010090("노원구") 형식
 
     private String organName;//기업명
 

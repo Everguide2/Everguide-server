@@ -8,12 +8,15 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class CustomJobRepositoryImpl implements CustomJobRepository {
@@ -27,7 +30,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
     //필터링 조건 추가
         //지역
-        if (regionList != null && regionList.size() > 0) {
+        if (regionList != null && !regionList.isEmpty()) {
             predicate.and(job.region.in(regionList));
         }
 
@@ -54,4 +57,21 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
         query.offset(pageable.getOffset()).limit(pageable.getPageSize());
         return  query.fetch();
     }
+
+
+
+    //모집 기한이 이번주에 끝나는 일자리 정보를 리스트로 배열 + d-day 순으로 정렬
+    @Override
+    public List<Job> findThisWeekJobList() {
+        LocalDate today = LocalDate.now(); // 오늘 날짜
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY); //이번 주 월요일
+        LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY); //이번 주 일요일
+
+        return jpaQueryFactory.selectFrom(job)
+                .where(job.endDate.between(startOfWeek, endOfWeek)) //마감일이 이번주 사이에 있는 일자리 필터링
+                .orderBy(job.endDate.asc()) // 종료일(D-day) 순으로 오름차순 정렬 = 마감일이 오늘보다 가까운 것부터 먼 것 순서 - 오름차순
+                .limit(7) // 대표 일자리 포함 7개
+                .fetch();
+    }
+
 }

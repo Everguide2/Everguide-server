@@ -19,9 +19,18 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 네이버 소셜 로그인 관련 에러
     _NAVER_SIGN_IN_INTEGRATION_FAILED(HttpStatus.UNAUTHORIZED, "NAVER4001", "네이버 로그인 연동에 실패하였습니다."),
-    _NAVER_ACCESS_TOKEN_ISSUANCE_FAILED(HttpStatus.UNAUTHORIZED, "NAVER4002", "네이버 액세스 토큰 발급에 실패하였습니다.")
+    _NAVER_ACCESS_TOKEN_ISSUANCE_FAILED(HttpStatus.UNAUTHORIZED, "NAVER4002", "네이버 액세스 토큰 발급에 실패하였습니다."),
 
     //멤버 관련 에러
+    _MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "존재하지 않는 멤버입니다"),
+
+    //일자리 관련 에러
+    _JOB_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB4000" , "존재하지 않는 일자리 입니다."),
+    _THIS_WEEK_JOB_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB4001" , "이번주에 마감되는 일자리가 없습니다"),
+
+    //북마크 관련 에러
+    _JOB_BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크 처리 되었습니다."),
+    _JOB_BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "직업이 북마크 처리 되어 있지 않습니다.")
 
     ;
 

@@ -1,9 +1,12 @@
 package com.example.everguide.service.job;
 
+import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Job;
 import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
+import com.example.everguide.domain.enums.RegionDetail;
 import com.example.everguide.web.dto.job.JobItem;
+import com.example.everguide.web.dto.job.JobItemDetail;
 import com.example.everguide.web.dto.job.JobResponse;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,74 @@ import java.util.stream.Collectors;
 
 @Service
 public class JobMappingService {
+
+    public static JobResponse.deleteJobBookmarkResultDto toDeleteJobBookmarkResultDto(Long jobId) {
+        return JobResponse.deleteJobBookmarkResultDto.builder()
+                .jobId(jobId).build();
+    }
+
+    public static JobResponse.addJobBookmarkResultDto toAddJobBookMarkResponseResultDto(Bookmark bookmark) {
+        return JobResponse.addJobBookmarkResultDto.builder()
+                .memberId(bookmark.getMember().getId())
+                .jobId(bookmark.getJob().getId())
+                .bookmarkType(bookmark.getType().name())
+                .build();
+    }
+
+    public static JobResponse.ThisWeekJobsDto toThisWeekJobsDto(List<Job> jobs) {
+        return JobResponse.ThisWeekJobsDto.builder()
+                .bigJob(toBigJobDto(jobs.get(0)))
+                .smallJobList(toSmalljobListDto(jobs.subList(1, jobs.size())))
+                .build();
+
+    }
+
+    private static List<JobResponse.ThisWeekSmallJob> toSmalljobListDto(List<Job> jobs) {
+        return jobs.stream().map(j ->
+                JobResponse.ThisWeekSmallJob.builder()
+                        .jobId(j.getId())
+                        .companyName(j.getOrganName())
+                        .jobName(j.getName())
+                        .region(j.getRegion()!= null ? j.getRegion().getDescription() : "")
+                        .regionDetail(j.getRegionDetail() != null ? j.getRegionDetail().getRegionDetail() : "").build()).toList();
+    }
+
+    private static JobResponse.ThisWeekBigJob toBigJobDto(Job job) {
+        return JobResponse.ThisWeekBigJob.builder()
+                .jobId(job.getId())
+                .companyName(job.getOrganName())
+                .jobName(job.getName())
+                .region(job.getRegion() != null ? job.getRegion().getDescription() : "")
+                .regionDetail(job.getRegionDetail() != null ? job.getRegionDetail().getRegionDetail() : "")
+                .startDate(String.valueOf(job.getStartDate()))
+                .endDate(String.valueOf(job.getEndDate()))
+                .hireType(job.getHireType() != null ? job.getHireType().name() : "")
+                .build();
+
+    }
+
+    //
+    //xml 데이터를 받아, response 객체로 변환
+    public static JobResponse.GetJobDetailDto convertToDetailResponse(JobItemDetail jobItemDetail, Job job) {
+        return JobResponse.GetJobDetailDto.builder()
+                .hireType(job.getHireType().name())
+                .company(jobItemDetail.getPlbizNm())
+                .jobName(jobItemDetail.getWantedTitle())
+                .startDate(String.valueOf(job.getStartDate()))
+                .endDate(String.valueOf(job.getEndDate()))
+                .address(jobItemDetail.getPlDetAddr())
+                .detailContext(jobItemDetail.getDetCnts())
+                .etc(jobItemDetail.getEtcItm())
+                .recruitNum(jobItemDetail.getClltPrnnum())
+                .age(jobItemDetail.getAge())
+                .apply(jobItemDetail.getAcptMthdCd())
+                .clerk(jobItemDetail.getClerk())
+                .clerkContect(jobItemDetail.getClerkContt())
+                .homepage(jobItemDetail.getHomepage())
+                .build();
+
+    }
+
 
     public static JobResponse.GetJobList toJobListDto(List<Job> jobs) {
         List<JobResponse.JobDto> jobList = jobs.stream().map(JobMappingService::toJobDto).collect(Collectors.toList());
@@ -33,6 +104,8 @@ public class JobMappingService {
                 .endDate(String.valueOf(job.getEndDate()))
                 .hireType(job.getHireType().name())
                 .company(job.getOrganName())
+                .region(job.getRegion().getDescription())
+                .regionDetail(job.getRegionDetail().getRegionDetail())
                 .build();
     }
 
@@ -53,7 +126,7 @@ public class JobMappingService {
     // xml item을 job 엔티티로 변환
     private Job mapToEntity(JobItem dto) {
         Job entity = new Job();
-        return entity.builder()
+        return Job.builder()
                 .jobCode(dto.getJobId())
                 .organName(dto.getOranNm()) //기업명
                 .hireType(HireType.toHireType(dto.getDeadline())) //마감여부
@@ -61,6 +134,7 @@ public class JobMappingService {
                 .endDate(stringToDate(dto.getToDd())) // 마감일
                 .name(dto.getRecrtTitle()) //채용제목
                 .region(classifyRegion(dto.getWorkPlc())) //지역
+                .regionDetail(RegionDetail.classifyRegionDetail(dto.getWorkPlc())) //상세 지역
                 .build();
 
     }
