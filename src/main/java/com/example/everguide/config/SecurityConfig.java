@@ -130,12 +130,9 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                                .requestMatchers("/", "/login", "/signup", "/signup/verify-email", "/noauth").permitAll()
-                                .requestMatchers("/reissue", "/cookie-to-header", "/sms/**").permitAll()
-                                .requestMatchers("/find-email", "/find-pwd").permitAll()
                                 .requestMatchers("/member/**").hasAnyRole("MEMBER")
                                 .requestMatchers("/signup/additional-info").hasAnyRole("PRE_MEMBER")
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 );
 
         // 세션 설정
