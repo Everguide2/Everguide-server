@@ -127,8 +127,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         cookie.setMaxAge(0);
         cookie.setPath("/");
 
-        System.out.println("logout 완료");
-
         response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
     }

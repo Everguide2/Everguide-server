@@ -66,7 +66,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
-                .group("login-logout")
+                .group("group")
                 .pathsToMatch("/**")
                 .addOpenApiCustomizer(newSpringSecurityLoginEndpointCustomizer(applicationContext))
                 .addOpenApiCustomizer(newSpringSecurityLogoutEndpointCustomizer(applicationContext))
