@@ -11,10 +11,10 @@ import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.service.mail.MailService;
 import com.example.everguide.web.dto.MemberResponse;
-import com.example.everguide.web.dto.oauth.CustomOAuth2User;
-import com.example.everguide.web.dto.oauth.CustomUserDetails;
+import com.example.everguide.web.dto.auth.CustomOAuth2User;
+import com.example.everguide.web.dto.auth.CustomUserDetails;
 import com.example.everguide.web.dto.MemberRequest;
-import com.example.everguide.web.dto.oauth.OAuthToken;
+import com.example.everguide.web.dto.auth.OAuthToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -83,18 +83,18 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         if (refresh == null) {
 
-            throw new MemberBadRequestException("Token이 null입니다.");
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_NULL.getMessage());
         }
 
         try {
             jwtUtil.isExpired(refresh);
+
         } catch (ExpiredJwtException e) {
 
-            throw new MemberBadRequestException("만료된 토큰입니다.");
+            throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
         }
 
         String category = jwtUtil.getCategory(refresh);
-
         if (!category.equals("refresh")) {
 
             throw new MemberBadRequestException("Refresh Token이 아닙니다.");
@@ -104,6 +104,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String role = jwtUtil.getRole(refresh);
         String social = jwtUtil.getSocial(refresh);
 
+        // Redis에 저장되어 있는지 확인
+        String currentLocalRefresh = redisUtils.getLocalRefreshToken(userId);
+        if (!refresh.equals(currentLocalRefresh)) {
+
+            throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
+        }
+
         //make new JWT
         String access = jwtUtil.createJwt(userId, role, social, "access", 60000*10L);
 
@@ -111,14 +118,8 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         response.setHeader("Authorization", "Bearer " + access);
         response.setStatus(HttpStatus.OK.value());
 
-        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
-        Boolean full = (member.getName() != null && !member.getName().isBlank())
-                && (member.getBirth() != null)
-                && (member.getPhoneNumber() != null && !member.getPhoneNumber().isBlank())
-                && (member.getEmail() != null && !member.getEmail().isBlank());
-
-        return full;
+        return Role.getRole(role).equals(Role.ROLE_MEMBER);
     }
 
     @Override
@@ -142,13 +143,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         try {
             jwtUtil.isExpired(refresh);
+
         } catch (ExpiredJwtException e) {
 
             throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());
         }
 
         String category = jwtUtil.getCategory(refresh);
-
         if (!category.equals("refresh")) {
 
             throw new MemberBadRequestException("Refresh Token이 아닙니다.");
@@ -158,8 +159,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         String role = jwtUtil.getRole(refresh);
         String social = jwtUtil.getSocial(refresh);
 
-        Boolean isExist = redisUtils.existsLocalRefreshToken(userId);
-        if (!isExist) {
+        // Redis에 저장되어 있는지 확인
+        String currentLocalRefresh = redisUtils.getLocalRefreshToken(userId);
+        if (!refresh.equals(currentLocalRefresh)) {
 
             throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
@@ -420,6 +422,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
         try {
             jwtUtil.isExpired(accessToken);
+
         } catch (ExpiredJwtException e) {
 
             throw new MemberBadRequestException(ErrorStatus._TOKEN_EXPIRED.getMessage());

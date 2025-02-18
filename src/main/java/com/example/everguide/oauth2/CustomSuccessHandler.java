@@ -2,13 +2,12 @@ package com.example.everguide.oauth2;
 
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.redis.RedisUtils;
-import com.example.everguide.web.dto.oauth.CustomOAuth2User;
+import com.example.everguide.web.dto.auth.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

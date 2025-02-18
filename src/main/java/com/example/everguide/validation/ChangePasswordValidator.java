@@ -34,13 +34,15 @@ public class ChangePasswordValidator implements Validator {
             errors.rejectValue("newPwd", "blank.password", getMessage("blank.password"));
         } else if (!PASSWORD_PATTERN.matcher(changePwdDTO.getNewPwd()).matches()) {
             errors.rejectValue("newPwd", "invalid.password", getMessage("invalid.password"));
+        } else if (changePwdDTO.getNewPwd().equals(changePwdDTO.getOriginalPwd())) {
+            errors.rejectValue("newPwd", "same.password", getMessage("same.password"));
         }
 
         // 비밀번호 재입력
         if (valueNullOrBlank(changePwdDTO.getRewriteNewPwd())) {
-            errors.rejectValue("rewritePassword", "blank.rewritePassword", getMessage("blank.rewritePassword"));
+            errors.rejectValue("rewriteNewPwd", "blank.rewritePassword", getMessage("blank.rewritePassword"));
         } else if (!changePwdDTO.getNewPwd().equals(changePwdDTO.getRewriteNewPwd())) {
-            errors.rejectValue("rewritePassword", "invalid.rewritePassword", getMessage("invalid.rewritePassword"));
+            errors.rejectValue("rewriteNewPwd", "invalid.rewritePassword", getMessage("invalid.rewritePassword"));
         }
     }
 

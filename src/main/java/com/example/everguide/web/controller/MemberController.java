@@ -11,6 +11,7 @@ import com.example.everguide.validation.ChangePasswordValidator;
 import com.example.everguide.validation.RegisterValidator;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,8 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -37,22 +36,14 @@ public class MemberController {
     private final AdditionalInfoValidator additionalInfoValidator;
     private final ChangePasswordValidator changePasswordValidator;
 
-    // OAuth2 기본 로그인 창 띄우지 않기 위함
-    @GetMapping("/noauth")
-    public ResponseEntity<ApiResponse<Map<String, String>>> noAuth() {
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED, "unauthorized"));
-    }
-
     // 소셜 로그인 Refresh 토큰 쿠키 발급 후 Access 토큰 헤더 발급 위함
     @PostMapping("/cookie-to-header")
     public ResponseEntity<ApiResponse<String>> cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
 
         try {
-            Boolean full = memberCommandService.cookieToHeader(request, response);
+            Boolean isMember = memberCommandService.cookieToHeader(request, response);
 
-            if (full) {
+            if (isMember) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
             } else {
