@@ -2,21 +2,28 @@ package com.example.everguide.service.job;
 
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Job;
+import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
 import com.example.everguide.domain.enums.RegionDetail;
+import com.example.everguide.repository.BookmarkRepository;
+import com.example.everguide.repository.JobRepository;
 import com.example.everguide.web.dto.job.JobItem;
 import com.example.everguide.web.dto.job.JobItemDetail;
 import com.example.everguide.web.dto.job.JobResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class JobMappingService {
+    private final BookmarkRepository bookmarkRepository;
 
     public static JobResponse.deleteJobBookmarkResultDto toDeleteJobBookmarkResultDto(Long jobId) {
         return JobResponse.deleteJobBookmarkResultDto.builder()
@@ -86,8 +93,10 @@ public class JobMappingService {
     }
 
 
-    public static JobResponse.GetJobList toJobListDto(List<Job> jobs) {
-        List<JobResponse.JobDto> jobList = jobs.stream().map(JobMappingService::toJobDto).collect(Collectors.toList());
+    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member) {
+        List<JobResponse.JobDto> jobList = jobs.stream()
+                .map(job -> this.toJobDto(job, member))
+                .collect(Collectors.toList());
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
                 .count(jobList.size())
@@ -95,19 +104,21 @@ public class JobMappingService {
     }
 
 
-    public static JobResponse.JobDto toJobDto(Job job) {
+    public JobResponse.JobDto toJobDto(Job job,Member member) {
         return JobResponse.JobDto.builder()
                 .jobId(job.getId())
                 .jobName(job.getName())
                 .dDay(calcDday(job.getEndDate()))
                 .startDate(String.valueOf(job.getStartDate()))
                 .endDate(String.valueOf(job.getEndDate()))
-                .hireType(job.getHireType().name())
+                .hireType(job.getHireType() != null ? job.getHireType().name() : "")
                 .company(job.getOrganName())
-                .region(job.getRegion().getDescription())
-                .regionDetail(job.getRegionDetail().getRegionDetail())
+                .region(job.getRegion() != null ? job.getRegion().getDescription() : "")
+                .regionDetail(job.getRegionDetail() != null ? job.getRegionDetail().getRegionDetail() : "")
+                .isBookmarked(bookmarkRepository.existsByJobAndMember(job,member))
                 .build();
     }
+
 
     private static String calcDday(LocalDate endDate) {
         LocalDate today = LocalDate.now();

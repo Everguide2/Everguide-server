@@ -11,6 +11,7 @@ import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.repository.JobRepository;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.job.JobRequest;
+import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +27,15 @@ public class JobService {
     private final JobRepository jobRepository;
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final JobMappingService jobMappingService;
 
     @Transactional(readOnly = true)
-    public List<Job> getJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member) {
-        return jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
+    public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+        List<Job> jobList = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
+        return jobMappingService.toJobListDto(jobList, member);
     }
+
 
 
     @Transactional(readOnly = true)

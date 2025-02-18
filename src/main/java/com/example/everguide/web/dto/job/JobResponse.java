@@ -42,7 +42,7 @@ public class JobResponse {
         String company; //담당 회사
         String region; //지역
         String regionDetail; //상세 지역
-
+        Boolean isBookmarked; //북마크 여부
     }
     //일자리 상세정보 요청 응답
     @Getter
