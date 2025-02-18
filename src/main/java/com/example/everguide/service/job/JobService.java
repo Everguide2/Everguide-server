@@ -39,6 +39,15 @@ public class JobService {
     }
 
     @Transactional(readOnly = true)
+    public Boolean isBookmarked(Long JobId) {
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        Job job = jobRepository.findById(JobId).orElseThrow(() -> new GeneralException(ErrorStatus._JOB_NOT_FOUND));
+        return bookmarkRepository.existsByJobAndMember(job, member);
+    }
+
+
+    @Transactional(readOnly = true)
     public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
         List<Job> jobs = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
         return jobMappingService.toNoLoginJobListDto(jobs);

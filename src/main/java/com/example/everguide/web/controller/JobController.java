@@ -14,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,12 +74,19 @@ public class JobController {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //    //로그인 했을 때만 가능
+
+    @GetMapping("/member/jobs/isBookMarked/{jobId}")
+    public ResponseEntity<ApiResponse<Boolean>> getJobListSearchByName(@PathVariable(value = "jobId") Long jobId) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.isBookmarked(jobId)));
+    }
+
     @GetMapping("member/jobs/getJobListSearchByName")
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
-                                                                         @RequestParam(value = "memberId") Long memberId,
-                                                                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                         @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
-                                                                         ) {
+                                                                                                  @RequestParam(value = "memberId") Long memberId,
+                                                                                                  @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
+    ) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.SearchJobListByName(name, pageable)));
     }
