@@ -4,7 +4,7 @@ import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
-import com.example.everguide.service.member.MemberCommandService;
+import com.example.everguide.service.token.TokenService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TokenController {
 
-    private final MemberCommandService memberCommandService;
+    private final TokenService tokenService;
 
     // 소셜 로그인 Refresh 토큰 쿠키 발급 후 Access 토큰 헤더 발급 위함
     @PostMapping("/cookie-to-header")
     public ResponseEntity<ApiResponse<String>> cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
 
         try {
-            Boolean isMember = memberCommandService.cookieToHeader(request, response);
+            Boolean isMember = tokenService.cookieToHeader(request, response);
 
             if (isMember) {
                 return ResponseEntity.status(HttpStatus.OK)
@@ -49,7 +49,7 @@ public class TokenController {
     public ResponseEntity<ApiResponse<String>> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         try {
-            memberCommandService.reissue(request, response);
+            tokenService.reissue(request, response);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK));

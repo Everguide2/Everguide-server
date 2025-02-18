@@ -35,7 +35,7 @@ public class ChangePasswordValidator implements Validator {
         } else if (!PASSWORD_PATTERN.matcher(changePwdDTO.getNewPwd()).matches()) {
             errors.rejectValue("newPwd", "invalid.password", getMessage("invalid.password"));
         } else if (changePwdDTO.getNewPwd().equals(changePwdDTO.getOriginalPwd())) {
-            errors.rejectValue("newPwd", "same.password", getMessage("same.password"));
+            errors.rejectValue("newPwd", "duplicate.password", getMessage("duplicate.password"));
         }
 
         // 비밀번호 재입력

@@ -16,7 +16,7 @@ public class SecurityUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId;
 
-        if (authentication == null || !authentication.isAuthenticated() || !(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             throw new MemberBadRequestException("인증 사용자가 아닙니다.");
 
         }

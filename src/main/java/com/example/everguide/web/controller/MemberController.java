@@ -4,8 +4,8 @@ import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
-import com.example.everguide.service.member.MemberCommandService;
-import com.example.everguide.service.member.MemberQueryService;
+import com.example.everguide.service.member.MemberService;
+import com.example.everguide.service.validate.ValidateService;
 import com.example.everguide.validation.ChangePasswordValidator;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.MemberResponse;
@@ -25,8 +25,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberQueryService memberQueryService;
-    private final MemberCommandService memberCommandService;
+    private final MemberService memberService;
+    private final ValidateService validateService;
+
     private final ChangePasswordValidator changePasswordValidator;
 
     // 이메일 찾기
@@ -35,7 +36,7 @@ public class MemberController {
             @RequestBody MemberRequest.FindEmailDTO findEmailDTO) {
 
         try {
-            MemberResponse.FindEmailDTO findEmailResponseDTO = memberCommandService.findEmail(findEmailDTO);
+            MemberResponse.FindEmailDTO findEmailResponseDTO = memberService.findEmail(findEmailDTO);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK, findEmailResponseDTO));
@@ -52,7 +53,7 @@ public class MemberController {
             @RequestBody MemberRequest.FindPwdDTO findPwdDTO) {
 
         try {
-            if (memberCommandService.findPwd(findPwdDTO)) {
+            if (memberService.findPwd(findPwdDTO)) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
 
@@ -78,7 +79,7 @@ public class MemberController {
             @RequestBody @Valid MemberRequest.ChangePwdDTO changePwdDTO,
             BindingResult bindingResult) {
 
-        if (!memberQueryService.checkOriginalPwd(changePwdDTO)) {
+        if (!memberService.checkOriginalPwd(changePwdDTO)) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, "기존 비밀번호와 같지 않습니다."));
@@ -88,14 +89,14 @@ public class MemberController {
 
         if (bindingResult.hasErrors()) {
 
-            Map<String, String> validatorResult = memberQueryService.validateHandling(bindingResult);
+            Map<String, String> validatorResult = validateService.validateHandling(bindingResult);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.onFailure(ErrorStatus._BAD_REQUEST, "값이 validate 실패했습니다.", validatorResult));
         }
 
         try {
-            if (memberCommandService.changePwd(changePwdDTO)) {
+            if (memberService.changePwd(changePwdDTO)) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
 
@@ -117,7 +118,7 @@ public class MemberController {
     ) {
 
         try {
-            if (memberCommandService.deleteMember(request, response, userId)) {
+            if (memberService.deleteMember(request, response, userId)) {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));

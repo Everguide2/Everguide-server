@@ -5,19 +5,9 @@ import com.example.everguide.web.dto.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.util.Map;
+public interface MemberService {
 
-public interface MemberCommandService {
-
-    Boolean cookieToHeader(HttpServletRequest request, HttpServletResponse response);
-
-    boolean reissue(HttpServletRequest request, HttpServletResponse response);
-
-    boolean localSignUp(MemberRequest.SignupDTO signupDTO);
-
-    MemberResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response);
-
-    boolean registerSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
+    Boolean checkOriginalPwd(MemberRequest.ChangePwdDTO changePwdDTO);
 
     boolean changePwd(MemberRequest.ChangePwdDTO changePwdDTO);
 

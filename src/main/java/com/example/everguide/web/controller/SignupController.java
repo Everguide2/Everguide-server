@@ -4,8 +4,8 @@ import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
-import com.example.everguide.service.member.MemberCommandService;
-import com.example.everguide.service.member.MemberQueryService;
+import com.example.everguide.service.signup.SignupService;
+import com.example.everguide.service.validate.ValidateService;
 import com.example.everguide.validation.AdditionalInfoValidator;
 import com.example.everguide.validation.RegisterValidator;
 import com.example.everguide.web.dto.MemberRequest;
@@ -31,8 +31,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SignupController {
 
-    private final MemberQueryService memberQueryService;
-    private final MemberCommandService memberCommandService;
+    private final SignupService signupService;
+    private final ValidateService validateService;
+
     private final RegisterValidator registerValidator;
     private final AdditionalInfoValidator additionalInfoValidator;
 
@@ -46,7 +47,7 @@ public class SignupController {
 
         if (bindingResult.hasErrors()) {
 
-            Map<String, String> validatorResult = memberQueryService.validateHandling(bindingResult);
+            Map<String, String> validatorResult = validateService.validateHandling(bindingResult);
 
             MemberResponse.SignupNotValidateDTO signupNotValidateDTO = MemberResponse.SignupNotValidateDTO.builder()
                     .name(signupDTO.getName())
@@ -62,7 +63,7 @@ public class SignupController {
         }
 
         try {
-            if (memberCommandService.localSignUp(signupDTO)) {
+            if (signupService.localSignUp(signupDTO)) {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
@@ -85,7 +86,7 @@ public class SignupController {
         String email = signupEmailDTO.getEmail();
         String userId = "LOCAL_" + email;
 
-        if (memberQueryService.checkEmailExist(userId)) {
+        if (signupService.checkEmailExist(userId)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK));
         } else {
@@ -101,7 +102,7 @@ public class SignupController {
     ) {
 
         try {
-            MemberResponse.SignupAdditionalDTO signupAdditionalDTO = memberCommandService.getSignupAdditionalInfo(request, response);
+            MemberResponse.SignupAdditionalDTO signupAdditionalDTO = signupService.getSignupAdditionalInfo(request, response);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK, signupAdditionalDTO));
@@ -121,7 +122,7 @@ public class SignupController {
             BindingResult bindingResult
     ) {
 
-        MemberResponse.AdditionalNotValidateDTO checkInfoEqual = memberQueryService.checkInfoEqual(request, response, signupAdditionalDTO);
+        MemberResponse.AdditionalNotValidateDTO checkInfoEqual = signupService.checkInfoEqual(request, response, signupAdditionalDTO);
 
         if (checkInfoEqual != null) {
 
@@ -133,7 +134,7 @@ public class SignupController {
 
         if (bindingResult.hasErrors()) {
 
-            Map<String, String> validatorResult = memberQueryService.validateHandling(bindingResult);
+            Map<String, String> validatorResult = validateService.validateHandling(bindingResult);
 
             MemberResponse.AdditionalNotValidateDTO additionalNotValidateDTO = MemberResponse.AdditionalNotValidateDTO.builder()
                     .name(signupAdditionalDTO.getName())
@@ -148,7 +149,7 @@ public class SignupController {
         }
 
         try {
-            if (memberCommandService.registerSignupAdditionalInfo(request, response, signupAdditionalDTO)) {
+            if (signupService.registerSignupAdditionalInfo(request, response, signupAdditionalDTO)) {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
