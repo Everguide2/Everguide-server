@@ -59,7 +59,7 @@ public class JobController {
     @GetMapping("/jobs/getJobListSearchByName")
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                         @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
+                                                                         @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
                                                                          ) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginSearchJobListByName(name, pageable)));
@@ -84,7 +84,7 @@ public class JobController {
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
                                                                                                   @RequestParam(value = "memberId") Long memberId,
                                                                                                   @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
+                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
     ) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
