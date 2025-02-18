@@ -13,4 +13,6 @@ import java.util.Set;
 public interface JobRepository extends JpaRepository<Job, Long>, CustomJobRepository {
     @Query("SELECT j.jobCode FROM Job j WHERE j.jobCode IN :newJobCode")
     Set<String> findDuplicateJobCodeList(@Param("newJobCode") List<String> newJobCode);
+
+    Integer countByNameContainingIgnoreCase(String name);
 }

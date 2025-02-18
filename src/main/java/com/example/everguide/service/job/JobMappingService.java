@@ -25,6 +25,63 @@ import java.util.stream.Collectors;
 public class JobMappingService {
     private final BookmarkRepository bookmarkRepository;
 
+
+    //로그인 했을 때, 검색결과
+    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(List<Job> jobs, Member member) {
+        List<JobResponse.JobDto> jobList = jobs.stream()
+                .map(job -> this.toJobDto(job, member))
+                .collect(Collectors.toList());
+        return JobResponse.GetJobListSearchByName.builder()
+                .jobDtoList(jobList)
+                .hasMore(calcHasNext(jobs))
+                .build();
+    }
+
+
+    //로그인 안했을 때, 검색결과
+    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(List<Job> jobs) {
+        List<JobResponse.JobDto> jobList = jobs.stream()
+                .map(this::toNoLoginJobDto)
+                .collect(Collectors.toList());
+        return JobResponse.GetJobListSearchByName.builder()
+                .jobDtoList(jobList)
+                .hasMore(calcHasNext(jobs))
+                .build();
+    }
+
+    private Boolean calcHasNext(List<Job> jobs) {
+        return jobs.size() == 5;
+    }
+
+
+    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs) {
+        List<JobResponse.JobDto> jobList = jobs.stream()
+                .map(this::toNoLoginJobDto)
+                .collect(Collectors.toList());
+
+
+        return JobResponse.GetJobList.builder()
+                .jobDtoList(jobList)
+                .count(jobList.size())
+                .build();
+    }
+
+    public JobResponse.JobDto toNoLoginJobDto(Job job) {
+        return JobResponse.JobDto.builder()
+                .jobId(job.getId())
+                .jobName(job.getName())
+                .dDay(calcDday(job.getEndDate()))
+                .startDate(String.valueOf(job.getStartDate()))
+                .endDate(String.valueOf(job.getEndDate()))
+                .hireType(job.getHireType() != null ? job.getHireType().name() : "")
+                .company(job.getOrganName())
+                .region(job.getRegion() != null ? job.getRegion().getDescription() : "")
+                .regionDetail(job.getRegionDetail() != null ? job.getRegionDetail().getRegionDetail() : "")
+                .build();
+    }
+
+
+
     public static JobResponse.deleteJobBookmarkResultDto toDeleteJobBookmarkResultDto(Long jobId) {
         return JobResponse.deleteJobBookmarkResultDto.builder()
                 .jobId(jobId).build();
@@ -214,4 +271,6 @@ public class JobMappingService {
         // 기본적으로 알 수 없는 경우는 null 반환
         return null;
     }
+
+
 }

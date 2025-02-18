@@ -8,7 +8,6 @@ public class JobRequest {
     @Getter
     @Setter
     public static class addJobBookmarkDto {
-         Long memberId; //이거 삭제 예정
          Long jobId;
     }
 
@@ -16,7 +15,6 @@ public class JobRequest {
     @Getter
     @Setter
     public static class deleteJobBookmarkDto {
-        Long memberId; //이거 삭제 예정
         Long jobId;
 
     }

@@ -7,19 +7,19 @@ import com.example.everguide.domain.Job;
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.BookmarkType;
 import com.example.everguide.domain.enums.Region;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.repository.JobRepository;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.job.JobRequest;
 import com.example.everguide.web.dto.job.JobResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +28,30 @@ public class JobService {
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
     private final JobMappingService jobMappingService;
+    private final SecurityUtil securityUtil;
+
 
     @Transactional(readOnly = true)
-    public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+    public Integer getTotalCountSearchByName(String name) {
+        return jobRepository.countByNameContainingIgnoreCase(name);
+
+
+    }
+
+    @Transactional(readOnly = true)
+    public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
+        List<Job> jobs = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
+        return jobMappingService.toNoLoginJobListDto(jobs);
+    }
+
+
+    @Transactional(readOnly = true)
+    public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
+
+
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+
         List<Job> jobList = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
         return jobMappingService.toJobListDto(jobList, member);
     }
@@ -56,7 +76,8 @@ public class JobService {
     @Transactional
     public Bookmark addJobBookmark(JobRequest.addJobBookmarkDto request) {
         // 회원 조회 -> 여기서 추후, 멤버 로그인 아이디로 조회해야 한다 -> 혜원님 푸시 이후 개발 하는 걸로
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
         // 일자리 조회
         Job job = jobRepository.findById(request.getJobId()).orElseThrow(() -> new GeneralException(ErrorStatus._JOB_NOT_FOUND));
         // 이미 존재하는 북마크인지 확인
@@ -73,11 +94,29 @@ public class JobService {
 
     }
 
+    //로그인 안했을 때, 검색 기능
+    @Transactional(readOnly = true)
+    public JobResponse.GetJobListSearchByName noLoginSearchJobListByName(String keyword, Pageable pageable) {
+        return jobMappingService.toNoLoginGetJobListSearchByName(jobRepository.SearchJobListByName(keyword, pageable));
+    }
+
+
+    //로그인 했을 때, 검색 기능
+    @Transactional(readOnly = true)
+    public JobResponse.GetJobListSearchByName SearchJobListByName(String keyword, Pageable pageable) {
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        return jobMappingService.toGetJobListSearchByName(jobRepository.SearchJobListByName(keyword, pageable), member);
+    }
+
+
     //일자리 북마크
     @Transactional
     public Long deleteJobBookmark(JobRequest.deleteJobBookmarkDto request) {
         // 회원 조회 -> 여기서 추후, 멤버 로그인 아이디로 조회해야 한다 -> 혜원님 푸시 이후 개발 하는 걸로
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(() -> new GeneralException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
         // 일자리 조회
         Job job = jobRepository.findById(request.getJobId()).orElseThrow(() -> new GeneralException(ErrorStatus._JOB_NOT_FOUND));
         // 북마크가 DB에 존재하는 지 확인

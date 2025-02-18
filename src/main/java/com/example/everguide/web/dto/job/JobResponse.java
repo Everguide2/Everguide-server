@@ -96,4 +96,13 @@ public class JobResponse {
         String hireType; //접수 여부
     }
 
+
+    @Getter
+    @Builder
+    public static class GetJobListSearchByName {
+        List<JobDto> jobDtoList; //일자리 리스트 정보
+        Boolean hasMore; //다음 페이지 여부
+    }
+
+
 }

@@ -10,5 +10,9 @@ import java.util.List;
 
 public interface CustomJobRepository {
     List<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member);
+    List<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting,  Pageable pageable);
+
+
     List<Job> findThisWeekJobList();
+    List<Job> SearchJobListByName(String name, Pageable pageable);
 }
