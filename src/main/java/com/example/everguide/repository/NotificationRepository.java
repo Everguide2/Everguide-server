@@ -28,7 +28,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 
 
-    // 30개 초과 시 오래된 알림 삭제 (JPA 메서드 예시)
+    // 30개 초과 시 오래된 알림 삭제
     @Modifying
     @Query("""
             DELETE FROM Notification n 

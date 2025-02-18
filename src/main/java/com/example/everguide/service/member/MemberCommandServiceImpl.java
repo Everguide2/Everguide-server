@@ -15,6 +15,7 @@ import com.example.everguide.web.dto.oauth.CustomOAuth2User;
 import com.example.everguide.web.dto.oauth.CustomUserDetails;
 import com.example.everguide.web.dto.MemberRequest;
 import com.example.everguide.web.dto.oauth.OAuthToken;
+import com.example.everguide.web.notification.NotificationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -66,6 +67,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     private final JWTUtil jwtUtil;
     private final MailService mailService;
     private final SecurityUtil securityUtil;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -207,6 +209,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
                 .build();
 
         memberRepository.save(member);
+        notificationService.sendWelcomeNotification(member);
 
         return true;
     }

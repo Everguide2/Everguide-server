@@ -4,6 +4,9 @@ public enum NotifyType {
     WELCOME,          // 환영 인사
     PERSONAL_RECOMM,  // 개인 맞춤 추천
     DEADLINE_D7,
+    DEADLINE_D6,
+    DEADLINE_D5,
+    DEADLINE_D4,
     DEADLINE_D3,
     DEADLINE_D2,
     DEADLINE_D1,

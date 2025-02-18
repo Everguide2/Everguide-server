@@ -2,7 +2,7 @@ package com.example.everguide.web.controller;
 
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.Notification;
-import com.example.everguide.repository.MemberRepository;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.web.notification.NotificationService;
 import com.example.everguide.web.dto.notificaton.NotificationDto;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * 알림(Notification) 관련 API
- * - 여기서는 로그인 로직 없이, memberId를 쿼리 파라미터로 받아 테스트용으로 사용
+ * - 로그인된 사용자 정보를 SecurityUtil에서 가져와 사용
  */
 @RestController
 @RequestMapping("/notifications")
@@ -20,34 +20,29 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final MemberRepository memberRepository;
-    // ↑ Member를 찾기 위해 필요 (프로젝트에 맞게 실제 MemberRepository 경로/이름 확인)
+    private final SecurityUtil securityUtil;
 
     /**
-     * 회원의 전체 알림 목록 조회
-     * 예: GET /notifications?memberId=1
+     * 로그인된 회원의 전체 알림 목록 조회
+     * 예: GET /notifications
      */
     @GetMapping
-    public List<NotificationDto> getNotifications(@RequestParam("memberId") Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found: " + memberId));
-
-        List<Notification> notifications = notificationService.getNotificationsForMember(member);
+    public List<NotificationDto> getNotifications() {
+        String userId = securityUtil.getCurrentUserId();
+        List<Notification> notifications = notificationService.getNotificationsForUserId(userId);
         return notifications.stream()
                 .map(NotificationDto::fromEntity)
                 .toList();
     }
 
     /**
-     * 회원의 '읽지 않은' 알림 목록 조회
-     * 예: GET /notifications/unread?memberId=1
+     * 로그인된 회원의 '읽지 않은' 알림 목록 조회
+     * 예: GET /notifications/unread
      */
     @GetMapping("/unread")
-    public List<NotificationDto> getUnreadNotifications(@RequestParam("memberId") Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found: " + memberId));
-
-        List<Notification> unreadNotifications = notificationService.getUnreadNotifications(member);
+    public List<NotificationDto> getUnreadNotifications() {
+        String userId = securityUtil.getCurrentUserId();
+        List<Notification> unreadNotifications = notificationService.getUnreadNotificationsForUserId(userId);
         return unreadNotifications.stream()
                 .map(NotificationDto::fromEntity)
                 .toList();
@@ -55,21 +50,11 @@ public class NotificationController {
 
     /**
      * 알림 읽음 처리
-     * 예: POST /notifications/9001/read?memberId=1
+     * 예: POST /notifications/{notificationId}/read
      */
     @PostMapping("/{notificationId}/read")
-    public void markAsRead(@RequestParam("memberId") Long memberId,
-                           @PathVariable Long notificationId) {
-        // 실제로는 "notification이 해당 member의 소유인지" 확인하는 로직 필요
-        notificationService.markAsRead(notificationId);
+    public void markAsRead(@PathVariable Long notificationId) {
+        String userId = securityUtil.getCurrentUserId();
+        notificationService.markAsReadForUser(notificationId, userId);
     }
-
-//    @GetMapping("/welcome")
-//    public String sendWelcome(@RequestParam("memberId") Long memberId) {
-//        Member member = memberRepository.findById(memberId)
-//                .orElseThrow(() -> new RuntimeException("Member not found: " + memberId));
-//        notificationService.sendWelcomeNotification(member);
-//        return "Welcome notification sent.";
-//    }
 }
-

@@ -19,7 +19,7 @@ public class NotificationDto {
         dto.setTitle(entity.getTitle());
         dto.setMessage(entity.getMessage());
         dto.setColor(entity.getColor());
-        dto.setRead(entity.getIsRead());
+        dto.setRead(entity.isRead());
         return dto;
     }
 }
