@@ -1,4 +1,4 @@
-package com.example.everguide.web.dto.notification;
+package com.example.everguide.web.dto.notificaton;
 
 import com.example.everguide.domain.Notification;
 import lombok.Getter;

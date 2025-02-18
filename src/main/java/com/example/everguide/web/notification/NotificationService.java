@@ -91,15 +91,19 @@ public class NotificationService {
         // Member의 생성일이 오늘이면 환영 알림 생성
         if (member.getCreatedDate() != null &&
                 member.getCreatedDate().toLocalDate().isEqual(LocalDate.now())) {
-            createNotification(
-                    member,
-                    NotifyType.WELCOME, // NotifyType에 WELCOME 타입이 정의되어 있어야 함
-                    "[환영합니다!]",
-                    "반가워요!! 이제부터 어떻게 everguide를 사용하면 좋을지 소개해 드릴게요:)",
-                    "BLACK", // 기본 색상(읽으면 GRAY로 변경)
-                    null,
-                    null
-            );
+            // 이미 환영 알림이 있는지 확인 (중복 발송 방지)
+            List<Notification> existing = notificationRepository.findByMemberAndType(member, NotifyType.WELCOME);
+            if (existing == null || existing.isEmpty()) {
+                createNotification(
+                        member,
+                        NotifyType.WELCOME,
+                        "[환영합니다!]",
+                        "반가워요!! 이제부터 어떻게 everguide를 사용하면 좋을지 소개해 드릴게요:)",
+                        "YELLOW", // 가입 인사 메시지는 노란색
+                        null,
+                        null
+                );
+            }
         }
     }
 }

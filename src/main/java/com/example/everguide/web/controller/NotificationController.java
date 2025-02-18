@@ -54,14 +54,15 @@
 //    }
 //}
 
-package com.example.everguide.web.notification;
+package com.example.everguide.web.controller;
 
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.Notification;
 //import com.example.everguide.web.notification.NotificationService;
 //import com.example.everguide.web.notification.dto.NotificationDto;
 import com.example.everguide.repository.MemberRepository;
-import com.example.everguide.web.notification.dto.NotificationDto;
+import com.example.everguide.web.notification.NotificationService;
+import com.example.everguide.web.dto.notificaton.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,5 +121,13 @@ public class NotificationController {
         // 실제로는 "notification이 해당 member의 소유인지" 확인하는 로직 필요
         notificationService.markAsRead(notificationId);
     }
+
+//    @GetMapping("/welcome")
+//    public String sendWelcome(@RequestParam("memberId") Long memberId) {
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new RuntimeException("Member not found: " + memberId));
+//        notificationService.sendWelcomeNotification(member);
+//        return "Welcome notification sent.";
+//    }
 }
 
