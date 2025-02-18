@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EducationRepository extends JpaRepository<Education, Long> {
-    Page<Education> findAllByOrderByEndDateAsc(Pageable pageable);
+    Slice<Education> findAllByOrderByEndDateAsc(Pageable pageable);
 }
