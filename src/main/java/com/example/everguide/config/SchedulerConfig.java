@@ -1,10 +1,21 @@
 package com.example.everguide.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import com.example.everguide.service.member.MemberCommandService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableScheduling
+@Component
+@RequiredArgsConstructor
+@Slf4j
 public class SchedulerConfig {
-    // 필요한 설정이 있다면 여기에 작성
+
+    private final MemberCommandService memberCommandService;
+
+    @Scheduled(cron = "0 0 0/1 * * ?")
+    public void run() {
+
+        memberCommandService.updateRedis();
+    }
 }

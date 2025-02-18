@@ -39,6 +39,25 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     testImplementation 'io.projectreactor:reactor-test'
 
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // 전화번호 인증
+    implementation 'net.nurigo:sdk:4.2.7'
+
+    // 이메일 인증
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     // JSON 관련 의존성 추가
     implementation 'org.json:json:20231013'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
@@ -49,15 +68,13 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    // OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
-    // Jackson XML 의존성 추가
-    //implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:Jackson2XmlDecoder2.15.2'
-
-    // JAXB 의존성 추가
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:4.0.2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'com.h2database:h2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {

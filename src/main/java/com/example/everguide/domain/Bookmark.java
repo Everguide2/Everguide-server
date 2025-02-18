@@ -1,6 +1,7 @@
 package com.example.everguide.domain;
 
 import com.example.everguide.domain.common.BaseEntity;
+
 import com.example.everguide.domain.enums.BookmarkType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,15 +21,14 @@ public class Bookmark extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 북마크 한 회원
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 북마크된 'Job'
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     private Job job;
+
 
     // 북마크된 'Education'
     @ManyToOne(fetch = FetchType.LAZY)
