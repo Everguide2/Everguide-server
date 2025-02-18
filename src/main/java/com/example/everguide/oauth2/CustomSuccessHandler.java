@@ -49,7 +49,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         redisUtils.setLocalRefreshToken(userId, refresh, 60000*60*24L);
 
         response.addCookie(createCookie("refresh", refresh));
-        response.sendRedirect("http://localhost:3000/cookie-to-header");
+        response.sendRedirect("http://localhost:5173/cookie-to-header");
     }
 
     private Cookie createCookie(String key, String value) {
