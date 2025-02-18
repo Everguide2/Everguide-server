@@ -8,11 +8,10 @@ import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.bookmark.BookmarkRequestDTO;
 import com.example.everguide.web.dto.bookmark.BookmarkResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +20,17 @@ public class BookmarkService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public List<BookmarkResponseDTO> getBookmarksByMemberId(Long memberId) {
-        return bookmarkRepository.findByMemberId(memberId).stream()
-                .map(BookmarkResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+    public Page<BookmarkResponseDTO> getBookmarksByMemberId(Long memberId, Pageable pageable) {
+        return bookmarkRepository.findByMemberId(memberId, pageable)
+                .map(BookmarkResponseDTO::fromEntity);
+    }
+
+
+    @Transactional(readOnly = true)
+    public BookmarkResponseDTO getBookmarkDetail(Long memberId, Long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findByIdAndMemberId(bookmarkId, memberId)
+                .orElseThrow(() -> new RuntimeException("해당 북마크를 찾을 수 없습니다."));
+        return BookmarkResponseDTO.fromEntity(bookmark);
     }
 
     @Transactional
