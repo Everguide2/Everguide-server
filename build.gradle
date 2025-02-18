@@ -69,7 +69,6 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     // OpenAPI
-//    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     annotationProcessor 'org.projectlombok:lombok'
