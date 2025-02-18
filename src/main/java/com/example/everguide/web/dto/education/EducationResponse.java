@@ -11,6 +11,22 @@ public class EducationResponse {
 
     @Getter
     @Builder
+    public static class NoLoginSearchEduByNameListDto {
+        List<SearchEduByNameDto> searchEduByNameDtoList;
+        Boolean hasMore; //다음 페이지 여부
+    }
+
+
+    @Getter
+    @Builder
+    public static class SearchEduByNameDto {
+        String name; // 교육이름
+        String companyName;//담당부서명
+        String dDay;
+    }
+
+    @Getter
+    @Builder
     public static class GetWorthToGoListDto {
         List<GetWorthToGoDto> educationList;
         Boolean hasMore;

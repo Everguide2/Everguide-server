@@ -2,11 +2,20 @@ package com.example.everguide.service.education;
 
 
 import com.example.everguide.domain.Education;
+import com.example.everguide.domain.Job;
 import com.example.everguide.web.dto.education.EducationResponse;
+import com.example.everguide.web.dto.job.JobResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
+
+@Service
+@RequiredArgsConstructor
 public class EducationMappingService {
     public static EducationResponse.GetWorthToGoListDto toGetWorthToGoResultDto(Slice<Education> educations) {
         List<EducationResponse.GetWorthToGoDto> educationList = educations.stream()
@@ -23,6 +32,29 @@ public class EducationMappingService {
                 build();
 
 
+    }
+    //로그인 안했을 때, 검색결과
+    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetJobListSearchByName(Slice<Education> educations) {
+        List<EducationResponse.SearchEduByNameDto> eduList = educations.stream()
+                .map(this::toNoLoginEduDto)
+                .collect(Collectors.toList());
+        return EducationResponse.NoLoginSearchEduByNameListDto.builder()
+                .searchEduByNameDtoList(eduList)
+                .hasMore(educations.hasNext()).build();
+    }
+    public EducationResponse.SearchEduByNameDto toNoLoginEduDto(Education education) {
+        return EducationResponse.SearchEduByNameDto.builder()
+                .name(education.getEduName())
+                .companyName(education.getCompanyName())
+                .dDay(calcDday(education.getEndDate())).build();
+
+    }
+
+    private static String calcDday(LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+        long daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(today, endDate);
+        // 날짜 차이가 0 미만이면 -1 반환, 그 외에는 남은 일수를 반환
+        return daysRemaining < 0 ? "-1" : String.valueOf(daysRemaining);
     }
 
 }
