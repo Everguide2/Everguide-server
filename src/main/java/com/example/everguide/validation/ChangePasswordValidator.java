@@ -1,6 +1,6 @@
 package com.example.everguide.validation;
 
-import com.example.everguide.web.dto.MemberRequest;
+import com.example.everguide.web.dto.member.MemberRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;

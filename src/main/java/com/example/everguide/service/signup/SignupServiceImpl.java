@@ -8,8 +8,9 @@ import com.example.everguide.domain.enums.Role;
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
-import com.example.everguide.web.dto.MemberRequest;
-import com.example.everguide.web.dto.MemberResponse;
+import com.example.everguide.web.dto.member.MemberResponse;
+import com.example.everguide.web.dto.signup.SignupRequest;
+import com.example.everguide.web.dto.signup.SignupResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
@@ -44,8 +45,8 @@ public class SignupServiceImpl implements SignupService {
     }
 
     @Override
-    public MemberResponse.AdditionalNotValidateDTO checkInfoEqual(HttpServletRequest request, HttpServletResponse response,
-                                                                  MemberRequest.SignupAdditionalDTO signupAdditionalDTO) {
+    public SignupResponse.AdditionalNotValidateDTO checkInfoEqual(HttpServletRequest request, HttpServletResponse response,
+                                                                  SignupRequest.SignupAdditionalDTO signupAdditionalDTO) {
 
         String authorization = request.getHeader("Authorization");
 
@@ -120,7 +121,7 @@ public class SignupServiceImpl implements SignupService {
             return null;
 
         } else {
-            return MemberResponse.AdditionalNotValidateDTO.builder()
+            return SignupResponse.AdditionalNotValidateDTO.builder()
                     .name(checkName)
                     .birth(checkBirth)
                     .phoneNumber(checkPhoneNumber)
@@ -132,7 +133,7 @@ public class SignupServiceImpl implements SignupService {
 
     @Override
     @Transactional
-    public boolean localSignUp(MemberRequest.SignupDTO signupDTO) {
+    public boolean localSignUp(SignupRequest.SignupDTO signupDTO) {
 
         String name = signupDTO.getName();
         String birth = signupDTO.getBirth();
@@ -201,7 +202,7 @@ public class SignupServiceImpl implements SignupService {
 
     @Override
     @Transactional
-    public MemberResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response) {
+    public SignupResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response) {
 
         String authorization = request.getHeader("Authorization");
 
@@ -230,7 +231,7 @@ public class SignupServiceImpl implements SignupService {
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
-        return MemberResponse.SignupAdditionalDTO.builder()
+        return SignupResponse.SignupAdditionalDTO.builder()
                 .name(member.getName())
                 .birth(member.getBirth())
                 .phoneNumber(member.getPhoneNumber())
@@ -242,7 +243,7 @@ public class SignupServiceImpl implements SignupService {
     @Transactional
     public boolean registerSignupAdditionalInfo(
             HttpServletRequest request, HttpServletResponse response,
-            MemberRequest.SignupAdditionalDTO signupAdditionalDTO) {
+            SignupRequest.SignupAdditionalDTO signupAdditionalDTO) {
 
         String authorization = request.getHeader("Authorization");
 

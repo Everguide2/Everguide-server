@@ -1,7 +1,8 @@
 package com.example.everguide.service.signup;
 
-import com.example.everguide.web.dto.MemberRequest;
-import com.example.everguide.web.dto.MemberResponse;
+import com.example.everguide.web.dto.member.MemberResponse;
+import com.example.everguide.web.dto.signup.SignupRequest;
+import com.example.everguide.web.dto.signup.SignupResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -9,11 +10,11 @@ public interface SignupService {
 
     Boolean checkEmailExist(String userId);
 
-    MemberResponse.AdditionalNotValidateDTO checkInfoEqual(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
+    SignupResponse.AdditionalNotValidateDTO checkInfoEqual(HttpServletRequest request, HttpServletResponse response, SignupRequest.SignupAdditionalDTO signupAdditionalDTO);
 
-    boolean localSignUp(MemberRequest.SignupDTO signupDTO);
+    boolean localSignUp(SignupRequest.SignupDTO signupDTO);
 
-    MemberResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response);
+    SignupResponse.SignupAdditionalDTO getSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response);
 
-    boolean registerSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response, MemberRequest.SignupAdditionalDTO signupAdditionalDTO);
+    boolean registerSignupAdditionalInfo(HttpServletRequest request, HttpServletResponse response, SignupRequest.SignupAdditionalDTO signupAdditionalDTO);
 }

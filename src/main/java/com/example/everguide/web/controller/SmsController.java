@@ -7,7 +7,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.service.sms.CoolSmsService;
-import com.example.everguide.web.dto.SmsRequest;
+import com.example.everguide.web.dto.sms.SmsRequest;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.FailedMessage;

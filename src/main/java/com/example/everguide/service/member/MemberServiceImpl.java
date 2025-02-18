@@ -10,10 +10,10 @@ import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.service.mail.MailService;
-import com.example.everguide.web.dto.MemberResponse;
+import com.example.everguide.web.dto.member.MemberResponse;
 import com.example.everguide.web.dto.auth.CustomOAuth2User;
 import com.example.everguide.web.dto.auth.CustomUserDetails;
-import com.example.everguide.web.dto.MemberRequest;
+import com.example.everguide.web.dto.member.MemberRequest;
 import com.example.everguide.web.dto.auth.OAuthToken;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -96,15 +96,16 @@ public class MemberServiceImpl implements MemberService {
 
         checkSmsVerify(phoneNumber);
 
-        List<Member> memberList = memberRepository.findByNameAndPhoneNumberAndProviderType(name, phoneNumber, ProviderType.LOCAL);
-        List<String> emailList = new ArrayList<>();
-        for (Member member : memberList) {
-            emailList.add(member.getEmail());
+        Member member = memberRepository.findByNameAndPhoneNumberAndProviderType(name, phoneNumber, ProviderType.LOCAL).orElse(null);
+
+        String email = null;
+        if (member != null) {
+            email = member.getEmail();
         }
 
         return MemberResponse.FindEmailDTO.builder()
                 .name(name)
-                .emailList(emailList)
+                .email(email)
                 .build();
     }
 

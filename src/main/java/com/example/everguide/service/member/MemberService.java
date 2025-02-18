@@ -1,7 +1,7 @@
 package com.example.everguide.service.member;
 
-import com.example.everguide.web.dto.MemberRequest;
-import com.example.everguide.web.dto.MemberResponse;
+import com.example.everguide.web.dto.member.MemberRequest;
+import com.example.everguide.web.dto.member.MemberResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 

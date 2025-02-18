@@ -8,8 +8,9 @@ import com.example.everguide.service.signup.SignupService;
 import com.example.everguide.service.validate.ValidateService;
 import com.example.everguide.validation.AdditionalInfoValidator;
 import com.example.everguide.validation.RegisterValidator;
-import com.example.everguide.web.dto.MemberRequest;
-import com.example.everguide.web.dto.MemberResponse;
+import com.example.everguide.web.dto.member.MemberResponse;
+import com.example.everguide.web.dto.signup.SignupRequest;
+import com.example.everguide.web.dto.signup.SignupResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,8 +40,8 @@ public class SignupController {
 
     // 일반 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<MemberResponse.SignupNotValidateDTO>> localSignup(
-            @RequestBody @Valid MemberRequest.SignupDTO signupDTO, BindingResult bindingResult
+    public ResponseEntity<ApiResponse<SignupResponse.SignupNotValidateDTO>> localSignup(
+            @RequestBody @Valid SignupRequest.SignupDTO signupDTO, BindingResult bindingResult
     ) {
 
         registerValidator.validate(signupDTO, bindingResult);
@@ -49,7 +50,7 @@ public class SignupController {
 
             Map<String, String> validatorResult = validateService.validateHandling(bindingResult);
 
-            MemberResponse.SignupNotValidateDTO signupNotValidateDTO = MemberResponse.SignupNotValidateDTO.builder()
+            SignupResponse.SignupNotValidateDTO signupNotValidateDTO = SignupResponse.SignupNotValidateDTO.builder()
                     .name(signupDTO.getName())
                     .birth(signupDTO.getBirth())
                     .phoneNumber(signupDTO.getPhoneNumber())
@@ -81,7 +82,7 @@ public class SignupController {
 
     // email 중복 확인
     @PostMapping("/signup/verify-email")
-    public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody MemberRequest.SignupEmailDTO signupEmailDTO) {
+    public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody SignupRequest.SignupEmailDTO signupEmailDTO) {
 
         String email = signupEmailDTO.getEmail();
         String userId = "LOCAL_" + email;
@@ -97,12 +98,12 @@ public class SignupController {
 
     // 소셜 회원가입 추가 정보 입력창
     @GetMapping("/signup/additional-info")
-    public ResponseEntity<ApiResponse<MemberResponse.SignupAdditionalDTO>> getSignupAdditionalInfo(
+    public ResponseEntity<ApiResponse<SignupResponse.SignupAdditionalDTO>> getSignupAdditionalInfo(
             HttpServletRequest request, HttpServletResponse response
     ) {
 
         try {
-            MemberResponse.SignupAdditionalDTO signupAdditionalDTO = signupService.getSignupAdditionalInfo(request, response);
+            SignupResponse.SignupAdditionalDTO signupAdditionalDTO = signupService.getSignupAdditionalInfo(request, response);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.onSuccess(SuccessStatus._OK, signupAdditionalDTO));
@@ -116,13 +117,13 @@ public class SignupController {
 
     // 소셜 회원가입 추가 정보 입력
     @PostMapping("/signup/additional-info")
-    public ResponseEntity<ApiResponse<MemberResponse.AdditionalNotValidateDTO>> registerSignupAdditionalInfo(
+    public ResponseEntity<ApiResponse<SignupResponse.AdditionalNotValidateDTO>> registerSignupAdditionalInfo(
             HttpServletRequest request, HttpServletResponse response,
-            @RequestBody @Valid MemberRequest.SignupAdditionalDTO signupAdditionalDTO,
+            @RequestBody @Valid SignupRequest.SignupAdditionalDTO signupAdditionalDTO,
             BindingResult bindingResult
     ) {
 
-        MemberResponse.AdditionalNotValidateDTO checkInfoEqual = signupService.checkInfoEqual(request, response, signupAdditionalDTO);
+        SignupResponse.AdditionalNotValidateDTO checkInfoEqual = signupService.checkInfoEqual(request, response, signupAdditionalDTO);
 
         if (checkInfoEqual != null) {
 
@@ -136,7 +137,7 @@ public class SignupController {
 
             Map<String, String> validatorResult = validateService.validateHandling(bindingResult);
 
-            MemberResponse.AdditionalNotValidateDTO additionalNotValidateDTO = MemberResponse.AdditionalNotValidateDTO.builder()
+            SignupResponse.AdditionalNotValidateDTO additionalNotValidateDTO = SignupResponse.AdditionalNotValidateDTO.builder()
                     .name(signupAdditionalDTO.getName())
                     .birth(LocalDate.parse(signupAdditionalDTO.getBirth(), DateTimeFormatter.BASIC_ISO_DATE))
                     .phoneNumber(signupAdditionalDTO.getPhoneNumber())
