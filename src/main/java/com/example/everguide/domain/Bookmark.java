@@ -25,6 +25,10 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    private Job job;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookmarkType type;

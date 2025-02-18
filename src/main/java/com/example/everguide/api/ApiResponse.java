@@ -3,6 +3,7 @@ package com.example.everguide.api;
 import com.example.everguide.api.code.BaseCode;
 import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
+import com.example.everguide.web.dto.job.JobResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -22,6 +23,7 @@ public class ApiResponse<T> {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result; // 응답 데이터
+
 
     @JsonProperty("isSuccess")
     public boolean isSuccess() {
