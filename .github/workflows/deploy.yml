@@ -19,8 +19,14 @@ jobs:
 
       - name: Make application.yml  # application.yml 파일 생성
         run: |
+          # mkdir -p src/main/resources
+          # echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
+          echo "=== Checking if application.yml was created ==="
+          ls -la src/main/resources/
+          echo "=== Checking application.yml content ==="
+          cat src/main/resources/application.yml
         shell: bash
 
       - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
