@@ -26,15 +26,17 @@ public class Education extends BaseEntity{
     private LocalDate endDate;// 강좌 종료일
     private String eduName;// 강좌명
     private String CompanyName;// 기관명 <- 더미데이터 기준, 실제이면 신청방법 들어갈 예정
+
+
     //
-//    private String consignment;                 // 위탁여부
-//    private String educationCenterName;         // 교육센터명
-//    private String organizationName;            // 기관명
-//    private String businessInformation;         // 사업내용
-//    private String educationTarget;             // 교육대상
-//    private Integer zipCode;                    // 우편번호
-//    private String location;                    // 소재지
-//    private String contact;                     // 연락처
-//    private String designatedPeriodStartDate;   // 지정기간시작일
-//    private LocalDate designatedPeriodEndDate;  // 지정기간종료일
+    private String consignment;                 // 위탁여부
+    private String educationCenterName;         // 교육센터명
+    private String organizationName;            // 기관명
+    private String businessInformation;         // 사업내용
+    private String educationTarget;             // 교육대상
+    private Integer zipCode;                    // 우편번호
+    private String location;                    // 소재지
+    private String contact;                     // 연락처
+    private String designatedPeriodStartDate;   // 지정기간시작일
+    private LocalDate designatedPeriodEndDate;  // 지정기간종료일
 }

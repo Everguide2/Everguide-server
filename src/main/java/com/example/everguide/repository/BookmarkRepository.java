@@ -23,7 +23,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     Page<Bookmark> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
     Optional<Bookmark> findByIdAndMemberId(Long bookmarkId, Long memberId);
-}
+
     Bookmark findOneByMember(Member member);
 
     Optional<Bookmark> findByMemberAndJob(Member member, Job job);
