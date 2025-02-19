@@ -90,7 +90,7 @@ public class RecommendServiceImpl implements RecommendService {
         String currentUserId = securityUtil.getCurrentUserId();
         Survey survey = surveyRepository.findByUserId(currentUserId);
 
-        String region = survey.getRegion().name();
+        String region = survey.getRegion().getDescription();
         Set<SupportType> supportTypes = survey.getSupportTypes();
         Set<HouseholdType> householdTypes = survey.getHouseholdTypes();
 
