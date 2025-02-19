@@ -111,6 +111,7 @@ public class RecommendServiceImpl implements RecommendService {
 
         return welfareServiceList.stream()
                 .map(welfareService -> RecommendResponse.RecommendDTO.builder()
+                        .id(welfareService.getId())
                         .servId(welfareService.getServiceId())
                         .servNm(welfareService.getServiceName()) // 서비스명
                         .aplyMtdNm(welfareService.getApplyMethod()) // 신청방법명

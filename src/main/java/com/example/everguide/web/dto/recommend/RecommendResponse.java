@@ -15,6 +15,7 @@ public class RecommendResponse {
     @AllArgsConstructor
     public static class RecommendDTO {
 
+        Long id;
         String servId;
         String servNm; // 서비스명
         String aplyMtdNm; // 신청방법명
