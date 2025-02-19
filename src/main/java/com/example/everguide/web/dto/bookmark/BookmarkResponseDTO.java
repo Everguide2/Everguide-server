@@ -24,7 +24,7 @@ public class BookmarkResponseDTO {
         if (bookmark.getJob() != null) {
             dto.setTitle(bookmark.getJob().getName()); // 기존 getTitle() → getName()
         } else if (bookmark.getEducation() != null) {
-            dto.setTitle(bookmark.getEducation().getEducationCenterName()); // 기존 getTitle() → getEducationCenterName()
+            dto.setTitle(bookmark.getEducation().getEduName()); // 기존 getTitle() → getEducationCenterName()
         }
 
         return dto;

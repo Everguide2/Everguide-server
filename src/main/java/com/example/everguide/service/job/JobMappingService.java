@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,8 +157,8 @@ public class JobMappingService {
                 .build();
     }
 
-
-    public JobResponse.JobDto toJobDto(Job job,Member member) {
+//---> 오류나면 여기 public으로 바꾸기
+    private JobResponse.JobDto toJobDto(Job job,Member member) {
         return JobResponse.JobDto.builder()
                 .jobId(job.getId())
                 .jobName(job.getName())

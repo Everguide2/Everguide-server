@@ -43,13 +43,18 @@ public enum ErrorStatus implements BaseErrorCode {
     _MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "존재하지 않는 멤버입니다"),
 
     //일자리 관련 에러
-    _JOB_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB4000" , "존재하지 않는 일자리 입니다."),
+    _JOB_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB4000" , "존재하지 않는 일자리입니다."),
     _THIS_WEEK_JOB_NOT_FOUND(HttpStatus.BAD_REQUEST, "JOB4001" , "이번주에 마감되는 일자리가 없습니다"),
 
     //북마크 관련 에러
     _JOB_BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "이미 북마크 처리 되었습니다."),
-    _JOB_BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "직업이 북마크 처리 되어 있지 않습니다.")
+    _JOB_BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "직업이 북마크 처리 되어 있지 않습니다."),
+    _EDUCATION_BOOKMARK_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "BOOKMARK4003", "이미 북마크 처리 되었습니다."),
+    _EDUCATION_BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4004", "교육이 북마크 처리 되어 있지 않습니다."),
 
+
+    //교육 관련
+    _EDUCATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "EDU4001", "존재하지 않는 교육입니다.")
     ;
 
     private final HttpStatus httpStatus;
