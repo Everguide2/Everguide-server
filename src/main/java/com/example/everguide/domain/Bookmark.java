@@ -30,12 +30,22 @@ public class Bookmark extends BaseEntity {
     private Job job;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "welfare_service_id")
+    private WelfareService welfareService;
+
     @JoinColumn(name = "education_id")
     private Education education;
-
-
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookmarkType type;
+
+    // 북마크 생성 메서드
+    public static Bookmark createWelfareBookmark(Member member, WelfareService welfareService) {
+        Bookmark bookmark = new Bookmark();
+        bookmark.setMember(member);
+        bookmark.setWelfareService(welfareService);
+        bookmark.setType(BookmarkType.WELFARE);
+        return bookmark;
+    }
 }
