@@ -33,6 +33,9 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "welfare_service_id")
     private WelfareService welfareService;
 
+    @JoinColumn(name = "education_id")
+    private Education education;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BookmarkType type;

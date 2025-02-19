@@ -1,4 +1,4 @@
-package com.example.everguide.web.dto;
+package com.example.everguide.web.dto.mail;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
