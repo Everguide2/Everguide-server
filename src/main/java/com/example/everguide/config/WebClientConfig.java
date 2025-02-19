@@ -22,7 +22,7 @@ public class WebClientConfig {
 
     private static final String WELFARE_API_BASE_URL = "https://apis.data.go.kr/B554287/LocalGovernmentWelfareInformations";
     private static final String JOB_API_BASE_URL = "https://apis.data.go.kr/B552474/SenuriService";
-
+    private static final String EDUCATION_API_BASE_URL = "https://apis.data.go.kr/B552474/EduInfoService";
     @Bean("welfareWebClient")
     public WebClient welfareWebClient() {
         return createWebClient(WELFARE_API_BASE_URL);
@@ -31,6 +31,10 @@ public class WebClientConfig {
     @Bean("jobWebClient")
     public WebClient jobWebClient() {
         return createWebClient(JOB_API_BASE_URL);
+    }
+    @Bean("educationWebClient")
+    public WebClient educationWebClient() {
+        return createWebClient(EDUCATION_API_BASE_URL);
     }
 
     private WebClient createWebClient(String baseUrl) {
