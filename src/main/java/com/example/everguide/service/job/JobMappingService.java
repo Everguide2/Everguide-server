@@ -51,7 +51,7 @@ public class JobMappingService {
 
 
 
-    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs) {
+    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
@@ -60,6 +60,9 @@ public class JobMappingService {
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
                 .count(jobList.size())
+                .regionList(regionList)
+                .sortBy(sortBy)
+                .isRecruiting(isRecruiting)
                 .build();
     }
 
@@ -147,13 +150,17 @@ public class JobMappingService {
     }
 
 
-    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member) {
+    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting) {
+
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
                 .count(jobList.size())
+                .regionList(regionList)
+                .sortBy(sortBy)
+                .isRecruiting(isRecruiting)
                 .build();
     }
 
