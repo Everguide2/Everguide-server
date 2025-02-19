@@ -42,8 +42,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -70,6 +68,7 @@ dependencies {
 
     // OpenAPI
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    // implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
