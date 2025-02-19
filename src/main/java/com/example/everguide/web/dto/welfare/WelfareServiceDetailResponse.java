@@ -20,15 +20,15 @@ public record WelfareServiceDetailResponse(
 ) {
     public static WelfareServiceDetailResponse of(WelfareService entity, boolean isBookmarked) {
         return new WelfareServiceDetailResponse(
-            entity.getServId(),
-            entity.getServNm(),
-            entity.getServDgst(),
-            entity.getServDtlLink(),
-            entity.getIntrsThemaNmArray(),
-            entity.getBizChrDeptNm(),
-            entity.getSggNm(),
-            entity.getAplyMtdNm(),
-            entity.getSrvPvsnNm(),
+            entity.getServiceId(),
+            entity.getServiceName(),
+            entity.getServiceDigest(),
+            entity.getServiceDetailLink(),
+            entity.getSupportTypes(),
+            entity.getChargeDepartment(),
+            entity.getRegionDetail(),
+            entity.getApplyMethod(),
+            entity.getProvisionType(),
             entity.getLastModYmd(),
             isBookmarked
         );

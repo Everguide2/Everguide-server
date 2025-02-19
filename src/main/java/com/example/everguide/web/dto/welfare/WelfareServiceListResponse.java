@@ -17,13 +17,13 @@ public record WelfareServiceListResponse(
 ) {
     public static WelfareServiceListResponse from(WelfareService entity) {
         return new WelfareServiceListResponse(
-            entity.getServId(),
-            entity.getServNm(),
-            entity.getIntrsThemaNmArray(),
-            entity.getBizChrDeptNm(),
-            entity.getSggNm(),
-            entity.getAplyMtdNm(),
-            entity.getSrvPvsnNm(),
+            entity.getServiceId(),
+            entity.getServiceName(),
+            entity.getSupportTypes(),
+            entity.getChargeDepartment(),
+            entity.getRegionDetail(),
+            entity.getApplyMethod(),
+            entity.getProvisionType(),
             entity.getLastModYmd()
         );
     }

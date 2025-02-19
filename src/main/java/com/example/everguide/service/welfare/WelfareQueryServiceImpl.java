@@ -1,6 +1,7 @@
 package com.example.everguide.service.welfare;
 
 import com.example.everguide.domain.WelfareService;
+import com.example.everguide.domain.enums.Region;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.repository.WelfareServiceRepository;
 import com.example.everguide.web.dto.welfare.WelfareServiceDetailResponse;
@@ -25,7 +26,7 @@ public class WelfareQueryServiceImpl implements WelfareQueryService {
         return welfareServiceRepository.searchWelfareServices(
             request.keyword(),
             request.intrsThemaNmArray(),
-            request.ctpvNm(),
+            Region.valueOf(request.ctpvNm()),
             request.lastModYmd(),
             pageable
         ).map(WelfareServiceListResponse::from);

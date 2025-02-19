@@ -1,6 +1,7 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.WelfareService;
+import com.example.everguide.domain.enums.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,43 +19,43 @@ public interface WelfareServiceRepository extends JpaRepository<WelfareService, 
     Optional<WelfareService> findById(Long id);
 
     @Query("SELECT w FROM WelfareService w " +
-           "WHERE (:ctpvNm IS NULL OR w.ctpvNm = :ctpvNm) " +
-           "AND (:sggNm IS NULL OR w.sggNm = :sggNm) " +
-           "AND (:intrsThemaNm IS NULL OR w.intrsThemaNmArray LIKE %:intrsThemaNm%) " +
-           "AND (:lifeNm IS NULL OR w.lifeNmArray LIKE %:lifeNm%) " +
-           "AND (:trgterIndvdlNm IS NULL OR w.trgterIndvdlNmArray LIKE %:trgterIndvdlNm%)")
+           "WHERE (:ctpvNm IS NULL OR w.region = :ctpvNm) " +
+           "AND (:sggNm IS NULL OR w.regionDetail = :sggNm) " +
+           "AND (:intrsThemaNm IS NULL OR w.supportTypes LIKE %:intrsThemaNm%) " +
+           "AND (:lifeNm IS NULL OR w.lifeCycle LIKE %:lifeNm%) " +
+           "AND (:trgterIndvdlNm IS NULL OR w.householdConditions LIKE %:trgterIndvdlNm%)")
     Page<WelfareService> findAllWithFilters(
-            @Param("ctpvNm") String ctpvNm,
+            @Param("ctpvNm") Region ctpvNm,
             @Param("sggNm") String sggNm,
             @Param("intrsThemaNm") String intrsThemaNm,
             @Param("lifeNm") String lifeNm,
             @Param("trgterIndvdlNm") String trgterIndvdlNm,
             Pageable pageable);
 
-    @Query("SELECT DISTINCT w.lifeNmArray FROM WelfareService w WHERE w.lifeNmArray IS NOT NULL")
+    @Query("SELECT DISTINCT w.lifeCycle FROM WelfareService w WHERE w.lifeCycle IS NOT NULL")
     List<String> findDistinctLifeNmArray();
 
-    @Query("SELECT DISTINCT w.trgterIndvdlNmArray FROM WelfareService w WHERE w.trgterIndvdlNmArray IS NOT NULL")
+    @Query("SELECT DISTINCT w.householdConditions FROM WelfareService w WHERE w.householdConditions IS NOT NULL")
     List<String> findDistinctTrgterIndvdlNmArray();
 
-    @Query("SELECT DISTINCT w.intrsThemaNmArray FROM WelfareService w WHERE w.intrsThemaNmArray IS NOT NULL")
+    @Query("SELECT DISTINCT w.supportTypes FROM WelfareService w WHERE w.supportTypes IS NOT NULL")
     List<String> findDistinctIntrsThemaNmArray();
 
-    @Query("SELECT DISTINCT w.ctpvNm FROM WelfareService w WHERE w.ctpvNm IS NOT NULL")
+    @Query("SELECT DISTINCT w.region FROM WelfareService w WHERE w.region IS NOT NULL")
     List<String> findDistinctCtpvNm();
 
-    @Query("SELECT DISTINCT w.sggNm FROM WelfareService w WHERE w.sggNm IS NOT NULL")
+    @Query("SELECT DISTINCT w.regionDetail FROM WelfareService w WHERE w.regionDetail IS NOT NULL")
     List<String> findDistinctSggNm();
 
     @Query("SELECT w FROM WelfareService w " +
-           "WHERE (:keyword = '' OR w.servNm LIKE %:keyword% OR w.servDgst LIKE %:keyword%) " +
-           "AND (:#{#intrsThemaNmArray.isEmpty()} = true OR w.intrsThemaNmArray IN :intrsThemaNmArray) " +
-           "AND (:ctpvNm = '' OR w.ctpvNm = :ctpvNm) " +
+           "WHERE (:keyword = '' OR w.serviceName LIKE %:keyword% OR w.serviceDigest LIKE %:keyword%) " +
+           "AND (:#{#intrsThemaNmArray.isEmpty()} = true OR w.supportTypes IN :intrsThemaNmArray) " +
+           "AND (:ctpvNm = null OR w.region = :ctpvNm) " +
            "AND (:lastModYmd = '' OR w.lastModYmd = :lastModYmd)")
     Page<WelfareService> searchWelfareServices(
         @Param("keyword") String keyword,
         @Param("intrsThemaNmArray") List<String> intrsThemaNmArray,
-        @Param("ctpvNm") String ctpvNm,
+        @Param("ctpvNm") Region ctpvNm,
         @Param("lastModYmd") String lastModYmd,
         Pageable pageable
     );
