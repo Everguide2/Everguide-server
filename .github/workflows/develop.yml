@@ -29,14 +29,17 @@ jobs:
         shell: bash
 
       - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
-        run: |
-          chmod +x gradlew
-          ./gradlew clean build -x test
+        run: chmod +x gradlew
+
+      - name: Generate QueryDSL Q classes
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean compileJava
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build -x test
 
       - name: Run tests
         uses: gradle/gradle-build-action@v2
