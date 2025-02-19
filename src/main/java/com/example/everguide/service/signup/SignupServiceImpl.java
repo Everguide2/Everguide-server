@@ -11,6 +11,7 @@ import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.member.MemberResponse;
 import com.example.everguide.web.dto.signup.SignupRequest;
 import com.example.everguide.web.dto.signup.SignupResponse;
+import com.example.everguide.web.notification.NotificationService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
@@ -31,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 public class SignupServiceImpl implements SignupService {
 
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -160,6 +162,8 @@ public class SignupServiceImpl implements SignupService {
                 .build();
 
         memberRepository.save(member);
+
+        notificationService.sendWelcomeNotification(member);
 
         return true;
     }
