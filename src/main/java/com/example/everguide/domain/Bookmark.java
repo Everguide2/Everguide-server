@@ -1,6 +1,7 @@
 package com.example.everguide.domain;
 
 import com.example.everguide.domain.common.BaseEntity;
+
 import com.example.everguide.domain.enums.BookmarkType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,8 @@ public class Bookmark extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "education_id")
     private Education education;
+
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

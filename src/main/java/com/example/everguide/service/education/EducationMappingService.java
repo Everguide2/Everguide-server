@@ -1,10 +1,11 @@
 package com.example.everguide.service.education;
 
 
+import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
+import com.example.everguide.domain.Member;
+import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.web.dto.education.EducationResponse;
-import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,30 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EducationMappingService {
+    private final BookmarkRepository bookmarkRepository;
+
+
+    public static EducationResponse.deleteEduBookmarkResultDto toDeleteEduBookmarkResultDto(Long educationId) {
+        return EducationResponse.deleteEduBookmarkResultDto.builder()
+                .educationId(educationId)
+                .build();
+    }
+
+    public static EducationResponse.addEduBookmarkResultDto toAddEduBookMarkResponseResultDto(Bookmark bookmark) {
+        return EducationResponse.addEduBookmarkResultDto.builder()
+                .memberId(bookmark.getMember().getId())
+                .educationId(bookmark.getEducation().getId())
+                .bookmarkType(bookmark.getType().name())
+                .build();
+    }
+
+
+
     public static EducationResponse.GetWorthToGoListDto toGetWorthToGoResultDto(Slice<Education> educations) {
         List<EducationResponse.GetWorthToGoDto> educationList = educations.stream()
                 .map(education ->
                         EducationResponse.GetWorthToGoDto.builder()
+                                .educationId(education.getId())
                                 .CompanyName(education.getCompanyName())
                                 .eduName(education.getEduName())
                                 .startDate(String.valueOf(education.getStartDate()))
@@ -34,7 +55,7 @@ public class EducationMappingService {
 
     }
     //로그인 안했을 때, 검색결과
-    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetJobListSearchByName(Slice<Education> educations) {
+    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetEduListSearchByName(Slice<Education> educations) {
         List<EducationResponse.SearchEduByNameDto> eduList = educations.stream()
                 .map(this::toNoLoginEduDto)
                 .collect(Collectors.toList());
@@ -44,6 +65,7 @@ public class EducationMappingService {
     }
     public EducationResponse.SearchEduByNameDto toNoLoginEduDto(Education education) {
         return EducationResponse.SearchEduByNameDto.builder()
+                .educationId(education.getId())
                 .name(education.getEduName())
                 .companyName(education.getCompanyName())
                 .dDay(calcDday(education.getEndDate())).build();
@@ -55,6 +77,27 @@ public class EducationMappingService {
         long daysRemaining = java.time.temporal.ChronoUnit.DAYS.between(today, endDate);
         // 날짜 차이가 0 미만이면 -1 반환, 그 외에는 남은 일수를 반환
         return daysRemaining < 0 ? "-1" : String.valueOf(daysRemaining);
+    }
+
+
+    public EducationResponse.getRecommendEducationResultDto toGetRecommendEducationResultDto(List<Education> educationList, Member member) {
+        List<EducationResponse.recommendEducationDetailDto> recommendEduList = educationList.stream()
+                .map(education -> this.toRecommendEduDetail(education, member))
+                .collect(Collectors.toList());
+
+        return EducationResponse.getRecommendEducationResultDto.builder()
+                .educationList(recommendEduList)
+                .build();
+    }
+
+    private EducationResponse.recommendEducationDetailDto toRecommendEduDetail(Education education, Member member) {
+        return EducationResponse.recommendEducationDetailDto.builder()
+                .educationId(education.getId())
+                .name(education.getEduName())
+                .companyName(education.getCompanyName())
+                .dDay(calcDday(education.getEndDate()))
+                .isBookMarked(bookmarkRepository.existsByEducationAndMember(education, member))
+                .build();
     }
 
 }
