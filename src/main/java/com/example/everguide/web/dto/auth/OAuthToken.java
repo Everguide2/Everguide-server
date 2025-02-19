@@ -1,4 +1,4 @@
-package com.example.everguide.web.dto.oauth;
+package com.example.everguide.web.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

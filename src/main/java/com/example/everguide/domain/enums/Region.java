@@ -26,6 +26,8 @@ public enum Region {
 
     private final String description;
 
+
+
     public static Region fromString(String text) {
         for (Region region : Region.values()) {
             if (region.getDescription().equals(text)) {

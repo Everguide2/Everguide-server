@@ -3,6 +3,8 @@ package com.example.everguide.repository;
 import com.example.everguide.domain.Bookmark;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.example.everguide.domain.Job;
+import com.example.everguide.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +24,9 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     Optional<Bookmark> findByIdAndMemberId(Long bookmarkId, Long memberId);
 }
+    Bookmark findOneByMember(Member member);
 
+    Optional<Bookmark> findByMemberAndJob(Member member, Job job);
+
+    Boolean existsByJobAndMember(Job job, Member member);
+}

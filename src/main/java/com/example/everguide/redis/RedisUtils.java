@@ -93,10 +93,10 @@ public class RedisUtils {
 
     public String getLocalRefreshToken(String userId){
 
-        Optional<LocalRefreshToken> redisTokenOptional = localRefreshTokenRepository.findByUserId(userId);
+        LocalRefreshToken redisToken = localRefreshTokenRepository.findByUserId(userId).orElse(null);
 
-        if (redisTokenOptional.isPresent()){
-            return redisTokenOptional.get().getRefreshToken();
+        if (redisToken != null){
+            return redisToken.getRefreshToken();
         } else {
             return null;
         }

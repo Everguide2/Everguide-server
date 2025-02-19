@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,7 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByUserId(String userId);
 
-    List<Member> findByNameAndPhoneNumberAndProviderType(String name, String phoneNumber, ProviderType providerType);
+    Optional<Member> findByNameAndPhoneNumberAndProviderType(String name, String phoneNumber, ProviderType providerType);
 
     Optional<Member> findByEmailAndNameAndPhoneNumberAndProviderType(String email, String name, String phoneNumber, ProviderType providerType);
 
@@ -31,4 +30,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("UPDATE Member m SET m.password = :newPassword WHERE m.userId = :userId")
     int updatePasswordByUserId(@Param("userId") String userId, @Param("newPassword") String newPassword);
+
 }
