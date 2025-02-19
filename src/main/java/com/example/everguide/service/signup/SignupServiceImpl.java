@@ -146,7 +146,7 @@ public class SignupServiceImpl implements SignupService {
 
         checkPhoneNumberDuplicate(phoneNumber);
 
-//        checkSmsVerify(phoneNumber);
+        checkSmsVerify(phoneNumber);
 
         Member member = Member.builder()
                 .name(name)
