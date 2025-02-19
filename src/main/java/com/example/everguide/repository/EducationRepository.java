@@ -1,6 +1,7 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.Education;
+import com.example.everguide.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,4 +25,5 @@ public interface EducationRepository extends JpaRepository<Education, Long> , Cu
             "WHERE e.educationKey1 IN :key1List AND e.educationKey2 IN :key2List")
     Set<String> findDuplicateEducationKeyList(@Param("key1List") List<String> educationKey1List,
                                               @Param("key2List") List<String> educationKey2List);
+
 }

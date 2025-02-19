@@ -50,4 +50,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     Optional<Bookmark> findByMemberAndEducation(Member member, Education education);
 
     Boolean existsByEducationAndMember(Education education, Member member);
+
 }

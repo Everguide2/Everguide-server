@@ -88,7 +88,14 @@ public class EducationService {
         return educationMappingService.toGetRecommendEducationResultDto(random6Educations, member);
 
     }
+    @Transactional(readOnly = true)
+    public Boolean isBookMarked(Long educationId) {
+        //멤버 조회
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        // 일자리 조회
+        Education education = educationRepository.findById(educationId).orElseThrow(() -> new GeneralException(ErrorStatus._EDUCATION_NOT_FOUND));
+        return bookmarkRepository.existsByEducationAndMember(education, member);
+    }
 
-
-    ///메ㅑ
 }

@@ -1,5 +1,6 @@
 package com.example.everguide.web.dto.job;
 
+import com.example.everguide.domain.enums.Region;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,6 +30,9 @@ public class JobResponse {
     public static class GetJobList {
         Integer count; //일자리 수
         List<JobDto> jobDtoList;
+        List<Region> regionList;
+        Boolean isRecruiting;
+        String sortBy; // 정렬 조건
     }
     @Getter
     @Builder
