@@ -47,8 +47,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     @Query("SELECT b FROM Bookmark b WHERE b.member = :member AND b.type = 'WELFARE'")
     List<Bookmark> findWelfareBookmarksByMember(@Param("member") Member member);
 
-    boolean existsByJobAndMember(Job job, Member member);
-
     Optional<Bookmark> findByMemberAndEducation(Member member, Education education);
 
     Boolean existsByEducationAndMember(Education education, Member member);
