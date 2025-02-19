@@ -18,17 +18,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Make application.yml
+      - name: Make application.yml  # application.yml 파일 생성
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" | base64 --decode > src/main/resources/application.yml
@@ -38,13 +28,18 @@ jobs:
           cat src/main/resources/application.yml
         shell: bash
 
-      - name: Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
         run: chmod +x gradlew
+
+      - name: Generate QueryDSL Q classes
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean compileJava
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build -x test
 
       - name: Run tests
         uses: gradle/gradle-build-action@v2

@@ -38,7 +38,6 @@ public class JobDataService {
     private static final String API_ENDPOINT = "/getJobList";
     private static final String JOBDETAIL_API_ENDPOINT = "/getJobInfo";
 
-    //일자리 리스트 조회
     @Transactional
     // 외부 API 호출 → DTO 매핑 → Entity 변환 및 DB 저장 과정을 수행
     public Mono<List<Job>> fetchAndSaveJobData() {

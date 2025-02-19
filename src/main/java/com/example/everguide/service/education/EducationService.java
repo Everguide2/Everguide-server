@@ -88,4 +88,7 @@ public class EducationService {
         return educationMappingService.toGetRecommendEducationResultDto(random6Educations, member);
 
     }
+
+
+    ///메ㅑ
 }

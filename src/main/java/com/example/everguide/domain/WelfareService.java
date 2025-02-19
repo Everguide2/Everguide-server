@@ -1,5 +1,6 @@
 package com.example.everguide.domain;
 
+import com.example.everguide.domain.enums.Region;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,48 +14,51 @@ import lombok.Setter;
 public class WelfareService {
 
     @Id
-    @Column(name = "serv_id", nullable = false)
-    private String servId;      // 정책 API의 서비스 ID (기본키)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "serv_nm", length = 500)
-    private String servNm;
+    @Column(name = "service_id", nullable = false)
+    private String serviceId;      // servId 정책 API의 서비스 ID (기본키)
 
-    @Column(name = "serv_dgst", length = 1000)
-    private String servDgst;
+    @Column(name = "service_name", length = 500)
+    private String serviceName; // servNm 서비스명
 
-    @Column(name = "serv_dtl_link", length = 500)
-    private String servDtlLink;
+    @Column(name = "service_digest", length = 1000)
+    private String serviceDigest; // servDgst 서비스 요약
 
-    @Column(name = "aply_mtd_nm", length = 500)
-    private String aplyMtdNm;
+    @Column(name = "service_detail_link", length = 500)
+    private String serviceDetailLink; // servDtlLink 서비스 상세 링크
 
-    @Column(name = "biz_chr_dept_nm", length = 200)
-    private String bizChrDeptNm;
+    @Column(name = "apply_method", length = 500)
+    private String applyMethod; // aplyMtdNm 신청방법명 다중
 
-    @Column(name = "ctpv_nm", length = 100)
-    private String ctpvNm;
+    @Column(name = "charge_department", length = 200)
+    private String chargeDepartment; // bizChrDeptNm 사업담당부서명
 
-    @Column(name = "inq_num")
-    private int inqNum;
+    @Column(name = "region", length = 100)
+    private String region; // ctpvNm 시도명
 
-    @Column(name = "intrs_thema_nm_array", length = 500)
-    private String intrsThemaNmArray;
+    @Column(name = "hits")
+    private int hits; // inqNum 조회수
+
+    @Column(name = "support_types", length = 500)
+    private String supportTypes; // intrsThemaNmArray 관심주제명 다중
 
     @Column(name = "last_mod_ymd", length = 8)
-    private String lastModYmd;
+    private String lastModYmd; // lastModYmd 최종수정일자
 
-    @Column(name = "life_nm_array", length = 500)
-    private String lifeNmArray;
+    @Column(name = "life_cycle", length = 500)
+    private String lifeCycle; // lifeNmArray 생애주기명 다중
 
-    @Column(name = "sprt_cyc_nm", length = 100)
-    private String sprtCycNm;
+    @Column(name = "support_cycle", length = 100)
+    private String supportCycle; // sprtCycNm 지원주기명
 
-    @Column(name = "srv_pvsn_nm", length = 200)
-    private String srvPvsnNm;
+    @Column(name = "provision_type", length = 200)
+    private String provisionType; // srvPvsnNm 제공유형명 다중
 
-    @Column(name = "trgter_indvdl_nm_array", length = 500)
-    private String trgterIndvdlNmArray;
+    @Column(name = "household_conditions", length = 500)
+    private String householdConditions; // trgterIndvdlNmArray 가구상황명 다중
 
-    @Column(name = "sgg_nm", length = 100)
-    private String sggNm;
+    @Column(name = "region_detail", length = 100)
+    private String regionDetail; // sggNm 시군구명
 }

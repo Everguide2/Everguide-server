@@ -1,5 +1,6 @@
 package com.example.everguide.web.dto.job;
 
+import com.example.everguide.domain.Education;
 import jakarta.xml.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -57,7 +57,7 @@ public class JobController {
     }
     // 로그인 안했을 때, 검색 기능
     @GetMapping("/jobs/getJobListSearchByName")
-    public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
+    public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> noLoginGetJobListSearchByName(@RequestParam(value = "name") String name,
                                                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                                          @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
                                                                          ) {
@@ -82,10 +82,8 @@ public class JobController {
 
     @GetMapping("member/jobs/getJobListSearchByName")
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
-                                                                                                  @RequestParam(value = "memberId") Long memberId,
                                                                                                   @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
-    ) {
+                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.SearchJobListByName(name, pageable)));
