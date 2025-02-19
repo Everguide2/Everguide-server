@@ -33,6 +33,7 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "welfare_service_id")
     private WelfareService welfareService;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "education_id")
     private Education education;
 
