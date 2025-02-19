@@ -19,7 +19,7 @@ public class EducationResponse {
     public static class recommendEducationDetailDto {
         Long educationId;
         String name; // 교육이름
-        String companyName;//담당부서명
+        String howTo;// 신청방법
         String dDay;
         Boolean isBookMarked;
     }
@@ -54,7 +54,7 @@ public class EducationResponse {
     public static class SearchEduByNameDto {
         Long educationId;
         String name; // 교육이름
-        String companyName;//담당부서명
+        String howTo;// 신청방법
         String dDay;
     }
 
@@ -74,6 +74,23 @@ public class EducationResponse {
         String startDate;// 강좌 시작일
         String endDate;// 강좌 종료일
         String eduName;// 강좌명
-        String CompanyName;// 기관명 <- 더미데이터 기준, 실제이면 신청방법 들어갈 예정
+        String howTo;// 신청방법
+    }
+
+
+    @Getter
+    @Builder
+    public static class GetEduDetailDto {
+        String applyStartDate; //접수 시작일	acptFrDd
+        String applyEndDate; //접수 종료일	acptToDd
+        String region;//지역	citiprovNo
+        String detailContent; //상세내용	cnts
+        String eduStartDate; //강좌시작일	lctreFrDd
+        String eduName; //강좌명	lctreNm
+        String eduHour;//교육시간	lctreTm
+        String eduEndDate;//강좌종료일	lctreToDd
+        String price;//참가비	partcptAmt
+        String howTo;//신청방법	reqMthd
+
     }
 }

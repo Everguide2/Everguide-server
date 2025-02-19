@@ -1,16 +1,17 @@
 package com.example.everguide.service.education;
 
 
-import com.example.everguide.domain.Bookmark;
-import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Member;
+import com.example.everguide.domain.*;
 import com.example.everguide.repository.BookmarkRepository;
+import com.example.everguide.web.dto.education.EducationItemDetail;
 import com.example.everguide.web.dto.education.EducationResponse;
+import com.example.everguide.web.dto.education.EducationItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,21 @@ import java.util.stream.Collectors;
 public class EducationMappingService {
     private final BookmarkRepository bookmarkRepository;
 
+    public static EducationResponse.GetEduDetailDto convertToDetailEduDetailDto(EducationItemDetail educationItem) {
+        return EducationResponse.GetEduDetailDto.builder()
+                .applyStartDate(educationItem.getAcptFrDd())
+                .applyEndDate(educationItem.getAcptToDd())
+                .region(educationItem.getCitiprovNo())
+                .detailContent(educationItem.getCnts())
+                .eduStartDate(educationItem.getLctreFrDd())
+                .eduName(educationItem.getLctreNm())
+                .eduHour(educationItem.getLctreTm())
+                .eduEndDate(educationItem.getLctreToDd())
+                .price(educationItem.getPartcptAmt())
+                .howTo(educationItem.getReqMthd()).build();
+
+
+    }
 
     public static EducationResponse.deleteEduBookmarkResultDto toDeleteEduBookmarkResultDto(Long educationId) {
         return EducationResponse.deleteEduBookmarkResultDto.builder()
@@ -42,7 +58,7 @@ public class EducationMappingService {
                 .map(education ->
                         EducationResponse.GetWorthToGoDto.builder()
                                 .educationId(education.getId())
-                                .CompanyName(education.getCompanyName())
+                                .howTo(education.getHowTo())
                                 .eduName(education.getEduName())
                                 .startDate(String.valueOf(education.getStartDate()))
                                 .endDate(String.valueOf(education.getEndDate()))
@@ -67,7 +83,7 @@ public class EducationMappingService {
         return EducationResponse.SearchEduByNameDto.builder()
                 .educationId(education.getId())
                 .name(education.getEduName())
-                .companyName(education.getCompanyName())
+                .howTo(education.getHowTo())
                 .dDay(calcDday(education.getEndDate())).build();
 
     }
@@ -94,10 +110,33 @@ public class EducationMappingService {
         return EducationResponse.recommendEducationDetailDto.builder()
                 .educationId(education.getId())
                 .name(education.getEduName())
-                .companyName(education.getCompanyName())
+                .howTo(education.getHowTo())
                 .dDay(calcDday(education.getEndDate()))
                 .isBookMarked(bookmarkRepository.existsByEducationAndMember(education, member))
                 .build();
     }
 
+
+    //xml 결과를 엔티티 리스트로 변환
+    public List<Education> convert(List<EducationItem> educationLists) {
+        return educationLists.stream()
+                .map(this::mapToEntity)
+                .collect(Collectors.toList());
+    }
+
+    // xml item을 job 엔티티로 변환
+    private Education mapToEntity(EducationItem dto) {
+        return Education.builder()
+                .educationKey1(dto.getEduCrseNo())
+                .educationKey2(dto.getLctreNo())
+                .startDate(stringToDate(dto.getLctreFrDd()))
+                .endDate(stringToDate(dto.getLctreToDd()))
+                .eduName(dto.getLctreNm())
+                .howTo(dto.getReqMthd())
+                .build();
+    }
+    private LocalDate stringToDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        return LocalDate.parse(date, formatter);
+    }
 }
