@@ -12,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @DynamicUpdate
 @DynamicInsert
@@ -28,7 +29,7 @@ public class Survey extends BaseEntity {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    private SurveyTarget target; // SELF, FAMILY, ELDERLY
+    private SurveyTarget surveyTarget; // SELF, FAMILY, ELDERLY
 
     @Enumerated(EnumType.STRING)
     private Region region;
@@ -43,19 +44,4 @@ public class Survey extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DisabilityGrade disabilityGrade; // 장애 등급
-
-    private boolean livingAlone;
-
-    @Enumerated(EnumType.STRING)
-    private FamilyDistance familyDistance;
-
-    @Enumerated(EnumType.STRING)
-    private IncomeSupport incomeSupports; // 수입, 지원 여부
-
-    @Enumerated(EnumType.STRING)
-    private WelfareStatus welfareStatus; // 기초생활수급자, 차상위계층 상태
-
-    @Enumerated(EnumType.STRING)
-    private DeviceUsage deviceUsage;
-
 }

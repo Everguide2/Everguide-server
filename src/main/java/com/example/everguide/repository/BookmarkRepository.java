@@ -40,7 +40,7 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Bookmark b WHERE b.member = :member AND b.welfareService = :welfareService")
     boolean existsByMemberAndWelfareService(@Param("member") Member member, @Param("welfareService") WelfareService welfareService);
 
-    @Query("SELECT COUNT(b) > 0 FROM Bookmark b WHERE b.member.id = :memberId AND b.welfareService.servId = :welfareServiceId")
+    @Query("SELECT COUNT(b) > 0 FROM Bookmark b WHERE b.member.id = :memberId AND b.welfareService.serviceId = :welfareServiceId")
     boolean existsByMemberIdAndWelfareServiceId(@Param("memberId") Long memberId, @Param("welfareServiceId") String welfareServiceId);
 
     // 회원의 복지 서비스 북마크 목록 조회
