@@ -23,7 +23,7 @@ public class WelfareService {
     @Column(name = "service_name", length = 500)
     private String serviceName; // servNm 서비스명
 
-    @Column(name = "service_Digest", length = 1000)
+    @Column(name = "service_digest", length = 1000)
     private String serviceDigest; // servDgst 서비스 요약
 
     @Column(name = "service_detail_link", length = 500)
@@ -36,7 +36,7 @@ public class WelfareService {
     private String chargeDepartment; // bizChrDeptNm 사업담당부서명
 
     @Column(name = "region", length = 100)
-    private String region; // ctpvNm 시도명
+    private Region region; // ctpvNm 시도명
 
     @Column(name = "hits")
     private int hits; // inqNum 조회수
