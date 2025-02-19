@@ -1,7 +1,7 @@
 package com.example.everguide.service.welfare;
 
-
 import com.example.everguide.domain.WelfareService;
+import com.example.everguide.domain.enums.Region;
 import com.example.everguide.web.dto.welfare.ServList;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +20,21 @@ public class WelfareMappingService {
 
     private WelfareService mapToEntity(ServList dto) {
         WelfareService entity = new WelfareService();
-        entity.setServId(dto.getServId());
-        entity.setServNm(dto.getServNm());
-        entity.setServDgst(dto.getServDgst());
-        entity.setServDtlLink(dto.getServDtlLink());
-        entity.setAplyMtdNm(dto.getAplyMtdNm());
-        entity.setBizChrDeptNm(dto.getBizChrDeptNm());
-        entity.setCtpvNm(dto.getCtpvNm());
-        entity.setSggNm(dto.getSggNm());
-        entity.setInqNum(dto.getInqNum());
-        entity.setIntrsThemaNmArray(dto.getIntrsThemaNmArray());
+        entity.setServiceId(dto.getServId());
+        entity.setServiceName(dto.getServNm());
+        entity.setServiceDigest(dto.getServDgst());
+        entity.setServiceDetailLink(dto.getServDtlLink());
+        entity.setApplyMethod(dto.getAplyMtdNm());
+        entity.setChargeDepartment(dto.getBizChrDeptNm());
+        entity.setRegion(Region.fromString(dto.getCtpvNm()));
+        entity.setRegionDetail(dto.getSggNm());
+        entity.setHits(dto.getInqNum());
+        entity.setSupportTypes(dto.getIntrsThemaNmArray());
         entity.setLastModYmd(dto.getLastModYmd());
-        entity.setLifeNmArray(dto.getLifeNmArray());
-        entity.setSprtCycNm(dto.getSprtCycNm());
-        entity.setSrvPvsnNm(dto.getSrvPvsnNm());
-        entity.setTrgterIndvdlNmArray(dto.getTrgterIndvdlNmArray());
+        entity.setLifeCycle(dto.getLifeNmArray());
+        entity.setSupportCycle(dto.getSprtCycNm());
+        entity.setProvisionType(dto.getSrvPvsnNm());
+        entity.setHouseholdConditions(dto.getTrgterIndvdlNmArray());
         return entity;
     }
 }

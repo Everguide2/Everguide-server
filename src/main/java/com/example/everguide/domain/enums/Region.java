@@ -18,7 +18,7 @@ public enum Region {
     GANGWON("강원도"),
     CHUNGBUK("충청북도"),
     CHUNGNAM("충청남도"),
-    JEONBUK("전라북도"),
+    JEONBUK("전북특별자치도"),
     JEONNAM("전라남도"),
     GYEONGBUK("경상북도"),
     GYEONGNAM("경상남도"),

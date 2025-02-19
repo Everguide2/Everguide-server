@@ -17,7 +17,7 @@ public enum SupportType {
     PREGNANCY_CHILDBIRTH("080", "임신·출산"),
     CHILDCARE("090", "보육"),
     EDUCATION("100", "교육"),
-    MEDICAL_TREATMENT("110", "입양·위탁"),
+    ADOPT_POSTER("110", "입양·위탁"),
     PROTECTION_CARE("120", "보호·돌봄"),
     FINANCE("130", "서민금융"),
     LEGAL("140", "법률");

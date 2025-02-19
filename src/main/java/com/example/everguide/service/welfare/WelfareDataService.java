@@ -38,7 +38,7 @@ public class WelfareDataService {
                 .uri(uriBuilder -> uriBuilder
                         .path(API_ENDPOINT)
                         .queryParam("serviceKey", serviceKey)
-                        .queryParam("numOfRows", 20)
+                        .queryParam("numOfRows", 500)
                         .queryParam("pageNo",1)
                         .build())
                 .accept(MediaType.APPLICATION_XML)
