@@ -7,7 +7,7 @@ import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.domain.enums.Role;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
-import com.example.everguide.web.dto.oauth.*;
+import com.example.everguide.web.dto.auth.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

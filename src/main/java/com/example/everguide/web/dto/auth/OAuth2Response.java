@@ -1,4 +1,4 @@
-package com.example.everguide.web.dto.oauth;
+package com.example.everguide.web.dto.auth;
 
 import com.example.everguide.domain.enums.ProviderType;
 

@@ -1,16 +1,17 @@
-package com.example.everguide.web.dto.oauth;
+package com.example.everguide.web.dto.auth;
 
 import com.example.everguide.domain.enums.ProviderType;
 
 import java.util.Map;
 
-public class NaverResponse implements OAuth2Response {
+public class KakaoResponse implements OAuth2Response {
 
     private final Map<String, Object> attribute;
 
-    public NaverResponse(Map<String, Object> attribute) {
+    public KakaoResponse(Map<String, Object> attribute) {
 
-        this.attribute = (Map<String, Object>) attribute.get("response");
+        this.attribute = (Map<String, Object>) attribute.get("kakao_account");
+        this.attribute.put("id", attribute.get("id"));
     }
 
     @Override
@@ -46,11 +47,11 @@ public class NaverResponse implements OAuth2Response {
     @Override
     public String getPhoneNumber() {
 
-        if (!attribute.containsKey("mobile")) {
+        if (!attribute.containsKey("phone_number")) {
             return null;
         }
 
-        return attribute.get("mobile").toString();
+        return attribute.get("phone_number").toString();
     }
 
     @Override
@@ -66,7 +67,7 @@ public class NaverResponse implements OAuth2Response {
     @Override
     public ProviderType getProviderType() {
 
-        return ProviderType.NAVER;
+        return ProviderType.KAKAO;
     }
 
     @Override
