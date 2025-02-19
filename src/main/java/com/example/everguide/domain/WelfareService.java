@@ -61,4 +61,7 @@ public class WelfareService {
 
     @Column(name = "region_detail", length = 100)
     private String regionDetail; // sggNm 시군구명
+
+    @Column(name = "region_category", length = 100)
+    private String regionCategory;
 }
