@@ -4,7 +4,6 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.GeneralException;
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
 import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.BookmarkType;
 import com.example.everguide.jwt.SecurityUtil;
@@ -13,14 +12,14 @@ import com.example.everguide.repository.EducationRepository;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.education.EducationRequest;
 import com.example.everguide.web.dto.education.EducationResponse;
-import com.example.everguide.web.dto.job.JobRequest;
-import com.example.everguide.web.dto.job.JobResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,6 @@ public class EducationService {
     private final BookmarkRepository bookmarkRepository;
 
 
-
     @Transactional(readOnly = true)
     public Slice<Education> getWorthToGoList(Pageable pageable) {
         return educationRepository.findAllByOrderByEndDateAsc(pageable);
@@ -40,7 +38,7 @@ public class EducationService {
 
     @Transactional(readOnly = true)
     public EducationResponse.NoLoginSearchEduByNameListDto noLoginSearchEduListByName(String keyword, Pageable pageable) {
-        return educationMappingService.toNoLoginGetJobListSearchByName(educationRepository.searchEduListByName(keyword, pageable));
+        return educationMappingService.toNoLoginGetEduListSearchByName(educationRepository.searchEduListByName(keyword, pageable));
     }
 
 
@@ -64,7 +62,7 @@ public class EducationService {
     }
 
     @Transactional
-    public Long deleteJobBookmark(EducationRequest.deleteEduBookmarkDto request) {
+    public Long deleteEduBookmark(EducationRequest.deleteEduBookmarkDto request) {
 
         String userId = securityUtil.getCurrentUserId();
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
@@ -78,4 +76,16 @@ public class EducationService {
         return education.getId();
     }
 
+
+    @Transactional(readOnly = true)
+    public EducationResponse.getRecommendEducationResultDto getRandom6Edu() {
+        //멤버 조회
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        //일자리 리스트 조회
+        List<Education> random6Educations = educationRepository.getRandom6Educations();
+
+        return educationMappingService.toGetRecommendEducationResultDto(random6Educations, member);
+
     }
+}
