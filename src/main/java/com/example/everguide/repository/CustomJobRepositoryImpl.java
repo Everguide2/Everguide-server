@@ -14,6 +14,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
@@ -28,8 +30,8 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
     private final QJob job = QJob.job;
     private final QBookmark bookmark = QBookmark.bookmark;
 
-    @Override
-    public List<Job> SearchJobListByName(String name, Pageable pageable) {
+
+    public Slice<Job> searchJobListByName(String name, Pageable pageable) {
         JPQLQuery<Job> query = jpaQueryFactory.selectFrom(job);
 
         // name이 null이 아니고 비어 있지 않으면 검색 조건 추가
@@ -37,10 +39,21 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
             query.where(job.name.containsIgnoreCase(name)); // 이름으로 검색 (대소문자 구분 x)
         }
         query.orderBy(job.endDate.asc()); // 마감일 오름차순 정렬
-        query.offset(pageable.getOffset()).limit(pageable.getPageSize()); // 페이징 처리
 
-        return query.fetch(); // 결과 반환
+        // 페이징 처리된 데이터 리스트
+        List<Job> jobs = query.offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1) // +1 개 가져와서 다음 페이지 여부 확인
+                .fetch();
+
+        boolean hasNext = jobs.size() > pageable.getPageSize();
+        if (hasNext) {
+            jobs.remove(jobs.size() - 1);
+        }
+
+        // Slice 객체로 반환
+        return new SliceImpl<>(jobs, pageable, hasNext);
     }
+
 
     //로그인 한 경우
     @Override
@@ -133,6 +146,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
                 .limit(7) // 대표 일자리 포함 7개
                 .fetch();
     }
+
 
 
 

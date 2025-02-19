@@ -20,15 +20,22 @@ public class EducationController {
 
     private final EducationService educationService;
     // 로그인 없어도 접근 가능한 컨트롤러
-    @GetMapping("educations/getWorthToGo")
-    public ResponseEntity<ApiResponse<EducationResponse.GetWorthToGoListDto>> getThisWeekJob(@RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                                             @RequestParam(value = "size", required = false, defaultValue = "5") Integer size) {
+    @GetMapping("/educations/getWorthToGo")
+    public ResponseEntity<ApiResponse<EducationResponse.GetWorthToGoListDto>> getThisWeekJob(@RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                                             @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, EducationMappingService.toGetWorthToGoResultDto(educationService.getWorthToGoList(pageable))));
 
     }
 
+    @GetMapping("/educations/searchEduByName")
+    public ResponseEntity<ApiResponse<EducationResponse.NoLoginSearchEduByNameListDto>> searchEduByName(@RequestParam(value = "name") String name,
+                                                                                                        @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                                                        @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.noLoginSearchEduListByName(name, pageable)));
 
+    }
 
 
 
