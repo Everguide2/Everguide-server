@@ -26,7 +26,7 @@ public class WelfareMappingService {
         entity.setServiceDetailLink(dto.getServDtlLink());
         entity.setApplyMethod(dto.getAplyMtdNm());
         entity.setChargeDepartment(dto.getBizChrDeptNm());
-        entity.setRegion(Region.valueOf(dto.getCtpvNm()));
+        entity.setRegion(dto.getCtpvNm());
         entity.setRegionDetail(dto.getSggNm());
         entity.setHits(dto.getInqNum());
         entity.setSupportTypes(dto.getIntrsThemaNmArray());

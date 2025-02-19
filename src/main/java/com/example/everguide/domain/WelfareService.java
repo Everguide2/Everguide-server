@@ -36,7 +36,7 @@ public class WelfareService {
     private String chargeDepartment; // bizChrDeptNm 사업담당부서명
 
     @Column(name = "region", length = 100)
-    private Region region; // ctpvNm 시도명
+    private String region; // ctpvNm 시도명
 
     @Column(name = "hits")
     private int hits; // inqNum 조회수

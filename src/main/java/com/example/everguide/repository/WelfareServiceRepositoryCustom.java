@@ -10,5 +10,5 @@ import java.util.Set;
 
 public interface WelfareServiceRepositoryCustom {
 
-    List<WelfareService> welfareServiceSearch(Region region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes);
+    List<WelfareService> welfareServiceSearch(String region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes);
 }

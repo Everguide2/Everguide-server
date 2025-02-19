@@ -22,7 +22,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     private final QWelfareService welfareService = QWelfareService.welfareService;
 
     @Override
-    public List<WelfareService> welfareServiceSearch(Region region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes) {
+    public List<WelfareService> welfareServiceSearch(String region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes) {
 
         String lifeCycle = "노년";
 
@@ -34,7 +34,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
                 .fetch();
     }
 
-    public BooleanBuilder all(String lifeCycle, Region region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes) {
+    public BooleanBuilder all(String lifeCycle, String region, Set<SupportType> supportTypes, Set<HouseholdType> householdTypes) {
         return lifeCycleContains(lifeCycle).and(regionEq(region).and(supportTypes(supportTypes)).and(householdTypes(householdTypes)));
     }
 
@@ -69,7 +69,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
         return nullSafeBooleanBuilder(() -> welfareService.lifeCycle.contains(lifeCycle));
     }
 
-    public BooleanBuilder regionEq(Region region) {
+    public BooleanBuilder regionEq(String region) {
 
         return nullSafeBooleanBuilder(() -> welfareService.region.eq(region));
     }

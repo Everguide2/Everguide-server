@@ -1,7 +1,6 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.WelfareService;
-import com.example.everguide.domain.enums.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +24,7 @@ public interface WelfareServiceRepository extends JpaRepository<WelfareService, 
            "AND (:lifeNm IS NULL OR w.lifeCycle LIKE %:lifeNm%) " +
            "AND (:trgterIndvdlNm IS NULL OR w.householdConditions LIKE %:trgterIndvdlNm%)")
     Page<WelfareService> findAllWithFilters(
-            @Param("ctpvNm") Region ctpvNm,
+            @Param("ctpvNm") String ctpvNm,
             @Param("sggNm") String sggNm,
             @Param("intrsThemaNm") String intrsThemaNm,
             @Param("lifeNm") String lifeNm,
@@ -50,12 +49,12 @@ public interface WelfareServiceRepository extends JpaRepository<WelfareService, 
     @Query("SELECT w FROM WelfareService w " +
            "WHERE (:keyword = '' OR w.serviceName LIKE %:keyword% OR w.serviceDigest LIKE %:keyword%) " +
            "AND (:#{#intrsThemaNmArray.isEmpty()} = true OR w.supportTypes IN :intrsThemaNmArray) " +
-           "AND (:ctpvNm = null OR w.region = :ctpvNm) " +
+           "AND (:ctpvNm = '' OR w.region = :ctpvNm) " +
            "AND (:lastModYmd = '' OR w.lastModYmd = :lastModYmd)")
     Page<WelfareService> searchWelfareServices(
         @Param("keyword") String keyword,
         @Param("intrsThemaNmArray") List<String> intrsThemaNmArray,
-        @Param("ctpvNm") Region ctpvNm,
+        @Param("ctpvNm") String ctpvNm,
         @Param("lastModYmd") String lastModYmd,
         Pageable pageable
     );

@@ -90,7 +90,7 @@ public class RecommendServiceImpl implements RecommendService {
         String currentUserId = securityUtil.getCurrentUserId();
         Survey survey = surveyRepository.findByUserId(currentUserId);
 
-        Region region = survey.getRegion();
+        String region = survey.getRegion().name();
         Set<SupportType> supportTypes = survey.getSupportTypes();
         Set<HouseholdType> householdTypes = survey.getHouseholdTypes();
 
@@ -135,7 +135,7 @@ public class RecommendServiceImpl implements RecommendService {
                 .serviceDetailLink(welfareService.getServiceDetailLink())
                 .applyMethod(welfareService.getApplyMethod())
                 .chargeDepartment(welfareService.getChargeDepartment())
-                .region(welfareService.getRegion().name())
+                .region(welfareService.getRegion())
                 .supportTypes(welfareService.getSupportTypes())
                 .supportCycle(welfareService.getSupportCycle())
                 .provisionType(welfareService.getProvisionType())
