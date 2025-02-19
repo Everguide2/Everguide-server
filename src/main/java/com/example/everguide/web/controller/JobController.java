@@ -14,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +50,7 @@ public class JobController {
     public ResponseEntity<ApiResponse<JobResponse.GetJobList>> getJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
                                                                           @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
                                                                           @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                                           @RequestParam(value = "size", required = false, defaultValue = "21") Integer size){
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginGetJobListResult(regionList, sortBy, isRecruiting, pageable)));
@@ -60,8 +58,8 @@ public class JobController {
     // 로그인 안했을 때, 검색 기능
     @GetMapping("/jobs/getJobListSearchByName")
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
-                                                                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                         @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
+                                                                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                         @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
                                                                          ) {
         Pageable pageable = PageRequest.of(page - 1, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginSearchJobListByName(name, pageable)));
@@ -76,12 +74,19 @@ public class JobController {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //    //로그인 했을 때만 가능
+
+    @GetMapping("/member/jobs/isBookMarked/{jobId}")
+    public ResponseEntity<ApiResponse<Boolean>> getJobListSearchByName(@PathVariable(value = "jobId") Long jobId) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.isBookmarked(jobId)));
+    }
+
     @GetMapping("member/jobs/getJobListSearchByName")
     public ResponseEntity<ApiResponse<JobResponse.GetJobListSearchByName>> getJobListSearchByName(@RequestParam(value = "name") String name,
-                                                                         @RequestParam(value = "memberId") Long memberId,
-                                                                         @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                         @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
-                                                                         ) {
+                                                                                                  @RequestParam(value = "memberId") Long memberId,
+                                                                                                  @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                                                  @RequestParam(value = "size", required = false, defaultValue = "4") Integer size
+    ) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.SearchJobListByName(name, pageable)));
     }
@@ -91,7 +96,7 @@ public class JobController {
     public ResponseEntity<ApiResponse<JobResponse.GetJobList>> loginGetJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
                                                                           @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
                                                                           @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                                           @RequestParam(value = "size", required = false, defaultValue = "21") Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
 

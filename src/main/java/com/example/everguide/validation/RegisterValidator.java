@@ -1,6 +1,6 @@
 package com.example.everguide.validation;
 
-import com.example.everguide.web.dto.MemberRequest;
+import com.example.everguide.web.dto.signup.SignupRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -27,13 +27,13 @@ public class RegisterValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return MemberRequest.SignupDTO.class.isAssignableFrom(clazz);
+        return SignupRequest.SignupDTO.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
 
-        MemberRequest.SignupDTO signupDTO = (MemberRequest.SignupDTO) target;
+        SignupRequest.SignupDTO signupDTO = (SignupRequest.SignupDTO) target;
 
         // 이름
         if (valueNullOrBlank(signupDTO.getName())) {

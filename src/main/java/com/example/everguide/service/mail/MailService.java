@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Slf4j
@@ -23,18 +24,18 @@ public class MailService {
 
     public String createCode() {
 
-        Random random = new Random();
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int length = 8;
+
+        SecureRandom random = new SecureRandom();
         StringBuilder key = new StringBuilder();
 
-        for (int i = 0; i < 8; i++) { // 인증 코드 8자리
-            int index = random.nextInt(3); // 0~2까지 랜덤, 랜덤값으로 switch문 실행
+        for (int i = 0; i < length; i++) {
 
-            switch (index) {
-                case 0 -> key.append((char) (random.nextInt(26) + 97)); // 소문자
-                case 1 -> key.append((char) (random.nextInt(26) + 65)); // 대문자
-                case 2 -> key.append(random.nextInt(10)); // 숫자
-            }
+            int index = random.nextInt(chars.length());
+            key.append(chars.charAt(index));
         }
+
         return key.toString();
     }
 

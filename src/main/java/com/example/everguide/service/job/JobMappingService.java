@@ -12,6 +12,7 @@ import com.example.everguide.web.dto.job.JobItem;
 import com.example.everguide.web.dto.job.JobItemDetail;
 import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,31 +28,28 @@ public class JobMappingService {
 
 
     //로그인 했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(List<Job> jobs, Member member) {
+    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(Slice<Job> jobs, Member member) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
-                .hasMore(calcHasNext(jobs))
+                .hasMore(jobs.hasNext())
                 .build();
     }
 
 
     //로그인 안했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(List<Job> jobs) {
+    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(Slice<Job> jobs) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
-                .hasMore(calcHasNext(jobs))
+                .hasMore(jobs.hasNext())
                 .build();
     }
 
-    private Boolean calcHasNext(List<Job> jobs) {
-        return jobs.size() == 5;
-    }
 
 
     public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs) {
@@ -160,8 +158,8 @@ public class JobMappingService {
                 .build();
     }
 
-
-    public JobResponse.JobDto toJobDto(Job job,Member member) {
+//---> 오류나면 여기 public으로 바꾸기
+    private JobResponse.JobDto toJobDto(Job job,Member member) {
         return JobResponse.JobDto.builder()
                 .jobId(job.getId())
                 .jobName(job.getName())

@@ -1,9 +1,20 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.Education;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
-public interface EducationRepository extends JpaRepository<Education, Long> {
-} 
+public interface EducationRepository extends JpaRepository<Education, Long> , CustomEducationRepository{
+    Slice<Education> findAllByOrderByEndDateAsc(Pageable pageable);
+
+    @Query(value = "SELECT * FROM Education ORDER BY RAND() LIMIT 6", nativeQuery = true)
+    List<Education> getRandom6Educations();
+
+}

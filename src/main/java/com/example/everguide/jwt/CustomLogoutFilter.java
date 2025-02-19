@@ -1,5 +1,7 @@
 package com.example.everguide.jwt;
 
+import com.example.everguide.api.code.status.ErrorStatus;
+import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.redis.RedisUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -62,58 +64,47 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        String authorization = request.getHeader("Authorization");
+        //get refresh token
+        String refresh = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
 
-        // 토큰이 없다면 다음 필터로 넘김
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            if (cookie.getName().equals("refresh")) {
 
-            log.info("token null");
-            filterChain.doFilter(request, response);
-
-            // 조건이 해당되면 메소드 종료 (필수)
-            return;
+                refresh = cookie.getValue();
+            }
         }
 
-        // Bearer 부분 제거 후 순수 토큰만 획득
-        String accessToken = authorization.split(" ")[1];
-
-        // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        try {
-            jwtUtil.isExpired(accessToken);
-        } catch (ExpiredJwtException e) {
-
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
-
-            // response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            return;
-        }
-
-        String category = jwtUtil.getCategory(accessToken);
-
-        if (!category.equals("access")) {
-
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.print("invalid access token");
-
-            // response status code
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        String userId = jwtUtil.getUserId(accessToken);
-        String social = jwtUtil.getSocial(accessToken);
-
-        // Redis에 저장되어 있는지 확인
-        String redisRefreshToken = redisUtils.getLocalRefreshToken(userId);
-        if (redisRefreshToken == null) {
+        if (refresh == null) {
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
+        }
+
+        try {
+            jwtUtil.isExpired(refresh);
+
+        } catch (ExpiredJwtException e) {
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        String category = jwtUtil.getCategory(refresh);
+        if (!category.equals("refresh")) {
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        String userId = jwtUtil.getUserId(refresh);
+        String social = jwtUtil.getSocial(refresh);
+
+        // Redis에 저장되어 있는지 확인
+        String currentLocalRefresh = redisUtils.getLocalRefreshToken(userId);
+        if (!refresh.equals(currentLocalRefresh)) {
+
+            throw new MemberBadRequestException(ErrorStatus._LOCAL_INVALID_TOKEN.getMessage());
         }
 
         // 로그아웃 진행

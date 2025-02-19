@@ -1,13 +1,11 @@
-package com.example.everguide.web.dto;
+package com.example.everguide.web.dto.signup;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class MemberRequest {
+public class SignupRequest {
 
     @Builder
     @Getter
@@ -42,37 +40,5 @@ public class MemberRequest {
         String birth;
         String phoneNumber;
         String email;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ChangePwdDTO {
-
-        String originalPwd;
-        String newPwd;
-        String rewriteNewPwd;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FindEmailDTO {
-
-        String name;
-        String phoneNumber;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FindPwdDTO {
-
-        String email;
-        String name;
-        String phoneNumber;
     }
 }

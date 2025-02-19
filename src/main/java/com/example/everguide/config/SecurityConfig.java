@@ -85,7 +85,7 @@ public class SecurityConfig {
 
                                 CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -106,6 +106,9 @@ public class SecurityConfig {
         // form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
+
+        http
+                .logout((auth) -> auth.disable());
 
         // http basic 인증 방식 disable
         http

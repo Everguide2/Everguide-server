@@ -5,6 +5,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.Region;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface CustomJobRepository {
 
 
     List<Job> findThisWeekJobList();
-    List<Job> SearchJobListByName(String name, Pageable pageable);
+    Slice<Job> searchJobListByName(String name, Pageable pageable);
 }

@@ -2,13 +2,12 @@ package com.example.everguide.oauth2;
 
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.redis.RedisUtils;
-import com.example.everguide.web.dto.oauth.CustomOAuth2User;
+import com.example.everguide.web.dto.auth.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -49,7 +48,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         redisUtils.setLocalRefreshToken(userId, refresh, 60000*60*24L);
 
         response.addCookie(createCookie("refresh", refresh));
-        response.sendRedirect("http://localhost:3000/cookie-to-header");
+        response.sendRedirect("http://localhost:5173/cookie-to-header");
     }
 
     private Cookie createCookie(String key, String value) {

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -15,21 +16,28 @@ import java.time.LocalDate;
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Education extends BaseEntity {
 
+public class Education extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer educationCenterId;
+    private Long id;          //pk id
 
-    private String consignment;
-    private String educationCenterName;
-    private String organizationName;
-    private String businessInformation;
-    private String educationTarget;
-    private Integer zipCode;
-    private String location;
-    private String contact;
-    private String designatedPeriodStartDate;
-    private LocalDate designatedPeriodEndDate; // 마감일
+    private LocalDate startDate;// 강좌 시작일
 
+    private LocalDate endDate;// 강좌 종료일
+
+    private String eduName;// 강좌명
+
+    private String CompanyName;// 기관명 <- 더미데이터 기준, 실제이면 신청방법 들어갈 예정
+    //
+    private String consignment;                 // 위탁여부
+    private String educationCenterName;         // 교육센터명
+    private String organizationName;            // 기관명
+    private String businessInformation;         // 사업내용
+    private String educationTarget;             // 교육대상
+    private Integer zipCode;                    // 우편번호
+    private String location;                    // 소재지
+    private String contact;                     // 연락처
+    private String designatedPeriodStartDate;   // 지정기간시작일
+    private LocalDate designatedPeriodEndDate;  // 지정기간종료일
 }

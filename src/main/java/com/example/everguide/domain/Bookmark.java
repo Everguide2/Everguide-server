@@ -29,11 +29,11 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "job_id")
     private Job job;
 
-
-    // 북마크된 'Education'
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "education_id")
     private Education education;
+
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
