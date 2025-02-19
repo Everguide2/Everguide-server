@@ -40,7 +40,8 @@ public class NotificationScheduler {
             if (bookmark.getType() == BookmarkType.JOB && bookmark.getJob() != null) {
                 deadline = bookmark.getJob().getEndDate();
             } else if (bookmark.getType() == BookmarkType.EDUCATION && bookmark.getEducation() != null) {
-                deadline = bookmark.getEducation().getDesignatedPeriodEndDate();
+                deadline = bookmark.getEducation().getEndDate();
+
             }
 
             log.info("Bookmark ID: {} deadline: {}", bookmark.getId(), deadline);
