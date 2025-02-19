@@ -1,10 +1,9 @@
 package com.example.everguide.service.education;
 
 
+import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
 import com.example.everguide.web.dto.education.EducationResponse;
-import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class EducationMappingService {
+
+
+    public static EducationResponse.deleteEduBookmarkResultDto toDeleteEduBookmarkResultDto(Long educationId) {
+        return EducationResponse.deleteEduBookmarkResultDto.builder()
+                .educationId(educationId)
+                .build();
+    }
+
+    public static EducationResponse.addEduBookmarkResultDto toAddEduBookMarkResponseResultDto(Bookmark bookmark) {
+        return EducationResponse.addEduBookmarkResultDto.builder()
+                .memberId(bookmark.getMember().getId())
+                .educationId(bookmark.getEducation().getId())
+                .bookmarkType(bookmark.getType().name())
+                .build();
+    }
+
+
+
     public static EducationResponse.GetWorthToGoListDto toGetWorthToGoResultDto(Slice<Education> educations) {
         List<EducationResponse.GetWorthToGoDto> educationList = educations.stream()
                 .map(education ->

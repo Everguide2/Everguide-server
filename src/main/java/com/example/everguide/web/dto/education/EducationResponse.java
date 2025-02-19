@@ -8,6 +8,22 @@ import java.util.List;
 
 public class EducationResponse {
 
+    @Getter
+    @Builder
+    public static class addEduBookmarkResultDto {
+        Long memberId;
+        Long educationId;
+        String bookmarkType;
+
+    }
+
+    @Getter
+    @Builder
+    public static class deleteEduBookmarkResultDto {
+        Long educationId; //삭제된 교육 아이디
+
+    }
+
 
     @Getter
     @Builder

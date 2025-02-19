@@ -5,14 +5,16 @@ import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.service.education.EducationMappingService;
 import com.example.everguide.service.education.EducationService;
+import com.example.everguide.service.job.JobMappingService;
+import com.example.everguide.web.dto.education.EducationRequest;
 import com.example.everguide.web.dto.education.EducationResponse;
+import com.example.everguide.web.dto.job.JobRequest;
+import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,5 +41,15 @@ public class EducationController {
 
 
 
-    //----------------------------------------------------------------------------------------------------------------------------------------------// 로그인 했을 때 접근 가능한 컨트롤러
+    //로그인이 필요한 컨트롤러-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    @PostMapping("member/educations/addEduBookmark")
+    public ResponseEntity<ApiResponse<EducationResponse.addEduBookmarkResultDto>> addEduBookmark(@ModelAttribute EducationRequest.addEduBookmarkDto request) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, EducationMappingService.toAddEduBookMarkResponseResultDto(educationService.addEduBookmark(request))));
     }
+
+    @DeleteMapping("member/educations/deleteEduBookmark")
+    public ResponseEntity<ApiResponse<EducationResponse.deleteEduBookmarkResultDto>> deleteEduBookMark(@ModelAttribute EducationRequest.deleteEduBookmarkDto request) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, EducationMappingService.toDeleteEduBookmarkResultDto(educationService.deleteJobBookmark(request))));
+    }
+
+}
