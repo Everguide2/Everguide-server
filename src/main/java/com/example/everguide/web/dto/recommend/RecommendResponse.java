@@ -16,11 +16,32 @@ public class RecommendResponse {
     public static class RecommendDTO {
 
         Long id;
-        String servId;
-        String servNm; // 서비스명
-        String aplyMtdNm; // 신청방법명
-        String bizChrDeptNm; // 사업담당부서명
-        String sprtCycNm; // 지원주기명
-        String srvPvsnNm; // 제공유형명
+        String serviceId;
+        String serviceName; // 서비스명
+        String applyMethod; // 신청방법명
+        String chargeDepartment; // 사업담당부서명
+        String supportCycle; // 지원주기명
+        String provisionType; // 제공유형명
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RecommendDetailsDTO {
+
+        Long id;
+        String serviceId;
+        String serviceName;
+        String serviceDigest;
+        String serviceDetailLink;
+        String applyMethod;
+        String chargeDepartment;
+        String region;
+        String supportTypes;
+        String supportCycle;
+        String provisionType;
+        String householdConditions;
+        String regionDetail;
     }
 }

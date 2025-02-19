@@ -112,13 +112,35 @@ public class RecommendServiceImpl implements RecommendService {
         return welfareServiceList.stream()
                 .map(welfareService -> RecommendResponse.RecommendDTO.builder()
                         .id(welfareService.getId())
-                        .servId(welfareService.getServiceId())
-                        .servNm(welfareService.getServiceName()) // 서비스명
-                        .aplyMtdNm(welfareService.getApplyMethod()) // 신청방법명
-                        .bizChrDeptNm(welfareService.getChargeDepartment()) // 사업담당부서명
-                        .sprtCycNm(welfareService.getSupportCycle()) // 지원주기명
-                        .srvPvsnNm(welfareService.getProvisionType()) // 제공유형명
+                        .serviceId(welfareService.getServiceId())
+                        .serviceName(welfareService.getServiceName()) // 서비스명
+                        .applyMethod(welfareService.getApplyMethod()) // 신청방법명
+                        .chargeDepartment(welfareService.getChargeDepartment()) // 사업담당부서명
+                        .supportCycle(welfareService.getSupportCycle()) // 지원주기명
+                        .provisionType(welfareService.getProvisionType()) // 제공유형명
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public RecommendResponse.RecommendDetailsDTO welfareRecommendDetails(Long welfareId) {
+
+        WelfareService welfareService = welfareServiceRepository.findById(welfareId).orElseThrow(EntityNotFoundException::new);
+
+        return RecommendResponse.RecommendDetailsDTO.builder()
+                .id(welfareService.getId())
+                .serviceId(welfareService.getServiceId())
+                .serviceName(welfareService.getServiceName())
+                .serviceDigest(welfareService.getServiceDigest())
+                .serviceDetailLink(welfareService.getServiceDetailLink())
+                .applyMethod(welfareService.getApplyMethod())
+                .chargeDepartment(welfareService.getChargeDepartment())
+                .region(welfareService.getRegion().name())
+                .supportTypes(welfareService.getSupportTypes())
+                .supportCycle(welfareService.getSupportCycle())
+                .provisionType(welfareService.getProvisionType())
+                .householdConditions(welfareService.getHouseholdConditions())
+                .regionDetail(welfareService.getRegionDetail())
+                .build();
     }
 }

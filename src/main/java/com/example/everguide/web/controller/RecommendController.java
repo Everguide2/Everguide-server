@@ -10,9 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,12 +46,28 @@ public class RecommendController {
         }
     }
 
-    @PostMapping("/member/recommend")
+    @GetMapping("/member/recommend-welfare")
     public ResponseEntity<ApiResponse<List<RecommendResponse.RecommendDTO>>> welfareRecommend() {
 
         List<RecommendResponse.RecommendDTO> recommendDTOList = recommendService.welfareRecommend();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.onSuccess(SuccessStatus._OK, recommendDTOList));
+    }
+
+    @GetMapping("/member/recommend-welfare/{welfareId}")
+    public ResponseEntity<ApiResponse<RecommendResponse.RecommendDetailsDTO>> welfareRecommendDetails(@PathVariable(name="welfareId") Long welfareId) {
+
+        try {
+            RecommendResponse.RecommendDetailsDTO recommendDetailsDTO = recommendService.welfareRecommendDetails(welfareId);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.onSuccess(SuccessStatus._OK, recommendDetailsDTO));
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.onFailure(ErrorStatus._NOT_FOUND, "회원을 찾을 수 없습니다."));
+
+        }
     }
 }

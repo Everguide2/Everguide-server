@@ -26,13 +26,13 @@ public class WelfareService {
     @Column(name = "service_Digest", length = 1000)
     private String serviceDigest; // servDgst 서비스 요약
 
-    @Column(name = "service_datil_link", length = 500)
+    @Column(name = "service_detail_link", length = 500)
     private String serviceDetailLink; // servDtlLink 서비스 상세 링크
 
     @Column(name = "apply_Method", length = 500)
     private String applyMethod; // aplyMtdNm 신청방법명 다중
 
-    @Column(name = "charge_dapartment", length = 200)
+    @Column(name = "charge_department", length = 200)
     private String chargeDepartment; // bizChrDeptNm 사업담당부서명
 
     @Column(name = "region", length = 100)

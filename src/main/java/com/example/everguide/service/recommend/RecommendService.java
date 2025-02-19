@@ -10,4 +10,6 @@ public interface RecommendService {
     Boolean registerSurvey(RecommendRequest.SurveyDTO surveyDTO);
 
     List<RecommendResponse.RecommendDTO> welfareRecommend();
+
+    RecommendResponse.RecommendDetailsDTO welfareRecommendDetails(Long welfareId);
 }
