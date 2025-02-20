@@ -53,7 +53,7 @@ public class EducationMappingService {
 
 
 
-    public static EducationResponse.GetWorthToGoListDto toGetWorthToGoResultDto(Slice<Education> educations) {
+    public static EducationResponse.GetWorthToGoListDto toGetWorthToGoResultDto(Slice<Education> educations, Integer currentPage) {
         List<EducationResponse.GetWorthToGoDto> educationList = educations.stream()
                 .map(education ->
                         EducationResponse.GetWorthToGoDto.builder()
@@ -65,8 +65,9 @@ public class EducationMappingService {
                                 .build()).toList();
         return EducationResponse.GetWorthToGoListDto.builder()
                 .educationList(educationList)
-                .hasMore(educations.hasNext()). //다음페이지 존재 여부
-                build();
+                .hasMore(educations.hasNext())
+                .currentPage(currentPage)
+                .build();
 
 
     }
