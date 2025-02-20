@@ -93,4 +93,20 @@ public class EducationResponse {
         String howTo;//신청방법	reqMthd
 
     }
+
+
+    @Getter
+    @Builder
+    public static class GetEduCationListDto {
+        List<EducationDto> educationList;
+        String sortBy;
+
+
+    }
+
+    @Getter
+    @Builder
+    public static class EducationDto {
+
+    }
 }

@@ -33,6 +33,8 @@ public class JobResponse {
         List<Region> regionList;
         Boolean isRecruiting;
         String sortBy; // 정렬 조건
+        Integer currentPage; //현재 페이지
+        Integer totalPages; // 모든 페이지 정보
     }
     @Getter
     @Builder

@@ -16,6 +16,7 @@ import com.example.everguide.web.dto.job.JobRequest;
 import com.example.everguide.web.dto.job.JobResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +51,10 @@ public class JobService {
 
     @Transactional(readOnly = true)
     public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
-        List<Job> jobs = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
-        return jobMappingService.toNoLoginJobListDto(jobs,  regionList, sortBy, isRecruiting);
+        Page<Job> jobPage = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
+        List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
+        int totalPages = jobPage.getTotalPages(); // 총 페이지 수
+        return jobMappingService.toNoLoginJobListDto(jobList,  regionList, sortBy, isRecruiting,pageable.getPageNumber(), totalPages );
     }
 
 
@@ -61,8 +64,10 @@ public class JobService {
         String userId = securityUtil.getCurrentUserId();
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
-        List<Job> jobList = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
-        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting);
+        Page<Job> jobPage = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
+        List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
+        int totalPages = jobPage.getTotalPages(); // 총 페이지 수
+        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting, pageable.getPageNumber(), totalPages);
     }
 
 
