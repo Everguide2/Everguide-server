@@ -48,6 +48,8 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findWelfareBookmarksByMember(@Param("member") Member member);
 
     Optional<Bookmark> findByMemberAndEducation(Member member, Education education);
+    @Query("SELECT b FROM Bookmark b LEFT JOIN FETCH b.job LEFT JOIN FETCH b.education")
+    List<Bookmark> findAllWithJobAndEducation();
 
     Boolean existsByEducationAndMember(Education education, Member member);
 }
