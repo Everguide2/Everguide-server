@@ -3,6 +3,7 @@ package com.example.everguide.jwt;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.web.dto.auth.CustomOAuth2User;
 import com.example.everguide.web.dto.auth.CustomUserDetails;
+import jakarta.servlet.http.Cookie;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,5 +35,16 @@ public class SecurityUtil {
         }
 
         return currentUserId;
+    }
+
+    public Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+//        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }
