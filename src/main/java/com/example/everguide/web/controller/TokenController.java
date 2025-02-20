@@ -47,7 +47,7 @@ public class TokenController {
     }
 
     // Access 토큰 만료 시 재발급
-    @Operation(summary = "Access 토큰 만료 시 Access 토큰, Refresh 토큰 재발급", description = "Access 토큰 만료 시 재발급해 Access 토큰은 헤더로 Refresh 토큰은 쿠키로 반환합니다.")
+    @Operation(summary = "Access 토큰 만료 시 재발급", description = "Access 토큰 만료 시 Refresh 토큰을 받아 Access 토큰은 헤더로 Refresh 토큰은 쿠키로 재발급해 반환합니다.")
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<String>> reissue(HttpServletRequest request, HttpServletResponse response) {
 
