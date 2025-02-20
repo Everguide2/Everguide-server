@@ -121,4 +121,14 @@ public class EducationResponse {
         Boolean isBookmarked; //북마크 여부
 
     }
+    @Getter
+    @Builder
+    public static class getEndDateCount {
+       String _7days;
+       String _30days;
+       String over30days;
+       String always;
+       String closed;
+
+    }
 }

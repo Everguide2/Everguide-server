@@ -1,6 +1,7 @@
 package com.example.everguide.repository;
 
 import com.example.everguide.domain.*;
+import com.example.everguide.web.dto.education.EducationResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
@@ -153,5 +154,55 @@ class CustomEducationRepositoryImpl implements CustomEducationRepository {
 
         return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
-}
+
+    @Override
+    public EducationResponse.getEndDateCount countEducationByDeadline() {
+        LocalDate now = LocalDate.now();
+
+        // 7일 미만
+        long count7Days = jpaQueryFactory
+                .select(education.count())
+                .from(education)
+                .where(education.endDate.between(now, now.plusDays(7)))
+                .fetchOne();
+
+        // 30일 미만
+        long count30Days = jpaQueryFactory
+                .select(education.count())
+                .from(education)
+                .where(education.endDate.between(now, now.plusDays(30)))
+                .fetchOne();
+
+        // 30일 이상
+        long countOver30Days = jpaQueryFactory
+                .select(education.count())
+                .from(education)
+                .where(education.endDate.after(now.plusDays(30)))
+                .fetchOne();
+
+//        // 상시 접수 (조건에 따라 추가)
+        long countAlways = jpaQueryFactory
+                .select(education.count())
+                .from(education)
+                .where(education.endDate.isNull())  // 상시 접수 조건을 추가해야 합니다.
+                .fetchOne();
+
+        // 마감된 교육
+        long countClosed = jpaQueryFactory
+                .select(education.count())
+                .from(education)
+                .where(education.endDate.before(now))
+                .fetchOne();
+
+        // DTO 빌더 사용해 반환
+        return EducationResponse.getEndDateCount.builder()
+                ._7days(String.valueOf(count7Days))
+                ._30days(String.valueOf(count30Days))
+                .over30days(String.valueOf(countOver30Days))
+                .always(String.valueOf(countAlways))
+                .closed(String.valueOf(countClosed))
+                .build();
+    }
+    }
+
 

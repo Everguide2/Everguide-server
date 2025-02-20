@@ -67,6 +67,12 @@ public class EducationController {
 
     }
 
+    @GetMapping("educations/getEndDateCount")
+    public ResponseEntity<ApiResponse<EducationResponse.getEndDateCount>> getEndDateCount() {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.getEndDateCount()));
+
+    }
+
 
 
     //로그인이 필요한 컨트롤러-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
