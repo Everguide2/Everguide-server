@@ -6,6 +6,7 @@ import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.service.recommend.RecommendService;
 import com.example.everguide.web.dto.recommend.RecommendRequest;
 import com.example.everguide.web.dto.recommend.RecommendResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class RecommendController {
 
     private final RecommendService recommendService;
 
+    @Operation(summary = "설문 저장", description = "설문 결과를 저장합니다.")
     @PostMapping("/member/survey")
     public ResponseEntity<ApiResponse<String>> registerSurvey(
             @RequestBody RecommendRequest.SurveyDTO surveyDTO
@@ -46,6 +48,7 @@ public class RecommendController {
         }
     }
 
+    @Operation(summary = "정책 추천", description = "설문 기반의 정책 추천을 랜덤으로 6개 반환합니다.")
     @GetMapping("/member/recommend-welfare")
     public ResponseEntity<ApiResponse<List<RecommendResponse.RecommendDTO>>> welfareRecommend() {
 
@@ -55,6 +58,7 @@ public class RecommendController {
                 .body(ApiResponse.onSuccess(SuccessStatus._OK, recommendDTOList));
     }
 
+    @Operation(summary = "정책 추천 상세", description = "정책 추천의 상세 정보를 조회합니다.")
     @GetMapping("/member/recommend-welfare/{welfareId}")
     public ResponseEntity<ApiResponse<RecommendResponse.RecommendDetailsDTO>> welfareRecommendDetails(@PathVariable(name="welfareId") Long welfareId) {
 

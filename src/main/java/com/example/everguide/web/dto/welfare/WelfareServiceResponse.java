@@ -83,7 +83,7 @@ public class WelfareServiceResponse {
                     .lifeNmArray(welfare.getLifeCycle())
                     .sprtCycNm(welfare.getSupportCycle())
                     .srvPvsnNm(welfare.getProvisionType())
-                    .trgterIndvdlNmArray(welfare.getHouseholdConditions())
+                    .trgterIndvdlNmArray(welfare.getHouseholdTypes())
                     .lastModYmd(welfare.getLastModYmd())
                     .isBookmarked(isBookmarked)
                     .build();

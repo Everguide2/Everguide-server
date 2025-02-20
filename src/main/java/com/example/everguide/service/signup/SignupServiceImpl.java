@@ -6,6 +6,7 @@ import com.example.everguide.domain.Member;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.domain.enums.Role;
 import com.example.everguide.jwt.JWTUtil;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.web.dto.member.MemberResponse;
@@ -37,6 +38,7 @@ public class SignupServiceImpl implements SignupService {
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisUtils redisUtils;
+    private final SecurityUtil securityUtil;
 
     @Override
     public Boolean checkEmailExist(String userId) {
@@ -148,7 +150,7 @@ public class SignupServiceImpl implements SignupService {
 
         checkPhoneNumberDuplicate(phoneNumber);
 
-//        checkSmsVerify(phoneNumber);
+        checkSmsVerify(phoneNumber);
 
         Member member = Member.builder()
                 .name(name)
@@ -292,20 +294,9 @@ public class SignupServiceImpl implements SignupService {
         redisUtils.changeLocalRefreshToken(userId, refresh, 60000*60*24L);
 
         response.addHeader("Authorization", "Bearer " + access);
-        response.addCookie(createCookie("refresh", refresh));
+        response.addCookie(securityUtil.createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
 
         return true;
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-//        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 }

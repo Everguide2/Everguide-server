@@ -19,6 +19,25 @@ public class WelfareMappingService {
     }
 
     private WelfareService mapToEntity(ServList dto) {
+
+        String region = dto.getCtpvNm();
+
+        if (region.equals("대구광역시")) {
+            region = "경상북도";
+        }
+        if (region.equals("광주광역시")) {
+            region = "전라남도";
+        }
+        if (region.equals("대전광역시")) {
+            region = "충청북도";
+        }
+        if (region.equals("울산광역시")) {
+            region = "경상남도";
+        }
+        if (region.equals("세종특별자치시")) {
+            region = "충청남도";
+        }
+
         WelfareService entity = new WelfareService();
         entity.setServiceId(dto.getServId());
         entity.setServiceName(dto.getServNm());
@@ -34,7 +53,8 @@ public class WelfareMappingService {
         entity.setLifeCycle(dto.getLifeNmArray());
         entity.setSupportCycle(dto.getSprtCycNm());
         entity.setProvisionType(dto.getSrvPvsnNm());
-        entity.setHouseholdConditions(dto.getTrgterIndvdlNmArray());
+        entity.setHouseholdTypes(dto.getTrgterIndvdlNmArray());
+        entity.setRegionCategory(region);
         return entity;
     }
 }

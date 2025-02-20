@@ -8,6 +8,7 @@ import com.example.everguide.redis.RedisUtils;
 import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.service.sms.CoolSmsService;
 import com.example.everguide.web.dto.sms.SmsRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.FailedMessage;
@@ -29,6 +30,7 @@ public class SmsController {
     private final RedisUtils redisUtils;
     private final MemberRepository memberRepository;
 
+    @Operation(summary = "전화번호 인증코드 전송", description = "전화번호 인증코드를 전송합니다.")
     @PostMapping("/send")
     public ResponseEntity<ApiResponse<String>> sendSms(@RequestBody SmsRequest.SmsSendDTO smsSendDTO) {
 
@@ -61,6 +63,7 @@ public class SmsController {
         }
     }
 
+    @Operation(summary = "전화번호 인증코드 검증", description = "전화번호 인증코드를 검증합니다.")
     @PostMapping("/verify-code")
     public ResponseEntity<ApiResponse<String>> verifyCode(@RequestBody SmsRequest.SmsVerifyDTO smsVerifyDTO) {
 
