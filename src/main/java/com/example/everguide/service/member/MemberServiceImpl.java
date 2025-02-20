@@ -4,11 +4,13 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Member;
+import com.example.everguide.domain.Notification;
 import com.example.everguide.domain.enums.ProviderType;
 import com.example.everguide.jwt.JWTUtil;
 import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.repository.BookmarkRepository;
 import com.example.everguide.redis.RedisUtils;
+import com.example.everguide.repository.NotificationRepository;
 import com.example.everguide.service.mail.MailService;
 import com.example.everguide.web.dto.member.MemberResponse;
 import com.example.everguide.web.dto.auth.CustomOAuth2User;
@@ -48,6 +50,7 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
 
+    private final NotificationRepository notificationRepository;
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
@@ -149,7 +152,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public boolean deleteMember(HttpServletRequest request, HttpServletResponse response, String userId) {
+    public boolean deleteMember(HttpServletRequest request, HttpServletResponse response) {
 
         String authorization = request.getHeader("Authorization");
 
@@ -178,15 +181,11 @@ public class MemberServiceImpl implements MemberService {
         String currentUserId = jwtUtil.getUserId(accessToken);
         String social = jwtUtil.getSocial(accessToken);
 
-        if (!currentUserId.equals(userId)) {
-            throw new MemberBadRequestException("현재 로그인한 회원이 아닙니다.");
-        }
-
         boolean memberDeleteSuccess = false;
         if (social.equals("local")) {
-            memberDeleteSuccess = deleteLocalMember(userId);
+            memberDeleteSuccess = deleteLocalMember(currentUserId);
         } else {
-            memberDeleteSuccess = deleteSocialMember(userId);
+            memberDeleteSuccess = deleteSocialMember(currentUserId);
         }
 
         if (memberDeleteSuccess) {
@@ -227,6 +226,9 @@ public class MemberServiceImpl implements MemberService {
 
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(userId);
         bookmarkRepository.deleteAllInBatch(bookmarkList);
+
+        List<Notification> notificationList = notificationRepository.findByUserId(userId);
+        notificationRepository.deleteAllInBatch(notificationList);
 
         memberRepository.deleteByUserId(userId);
 
@@ -272,6 +274,9 @@ public class MemberServiceImpl implements MemberService {
 
         List<Bookmark> bookmarkList = bookmarkRepository.findByUserId(userId);
         bookmarkRepository.deleteAllInBatch(bookmarkList);
+
+        List<Notification> notificationList = notificationRepository.findByUserId(userId);
+        notificationRepository.deleteAllInBatch(notificationList);
 
         memberRepository.deleteByUserId(userId);
 

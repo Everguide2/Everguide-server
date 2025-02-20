@@ -1,13 +1,11 @@
 package com.example.everguide.repository;
 
-import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
-import com.example.everguide.domain.Member;
-import com.example.everguide.domain.Notification;
+import com.example.everguide.domain.*;
 import com.example.everguide.domain.enums.NotifyType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -45,4 +43,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             )
             """)
     void deleteOldNotifications(Member member);
+
+    @Query("select n from Notification n where n.member.userId = :userId")
+    List<Notification> findByUserId(@Param("userId") String userId);
 }

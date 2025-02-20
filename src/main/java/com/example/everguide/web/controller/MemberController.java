@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,12 +121,11 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴", description = "회원이 탈퇴됩니다.")
     @DeleteMapping("/member")
     public ResponseEntity<ApiResponse<String>> deleteMember(
-            @RequestParam(name="user_id") String userId,
             HttpServletRequest request, HttpServletResponse response
     ) {
 
         try {
-            if (memberService.deleteMember(request, response, userId)) {
+            if (memberService.deleteMember(request, response)) {
 
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(ApiResponse.onSuccess(SuccessStatus._OK));
