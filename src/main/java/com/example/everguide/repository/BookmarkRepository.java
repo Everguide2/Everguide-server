@@ -52,4 +52,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findAllWithJobAndEducation();
 
     Boolean existsByEducationAndMember(Education education, Member member);
+
 }

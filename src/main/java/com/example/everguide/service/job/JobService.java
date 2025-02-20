@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -52,19 +51,18 @@ public class JobService {
     @Transactional(readOnly = true)
     public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
         List<Job> jobs = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
-        return jobMappingService.toNoLoginJobListDto(jobs);
+        return jobMappingService.toNoLoginJobListDto(jobs,  regionList, sortBy, isRecruiting);
     }
 
 
     @Transactional(readOnly = true)
     public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
 
-
         String userId = securityUtil.getCurrentUserId();
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
         List<Job> jobList = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
-        return jobMappingService.toJobListDto(jobList, member);
+        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting);
     }
 
 

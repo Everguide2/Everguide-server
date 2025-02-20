@@ -3,6 +3,7 @@ package com.example.everguide.web.controller;
 
 import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.SuccessStatus;
+import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Education;
 import com.example.everguide.domain.Job;
 import com.example.everguide.service.education.EducationDataService;
@@ -77,5 +78,10 @@ public class EducationController {
     @GetMapping("member/educations/getRecommendEducation")
     public ResponseEntity<ApiResponse<EducationResponse.getRecommendEducationResultDto>> getRecommendEdu() {
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.getRandom6Edu()));
+    }
+
+    @GetMapping("member/educations/isBookMarked/{educationId}")
+    public ResponseEntity<ApiResponse<Boolean>> isBookMarked(@RequestParam("educationId") Long educationId) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.isBookMarked(educationId)));
     }
 }
