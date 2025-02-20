@@ -80,7 +80,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional
     public boolean reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
