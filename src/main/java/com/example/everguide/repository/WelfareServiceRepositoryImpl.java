@@ -63,32 +63,6 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
                 .or(householdSingleGrandParentContains(householdTypes));
     }
 
-    public BooleanBuilder supportTypes(Set<SupportType> supportTypes) {
-        return supportPhysicalHealthContains(supportTypes)
-                .or(supportMentalHealthContains(supportTypes))
-                .or(supportLifeSupportContains(supportTypes))
-                .or(supportHousingContains(supportTypes))
-                .or(supportEmploymentContains(supportTypes))
-                .or(supportCultureLeisureContains(supportTypes))
-                .or(supportSafetyCrisisContains(supportTypes))
-                .or(supportPregnancyBirthContains(supportTypes))
-                .or(supportChildcareContains(supportTypes))
-                .or(supportEducationContains(supportTypes))
-                .or(supportAdoptPosterContains(supportTypes))
-                .or(supportProtectionCareContains(supportTypes))
-                .or(supportFinanceContains(supportTypes))
-                .or(supportLegalContains(supportTypes));
-    }
-
-    public BooleanBuilder householdTypes(Set<HouseholdType> householdTypes) {
-        return householdMulticulturalContains(householdTypes)
-                .or(householdMultichildContains(householdTypes))
-                .or(householdVeteranContains(householdTypes))
-                .or(householdDisabledContains(householdTypes))
-                .or(householdLowIncomeContains(householdTypes))
-                .or(householdSingleGrandParentContains(householdTypes));
-    }
-
     public BooleanBuilder lifeCycleContains(String lifeCycle) {
 
         return nullSafeBooleanBuilder(() -> welfareService.lifeCycle.contains(lifeCycle));
