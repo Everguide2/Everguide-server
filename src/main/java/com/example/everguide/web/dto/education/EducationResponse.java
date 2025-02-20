@@ -67,6 +67,7 @@ public class EducationResponse {
     public static class GetWorthToGoListDto {
         List<GetWorthToGoDto> educationList;
         Boolean hasMore;
+        Integer currentPage;
 
     }
 
