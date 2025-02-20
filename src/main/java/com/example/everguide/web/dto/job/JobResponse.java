@@ -109,7 +109,9 @@ public class JobResponse {
     @Builder
     public static class GetJobListSearchByName {
         List<JobDto> jobDtoList; //일자리 리스트 정보
+        Integer currentPage;
         Boolean hasMore; //다음 페이지 여부
+        String keyWord; //이름 검색 키워드
     }
 
 

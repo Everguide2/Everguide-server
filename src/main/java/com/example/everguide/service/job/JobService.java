@@ -114,7 +114,7 @@ public class JobService {
     //로그인 안했을 때, 검색 기능
     @Transactional(readOnly = true)
     public JobResponse.GetJobListSearchByName noLoginSearchJobListByName(String keyword, Pageable pageable) {
-        return jobMappingService.toNoLoginGetJobListSearchByName(jobRepository.searchJobListByName(keyword, pageable));
+        return jobMappingService.toNoLoginGetJobListSearchByName(jobRepository.searchJobListByName(keyword, pageable), keyword, pageable.getPageNumber());
     }
 
 
@@ -123,7 +123,7 @@ public class JobService {
     public JobResponse.GetJobListSearchByName SearchJobListByName(String keyword, Pageable pageable) {
         String userId = securityUtil.getCurrentUserId();
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
-        return jobMappingService.toGetJobListSearchByName(jobRepository.searchJobListByName(keyword, pageable), member);
+        return jobMappingService.toGetJobListSearchByName(jobRepository.searchJobListByName(keyword, pageable), member , keyword, pageable.getPageNumber());
     }
 
 

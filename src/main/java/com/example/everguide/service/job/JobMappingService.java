@@ -27,25 +27,29 @@ public class JobMappingService {
 
 
     //로그인 했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(Slice<Job> jobs, Member member) {
+    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(Slice<Job> jobs, Member member, String keyword, Integer currentPage) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
                 .hasMore(jobs.hasNext())
+                .keyWord(keyword)
+                .currentPage(currentPage)
                 .build();
     }
 
 
     //로그인 안했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(Slice<Job> jobs) {
+    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(Slice<Job> jobs, String keyWord, Integer currentPage) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
                 .hasMore(jobs.hasNext())
+                .keyWord(keyWord)
+                .currentPage(currentPage)
                 .build();
     }
 

@@ -46,6 +46,8 @@ public class EducationResponse {
     public static class NoLoginSearchEduByNameListDto {
         List<SearchEduByNameDto> searchEduByNameDtoList;
         Boolean hasMore; //다음 페이지 여부
+        String keyWord;
+        Integer currentPage;
     }
 
 
@@ -56,6 +58,7 @@ public class EducationResponse {
         String name; // 교육이름
         String howTo;// 신청방법
         String dDay;
+
     }
 
     @Getter
@@ -99,14 +102,22 @@ public class EducationResponse {
     @Builder
     public static class GetEduCationListDto {
         List<EducationDto> educationList;
-        String sortBy;
-
+        List<String> deadlines; // 마감일 필터 정보
+        Integer currentPage; //현재 페이지
+        Integer totalPages; // 모든 페이지 정보
+        Long count; // 모든 정보 개수
+        String keyword; //이름 검색 키워드
 
     }
 
     @Getter
     @Builder
     public static class EducationDto {
+        Long educationId;
+        String name;
+        String howTo;
+        String dDay;
+        Boolean isBookmarked; //북마크 여부
 
     }
 }

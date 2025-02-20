@@ -10,6 +10,7 @@ import com.example.everguide.service.job.JobMappingService;
 import com.example.everguide.service.job.JobService;
 import com.example.everguide.web.dto.job.JobRequest;
 import com.example.everguide.web.dto.job.JobResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,13 +28,14 @@ public class JobController {
     private final JobService jobService;
 
 // 로그인 없어도 접근 가능한 컨트롤러
-    @GetMapping("/jobs/getCountByRegion")
+@Operation(summary = "일자리 리스트 지역 필터 수 조회", description = "일자리 리스트 조회 시, 왼쪽 필터링의 지역 필터의 수를 조회합니다..")
+@GetMapping("/jobs/getCountByRegion")
     public ResponseEntity<ApiResponse<JobResponse.GetJobCountByRegionDto>> getCountByRegion() {
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.getJobCountByRegion()));
 
     }
 
-
+    @Operation(summary = "일자리 리스트 DB 적재", description = "일자리 리스트다..")
     @GetMapping("/api/job")
     public Mono<ResponseEntity<ApiResponse<List<Job>>>> getJobData() {
         return jobDataService.fetchAndSaveJobData()
