@@ -28,7 +28,7 @@ public class JobResponse {
     @Getter
     @Builder
     public static class GetJobList {
-        Integer count; //일자리 수
+        Long count; //일자리 수
         List<JobDto> jobDtoList;
         List<Region> regionList;
         Boolean isRecruiting;
@@ -36,6 +36,7 @@ public class JobResponse {
         Integer currentPage; //현재 페이지
         Integer totalPages; // 모든 페이지 정보
         String keyword; //이름 검색 키워드
+
     }
     @Getter
     @Builder

@@ -51,7 +51,7 @@ public class JobMappingService {
 
 
 
-    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPage, String keyWord) {
+    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPage, String keyWord, Long totalCount) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class JobMappingService {
 
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
-                .count(jobList.size())
+                .count(totalCount)
                 .regionList(regionList)
                 .sortBy(sortBy)
                 .isRecruiting(isRecruiting)
@@ -153,14 +153,14 @@ public class JobMappingService {
     }
 
 
-    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPages , String keyWord ) {
+    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPages , String keyWord ,Long totalCount) {
 
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
-                .count(jobList.size())
+                .count(totalCount)
                 .regionList(regionList)
                 .sortBy(sortBy)
                 .isRecruiting(isRecruiting)

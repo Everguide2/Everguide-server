@@ -54,7 +54,8 @@ public class JobService {
         Page<Job> jobPage = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable, keyWord);
         List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
         int totalPages = jobPage.getTotalPages(); // 총 페이지 수
-        return jobMappingService.toNoLoginJobListDto(jobList,  regionList, sortBy, isRecruiting,pageable.getPageNumber(), totalPages, keyWord);
+        Long totalCount = jobPage.getTotalElements(); // 검색 총 데이터 수
+        return jobMappingService.toNoLoginJobListDto(jobList,  regionList, sortBy, isRecruiting,pageable.getPageNumber(), totalPages, keyWord,totalCount);
     }
 
 
@@ -67,7 +68,9 @@ public class JobService {
         Page<Job> jobPage = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member,keyWord);
         List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
         int totalPages = jobPage.getTotalPages(); // 총 페이지 수
-        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting, pageable.getPageNumber(), totalPages, keyWord);
+        Long totalCount = jobPage.getTotalElements(); // 검색 총 데이터 수
+
+        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting, pageable.getPageNumber(), totalPages, keyWord, totalCount);
     }
 
 
