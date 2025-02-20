@@ -130,4 +130,10 @@ public class EducationService {
         return educationRepository.findAllByOrderByEndDateAsc(pageable);
     }
 
+    @Transactional(readOnly = true)
+    public EducationResponse.getEndDateCount getEndDateCount() {
+        return educationRepository.countEducationByDeadline();
+    }
+
+
 }
