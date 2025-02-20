@@ -11,7 +11,7 @@ public interface MemberService {
 
     boolean changePwd(MemberRequest.ChangePwdDTO changePwdDTO);
 
-    boolean deleteMember(HttpServletRequest request, HttpServletResponse response, String userId);
+    boolean deleteMember(HttpServletRequest request, HttpServletResponse response);
 
     MemberResponse.FindEmailDTO findEmail(MemberRequest.FindEmailDTO findEmailDTO);
 
