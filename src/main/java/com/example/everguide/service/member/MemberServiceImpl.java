@@ -23,6 +23,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -354,10 +356,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    @Transactional
     public void updateRedis() {
 
-        System.out.println("update Redis");
+        log.info("update Redis");
 
         ScanOptions scanOptions = ScanOptions.scanOptions().match("*").count(10).build();
         Cursor<byte[]> keys = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions);
