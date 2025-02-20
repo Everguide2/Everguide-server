@@ -3,21 +3,15 @@ package com.example.everguide.web.controller;
 
 import com.example.everguide.api.ApiResponse;
 import com.example.everguide.api.code.status.SuccessStatus;
-import com.example.everguide.domain.Bookmark;
 import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
 import com.example.everguide.service.education.EducationDataService;
 import com.example.everguide.service.education.EducationMappingService;
 import com.example.everguide.service.education.EducationService;
-import com.example.everguide.service.job.JobMappingService;
 import com.example.everguide.web.dto.education.EducationRequest;
 import com.example.everguide.web.dto.education.EducationResponse;
-import com.example.everguide.web.dto.job.JobRequest;
-import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -31,6 +25,7 @@ public class EducationController {
     private final EducationDataService educationDataService;
     private final EducationService educationService;
 
+    // 로그인 없어도 접근 가능한 컨트롤러
     @GetMapping("/educations/{educationId}")
     public Mono<ResponseEntity<ApiResponse<EducationResponse.GetEduDetailDto>>> getEducationDetail(@PathVariable Long educationId) {
         return educationDataService.fetchEducationDetailData(educationId)
@@ -45,7 +40,6 @@ public class EducationController {
     }
 
 
-    // 로그인 없어도 접근 가능한 컨트롤러
     @GetMapping("/educations/getWorthToGo")
     public ResponseEntity<ApiResponse<EducationResponse.GetWorthToGoListDto>> getWorthToGo(@RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                                                              @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
@@ -55,7 +49,7 @@ public class EducationController {
     }
 
     @GetMapping("/educations/searchEduByName")
-    public ResponseEntity<ApiResponse<EducationResponse.NoLoginSearchEduByNameListDto>> searchEduByName(@RequestParam(value = "name") String name,
+    public ResponseEntity<ApiResponse<EducationResponse.SearchEduByNameListDto>> noLoginSearchEduByName(@RequestParam(value = "name") String name,
                                                                                                         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
                                                                                                         @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -106,6 +100,15 @@ public class EducationController {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.getEducationList(deadline, pageable, keyWord)));
+
+    }
+
+    @GetMapping("member/educations/searchEduByName")
+    public ResponseEntity<ApiResponse<EducationResponse.SearchEduByNameListDto>> searchEduByName(@RequestParam(value = "name") String name,
+                                                                                                 @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                                                 @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.searchEduListByName(name, pageable)));
 
     }
 }

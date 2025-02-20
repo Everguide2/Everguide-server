@@ -57,8 +57,14 @@ public class EducationService {
 
 
     @Transactional(readOnly = true)
-    public EducationResponse.NoLoginSearchEduByNameListDto noLoginSearchEduListByName(String keyword, Pageable pageable) {
+    public EducationResponse.SearchEduByNameListDto noLoginSearchEduListByName(String keyword, Pageable pageable) {
         return educationMappingService.toNoLoginGetEduListSearchByName(educationRepository.searchEduListByName(keyword, pageable), keyword, pageable.getPageNumber());
+    }
+    @Transactional(readOnly = true)
+    public EducationResponse.SearchEduByNameListDto searchEduListByName(String keyword, Pageable pageable) {
+        String userId = securityUtil.getCurrentUserId();
+        Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        return educationMappingService.toGetEduListSearchByName(educationRepository.searchEduListByName(keyword, pageable), keyword, pageable.getPageNumber(), member);
     }
 
 

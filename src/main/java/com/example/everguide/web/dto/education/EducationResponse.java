@@ -3,7 +3,6 @@ package com.example.everguide.web.dto.education;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class EducationResponse {
@@ -43,12 +42,13 @@ public class EducationResponse {
 
     @Getter
     @Builder
-    public static class NoLoginSearchEduByNameListDto {
+    public static class SearchEduByNameListDto {
         List<SearchEduByNameDto> searchEduByNameDtoList;
         Boolean hasMore; //다음 페이지 여부
         String keyWord;
         Integer currentPage;
     }
+
 
 
     @Getter
@@ -58,6 +58,7 @@ public class EducationResponse {
         String name; // 교육이름
         String howTo;// 신청방법
         String dDay;
+        Boolean isBookMarked;
 
     }
 

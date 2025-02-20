@@ -7,7 +7,6 @@ import com.example.everguide.web.dto.education.EducationItemDetail;
 import com.example.everguide.web.dto.education.EducationResponse;
 import com.example.everguide.web.dto.education.EducationItem;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -71,12 +70,34 @@ public class EducationMappingService {
 
 
     }
+
+    public EducationResponse.SearchEduByNameListDto toGetEduListSearchByName(Slice<Education> educations, String keyWord, int currentPage, Member member) {
+        List<EducationResponse.SearchEduByNameDto> eduList = educations.stream()
+                .map(education -> this.toEduDto(education, member))
+                .collect(Collectors.toList());
+        return EducationResponse.SearchEduByNameListDto.builder()
+                .searchEduByNameDtoList(eduList)
+                .keyWord(keyWord)
+                .currentPage(currentPage)
+                .hasMore(educations.hasNext()).build();
+    }
+
+    private EducationResponse.SearchEduByNameDto toEduDto(Education education, Member member) {
+        return EducationResponse.SearchEduByNameDto.builder()
+                .educationId(education.getId())
+                .name(education.getEduName())
+                .howTo(education.getHowTo())
+                .isBookMarked(bookmarkRepository.existsByEducationAndMember(education,member))
+                .dDay(calcDday(education.getEndDate())).build();
+
+    }
+
     //로그인 안했을 때, 검색결과
-    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetEduListSearchByName(Slice<Education> educations, String keyWord, Integer currentPage ) {
+    public EducationResponse.SearchEduByNameListDto toNoLoginGetEduListSearchByName(Slice<Education> educations, String keyWord, Integer currentPage ) {
         List<EducationResponse.SearchEduByNameDto> eduList = educations.stream()
                 .map(this::toNoLoginEduDto)
                 .collect(Collectors.toList());
-        return EducationResponse.NoLoginSearchEduByNameListDto.builder()
+        return EducationResponse.SearchEduByNameListDto.builder()
                 .searchEduByNameDtoList(eduList)
                 .keyWord(keyWord)
                 .currentPage(currentPage)
@@ -193,4 +214,6 @@ public class EducationMappingService {
                 .isBookmarked(bookmarkRepository.existsByEducationAndMember(education, member))
                 .build();
     }
+
+
 }
