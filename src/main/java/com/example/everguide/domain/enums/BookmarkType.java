@@ -1,5 +1,5 @@
 package com.example.everguide.domain.enums;
 
 public enum BookmarkType {
-    POLICY, EVENT, JOB, EDUCATION
+    POLICY, EVENT, JOB, WELFARE, EDUCATION
 }
