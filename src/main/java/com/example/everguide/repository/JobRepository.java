@@ -17,4 +17,7 @@ public interface JobRepository extends JpaRepository<Job, Long>, CustomJobReposi
 
     Integer countByNameContainingIgnoreCase(String name);
 
+    // Region 별로 그룹화하여 카운트
+    @Query("SELECT j.region AS region, COUNT(j) AS count FROM Job j GROUP BY j.region")
+    List<JobCountProjection> countJobsByRegion();
 }

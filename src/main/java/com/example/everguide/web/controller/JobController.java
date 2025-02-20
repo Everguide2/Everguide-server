@@ -27,6 +27,15 @@ public class JobController {
     private final JobService jobService;
 
 // 로그인 없어도 접근 가능한 컨트롤러
+    @GetMapping("/jobs/getCountByRegion")
+    public ResponseEntity<ApiResponse<JobResponse.GetJobCountByRegionDto>> getCountByRegion() {
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.getJobCountByRegion()));
+
+    }
+
+
+
+
     @GetMapping("/api/job")
     public Mono<ResponseEntity<ApiResponse<List<Job>>>> getJobData() {
         return jobDataService.fetchAndSaveJobData()
@@ -50,7 +59,7 @@ public class JobController {
     public ResponseEntity<ApiResponse<JobResponse.GetJobList>> getJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
                                                                           @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
                                                                           @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                                                                           @RequestParam(value = "size", required = false, defaultValue = "21") Integer size){
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginGetJobListResult(regionList, sortBy, isRecruiting, pageable)));
@@ -94,7 +103,7 @@ public class JobController {
     public ResponseEntity<ApiResponse<JobResponse.GetJobList>> loginGetJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
                                                                           @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
                                                                           @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
                                                                           @RequestParam(value = "size", required = false, defaultValue = "21") Integer size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
 

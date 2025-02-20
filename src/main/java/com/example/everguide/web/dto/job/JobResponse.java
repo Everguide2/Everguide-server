@@ -105,4 +105,23 @@ public class JobResponse {
     }
 
 
+    @Getter
+    @Builder
+    public static class GetJobCountByRegionDto {
+        Integer all;
+        Integer seoul;
+        Integer incheon;
+        Integer busan;
+        Integer gyeonggido;
+        Integer chungcheongnamdo;
+        Integer chungcheongbukdo;
+        Integer jeollanamdo;
+        Integer jeollabukdo;
+        Integer gyeongsangbukdo;
+        Integer gyeongsangnamdo;
+        Integer gangwondo;
+        Integer jejudo;
+
+
+    }
 }
