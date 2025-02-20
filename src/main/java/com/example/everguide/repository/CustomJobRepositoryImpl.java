@@ -8,14 +8,13 @@ import com.example.everguide.domain.enums.HireType;
 import com.example.everguide.domain.enums.Region;
 import com.example.everguide.jwt.SecurityUtil;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.DayOfWeek;
@@ -57,7 +56,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
     //로그인 한 경우
     @Override
-    public List<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member) {
+    public Page<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member, String keyWord) {
         BooleanBuilder predicate = new BooleanBuilder();
 
     // 필터링 조건 추가
@@ -73,8 +72,10 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
             }
         }
 
-
-
+        // 이름 검색
+        if (keyWord != null && !keyWord.isEmpty()) {
+            predicate.and(job.name.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 일자리만 필터링
+        }
     // 정렬 조건 추가
         // 북마크 여부 (북마크가 있으면 true, 없으면 false로 표현)
         JPQLQuery<Job> query = jpaQueryFactory.selectFrom(job)
@@ -83,7 +84,6 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
                 .orderBy(
                         bookmark.id.desc().nullsLast() // 북마크 여부를 기준으로 정렬
                 );
-
         if (sortBy != null) {
             if (sortBy.equals("startDate")) { // 시작일 정렬
                 query.orderBy(job.startDate.asc()); // 시작일 오름차순 정렬
@@ -91,18 +91,18 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
                 query.orderBy(job.endDate.asc()); // 마감일 오름차순 정렬
             }
         }
-
-
         // 쿼리에 페이징 설정 추가
         query.offset(pageable.getOffset()).limit(pageable.getPageSize()); // 페이징 처리
 
-        return query.fetch(); // 결과 반환
+        QueryResults<Job> results = query.fetchResults();
+
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
 
     //로그인 하지 않은 경우
     @Override
-    public List<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
+    public Page<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, String keyWord) {
         BooleanBuilder predicate = new BooleanBuilder();
 
     // 필터링 조건 추가
@@ -117,6 +117,13 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
                 predicate.and(job.hireType.eq(HireType.RECRUITING)); // 접수중인 일자리만 필터링
             }
         }
+
+
+        // 이름 검색
+        if (keyWord != null && !keyWord.isEmpty()) {
+            predicate.and(job.name.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 일자리만 필터링
+        }
+
         JPQLQuery<Job> query = jpaQueryFactory.selectFrom(job).where(predicate);
 
     // 정렬 조건 추가
@@ -128,8 +135,10 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
             }
         }
         query.offset(pageable.getOffset()).limit(pageable.getPageSize()); // 페이징 처리
-        return query.fetch(); // 결과 반환
 
+        QueryResults<Job> results = query.fetchResults();
+
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
 

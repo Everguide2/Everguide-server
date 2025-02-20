@@ -27,31 +27,35 @@ public class JobMappingService {
 
 
     //로그인 했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(Slice<Job> jobs, Member member) {
+    public JobResponse.GetJobListSearchByName toGetJobListSearchByName(Slice<Job> jobs, Member member, String keyword, Integer currentPage) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
                 .hasMore(jobs.hasNext())
+                .keyWord(keyword)
+                .currentPage(currentPage)
                 .build();
     }
 
 
     //로그인 안했을 때, 검색결과
-    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(Slice<Job> jobs) {
+    public JobResponse.GetJobListSearchByName toNoLoginGetJobListSearchByName(Slice<Job> jobs, String keyWord, Integer currentPage) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
         return JobResponse.GetJobListSearchByName.builder()
                 .jobDtoList(jobList)
                 .hasMore(jobs.hasNext())
+                .keyWord(keyWord)
+                .currentPage(currentPage)
                 .build();
     }
 
 
 
-    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting) {
+    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPage, String keyWord, Long totalCount) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
@@ -59,10 +63,13 @@ public class JobMappingService {
 
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
-                .count(jobList.size())
+                .count(totalCount)
                 .regionList(regionList)
                 .sortBy(sortBy)
                 .isRecruiting(isRecruiting)
+                .currentPage(currentPage)
+                .totalPages(totalPage)
+                .keyword(keyWord)
                 .build();
     }
 
@@ -150,17 +157,20 @@ public class JobMappingService {
     }
 
 
-    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting) {
+    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPages , String keyWord ,Long totalCount) {
 
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
                 .collect(Collectors.toList());
         return JobResponse.GetJobList.builder()
                 .jobDtoList(jobList)
-                .count(jobList.size())
+                .count(totalCount)
                 .regionList(regionList)
                 .sortBy(sortBy)
                 .isRecruiting(isRecruiting)
+                .currentPage(currentPage)
+                .totalPages(totalPages)
+                .keyword(keyWord)
                 .build();
     }
 

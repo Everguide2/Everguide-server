@@ -14,6 +14,7 @@ import com.example.everguide.web.dto.education.EducationRequest;
 import com.example.everguide.web.dto.education.EducationResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -30,15 +31,34 @@ public class EducationService {
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
 
-
     @Transactional(readOnly = true)
-    public Slice<Education> getWorthToGoList(Pageable pageable) {
-        return educationRepository.findAllByOrderByEndDateAsc(pageable);
+    public EducationResponse.GetEduCationListDto noLoginGetEducationList(List<String> deadlines, Pageable pageable, String keyWord) {
+
+        Page<Education> educationPage = educationRepository.noLoginGetEducationList(deadlines, pageable, keyWord);
+        List<Education> educationList = educationPage.getContent(); // 실
+
+        int totalPages = educationPage.getTotalPages(); // 총 페이지 수
+        Long totalCount = educationPage.getTotalElements(); // 검색 총 데이터 수
+        return educationMappingService.toNoLoginEducationListDto(educationList,  pageable.getPageNumber(), totalPages, keyWord, totalCount, deadlines);
     }
+ @Transactional(readOnly = true)
+    public EducationResponse.GetEduCationListDto getEducationList(List<String> deadlines, Pageable pageable, String keyWord) {
+         String userId = securityUtil.getCurrentUserId();
+         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+
+
+        Page<Education> educationPage = educationRepository.getEducationList(deadlines, pageable, keyWord, member);
+        List<Education> educationList = educationPage.getContent(); // 실
+
+        int totalPages = educationPage.getTotalPages(); // 총 페이지 수
+        Long totalCount = educationPage.getTotalElements(); // 검색 총 데이터 수
+        return educationMappingService.togetEducationListDto(educationList,  pageable.getPageNumber(), totalPages, keyWord, totalCount, deadlines, member);
+    }
+
 
     @Transactional(readOnly = true)
     public EducationResponse.NoLoginSearchEduByNameListDto noLoginSearchEduListByName(String keyword, Pageable pageable) {
-        return educationMappingService.toNoLoginGetEduListSearchByName(educationRepository.searchEduListByName(keyword, pageable));
+        return educationMappingService.toNoLoginGetEduListSearchByName(educationRepository.searchEduListByName(keyword, pageable), keyword, pageable.getPageNumber());
     }
 
 
@@ -96,6 +116,12 @@ public class EducationService {
         // 일자리 조회
         Education education = educationRepository.findById(educationId).orElseThrow(() -> new GeneralException(ErrorStatus._EDUCATION_NOT_FOUND));
         return bookmarkRepository.existsByEducationAndMember(education, member);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Slice<Education> getWorthToGoList(Pageable pageable) {
+        return educationRepository.findAllByOrderByEndDateAsc(pageable);
     }
 
 }

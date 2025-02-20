@@ -1,17 +1,16 @@
 package com.example.everguide.repository;
 
-import com.example.everguide.domain.Education;
-import com.example.everguide.domain.Job;
-import com.example.everguide.domain.QEducation;
+import com.example.everguide.domain.*;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -20,6 +19,7 @@ import java.util.List;
 class CustomEducationRepositoryImpl implements CustomEducationRepository {
     private final JPAQueryFactory jpaQueryFactory; //쿼리 자동생성
     private final QEducation education = QEducation.education;
+    private final QBookmark bookmark = QBookmark.bookmark;
 
     @Override
     public Slice<Education> searchEduListByName(String name, Pageable pageable) {
@@ -44,4 +44,114 @@ class CustomEducationRepositoryImpl implements CustomEducationRepository {
         // Slice 객체로 반환
         return new SliceImpl<>(educations, pageable, hasNext);
     }
+
+    @Override
+    public Page<Education> noLoginGetEducationList(List<String> deadlines, Pageable pageable, String keyWord) {
+        BooleanBuilder predicate = new BooleanBuilder();
+
+        // 이름 검색
+        if (keyWord != null && !keyWord.trim().isEmpty()) {
+            predicate.and(education.eduName.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 교육만 필터링
+        }
+        // 마감일 필터링
+        LocalDate now = LocalDate.now();
+        BooleanBuilder deadlinePredicate = new BooleanBuilder(); // 마감일 조건을 위한 별도 BooleanBuilder
+
+        if (deadlines != null && !deadlines.isEmpty()) {
+            for (String deadline : deadlines) {
+                switch (deadline) {
+                    case "7days":
+                        deadlinePredicate.or(education.endDate.between(now, now.plusDays(7))); // 마감일이 7일 미만
+                        break;
+                    case "30days":
+                        deadlinePredicate.or(education.endDate.between(now, now.plusDays(30))); // 마감일이 30일 미만
+                        break;
+                    case "over30days":
+                        deadlinePredicate.or(education.endDate.after(now.plusDays(30))); // 마감일이 30일 이상
+                        break;
+                    case "always":
+//                        deadlinePredicate.or(education.hireType.eq(HireType.ALWAYS)); // 상시 접수
+                        break;
+                    case "closed":
+                        deadlinePredicate.or(education.endDate.before(now)); // 마감된 교육
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        predicate.and(deadlinePredicate); // 마감일 조건 추가
+
+        JPQLQuery<Education> query = jpaQueryFactory.selectFrom(education).where(predicate);
+
+        // 정렬 조건 추가
+        query.orderBy(education.endDate.asc());
+
+
+        query.offset(pageable.getOffset()).limit(pageable.getPageSize());
+
+        QueryResults<Education> results = query.fetchResults();
+
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+
+    }
+
+    @Override
+    public Page<Education> getEducationList(List<String> deadlines, Pageable pageable, String keyWord, Member member) {
+        BooleanBuilder predicate = new BooleanBuilder();
+
+        // 이름 검색
+        if (keyWord != null && !keyWord.trim().isEmpty()) {
+            predicate.and(education.eduName.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 교육만 필터링
+        }
+        // 마감일 필터링
+        LocalDate now = LocalDate.now();
+        BooleanBuilder deadlinePredicate = new BooleanBuilder(); // 마감일 조건을 위한 별도 BooleanBuilder
+
+        if (deadlines != null && !deadlines.isEmpty()) {
+            for (String deadline : deadlines) {
+                switch (deadline) {
+                    case "7days":
+                        deadlinePredicate.or(education.endDate.between(now, now.plusDays(7))); // 마감일이 7일 미만
+                        break;
+                    case "30days":
+                        deadlinePredicate.or(education.endDate.between(now, now.plusDays(30))); // 마감일이 30일 미만
+                        break;
+                    case "over30days":
+                        deadlinePredicate.or(education.endDate.after(now.plusDays(30))); // 마감일이 30일 이상
+                        break;
+                    case "always":
+//                        deadlinePredicate.or(education.hireType.eq(HireType.ALWAYS)); // 상시 접수
+                        break;
+                    case "closed":
+                        deadlinePredicate.or(education.endDate.before(now)); // 마감된 교육
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        predicate.and(deadlinePredicate); // 마감일 조건 추가
+
+
+        // 정렬 조건 추가
+        // 북마크 여부 (북마크가 있으면 true, 없으면 false로 표현)
+        JPQLQuery<Education> query = jpaQueryFactory.selectFrom(education)
+                .leftJoin(bookmark).on(bookmark.education.eq(education).and(bookmark.member.eq(member))) // 북마크된 직업 여부 확인
+                .where(predicate)
+                .orderBy(
+                        bookmark.id.desc().nullsLast() // 북마크 여부를 기준으로 정렬
+                );
+
+
+        query.orderBy(education.endDate.asc());
+
+
+        query.offset(pageable.getOffset()).limit(pageable.getPageSize());
+
+        QueryResults<Education> results = query.fetchResults();
+
+        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+    }
 }
+

@@ -17,6 +17,7 @@ import com.example.everguide.web.dto.job.JobResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -59,6 +60,16 @@ public class EducationController {
                                                                                                         @RequestParam(value = "size", required = false, defaultValue = "4") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.noLoginSearchEduListByName(name, pageable)));
+}
+    @GetMapping("educations/getEducationList")
+    public ResponseEntity<ApiResponse<EducationResponse.GetEduCationListDto>> noLoginGetEducationList(
+                                                                @RequestParam(value = "deadline", required = false) List<String> deadline,
+                                                                @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                                @RequestParam(value = "size", required = false, defaultValue = "21") Integer size,
+                                                                @RequestParam(value = "keyWord", required = false) String keyWord) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.noLoginGetEducationList(deadline, pageable, keyWord)));
 
     }
 
@@ -83,5 +94,18 @@ public class EducationController {
     @GetMapping("member/educations/isBookMarked/{educationId}")
     public ResponseEntity<ApiResponse<Boolean>> isBookMarked(@RequestParam("educationId") Long educationId) {
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.isBookMarked(educationId)));
+    }
+
+
+    @GetMapping("member/educations/getEducationList")
+    public ResponseEntity<ApiResponse<EducationResponse.GetEduCationListDto>> loginGetEducationList(
+            @RequestParam(value = "deadline", required = false) List<String> deadline,
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "21") Integer size,
+            @RequestParam(value = "keyWord", required = false) String keyWord) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, educationService.getEducationList(deadline, pageable, keyWord)));
+
     }
 }

@@ -7,6 +7,7 @@ import com.example.everguide.web.dto.education.EducationItemDetail;
 import com.example.everguide.web.dto.education.EducationResponse;
 import com.example.everguide.web.dto.education.EducationItem;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -71,12 +72,14 @@ public class EducationMappingService {
 
     }
     //로그인 안했을 때, 검색결과
-    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetEduListSearchByName(Slice<Education> educations) {
+    public EducationResponse.NoLoginSearchEduByNameListDto toNoLoginGetEduListSearchByName(Slice<Education> educations, String keyWord, Integer currentPage ) {
         List<EducationResponse.SearchEduByNameDto> eduList = educations.stream()
                 .map(this::toNoLoginEduDto)
                 .collect(Collectors.toList());
         return EducationResponse.NoLoginSearchEduByNameListDto.builder()
                 .searchEduByNameDtoList(eduList)
+                .keyWord(keyWord)
+                .currentPage(currentPage)
                 .hasMore(educations.hasNext()).build();
     }
     public EducationResponse.SearchEduByNameDto toNoLoginEduDto(Education education) {
@@ -138,5 +141,56 @@ public class EducationMappingService {
     private LocalDate stringToDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         return LocalDate.parse(date, formatter);
+    }
+
+    public EducationResponse.GetEduCationListDto toNoLoginEducationListDto(List<Education> educationList, Integer currentPage, Integer totalPages, String keyWord, Long totalCount, List<String> deadlines) {
+        List<EducationResponse.EducationDto> educationDtoList = educationList.stream()
+                .map(this::toNoEducationDto)
+                .collect(Collectors.toList());
+
+        return EducationResponse.GetEduCationListDto.builder()
+                .educationList(educationDtoList)
+                .count(totalCount)
+                .currentPage(currentPage)
+                .totalPages(totalPages)
+                .deadlines(deadlines)
+                .keyword(keyWord)
+                .build();
+
+    }
+
+    private EducationResponse.EducationDto toNoEducationDto(Education education) {
+        return EducationResponse.EducationDto.builder()
+                .educationId(education.getId())
+                .name(education.getEduName())
+                .howTo(education.getHowTo())
+                .dDay(calcDday(education.getEndDate()))
+                .build();
+
+    }
+
+    public EducationResponse.GetEduCationListDto togetEducationListDto(List<Education> educationList, int currentPage, int totalPages, String keyWord, Long totalCount, List<String> deadlines, Member member) {
+        List<EducationResponse.EducationDto> educationDtoList = educationList.stream()
+                .map(education -> this.toEducationDto(education, member))
+                .collect(Collectors.toList());
+
+        return EducationResponse.GetEduCationListDto.builder()
+                .educationList(educationDtoList)
+                .count(totalCount)
+                .currentPage(currentPage)
+                .totalPages(totalPages)
+                .deadlines(deadlines)
+                .keyword(keyWord)
+                .build();
+    }
+
+    private  EducationResponse.EducationDto  toEducationDto(Education education, Member member) {
+        return EducationResponse.EducationDto.builder()
+                .educationId(education.getId())
+                .name(education.getEduName())
+                .howTo(education.getHowTo())
+                .dDay(calcDday(education.getEndDate()))
+                .isBookmarked(bookmarkRepository.existsByEducationAndMember(education, member))
+                .build();
     }
 }
