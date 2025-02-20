@@ -5,6 +5,7 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.service.token.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ public class TokenController {
     private final TokenService tokenService;
 
     // 소셜 로그인 Refresh 토큰 쿠키 발급 후 Access 토큰 헤더 발급 위함
+    @Operation(summary = "소셜 로그인 Refresh 토큰 쿠키 발급 후 Access 토큰 헤더로 반환", description = "소셜 로그인 Refresh 토큰 쿠키 발급 후 Access 토큰을 헤더로 반환합니다.")
     @PostMapping("/cookie-to-header")
     public ResponseEntity<ApiResponse<String>> cookieToHeader(HttpServletRequest request, HttpServletResponse response) {
 
@@ -45,6 +47,7 @@ public class TokenController {
     }
 
     // Access 토큰 만료 시 재발급
+    @Operation(summary = "Access 토큰 만료 시 재발급", description = "Access 토큰 만료 시 재발급해 헤더로 반환합니다.")
     @PostMapping("/reissue")
     public ResponseEntity<ApiResponse<String>> reissue(HttpServletRequest request, HttpServletResponse response) {
 
