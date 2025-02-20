@@ -15,7 +15,7 @@ public enum Region {
     ULSAN("울산광역시"),
     SEJONG("세종특별자치시"),
     GYEONGGI("경기도"),
-    GANGWON("강원도"),
+    GANGWON("강원특별자치도"),
     CHUNGBUK("충청북도"),
     CHUNGNAM("충청남도"),
     JEONBUK("전북특별자치도"),

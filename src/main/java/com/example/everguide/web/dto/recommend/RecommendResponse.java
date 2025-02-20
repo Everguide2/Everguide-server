@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 public class RecommendResponse {
 
     @Builder
@@ -41,7 +39,7 @@ public class RecommendResponse {
         String supportTypes;
         String supportCycle;
         String provisionType;
-        String householdConditions;
+        String householdTypes;
         String regionDetail;
     }
 }

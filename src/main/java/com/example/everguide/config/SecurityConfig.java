@@ -1,9 +1,6 @@
 package com.example.everguide.config;
 
-import com.example.everguide.jwt.CustomLogoutFilter;
-import com.example.everguide.jwt.JWTFilter;
-import com.example.everguide.jwt.JWTUtil;
-import com.example.everguide.jwt.LoginFilter;
+import com.example.everguide.jwt.*;
 import com.example.everguide.oauth2.CustomSuccessHandler;
 import com.example.everguide.service.auth.CustomOAuth2UserService;
 import com.example.everguide.redis.RedisUtils;
@@ -31,6 +28,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -41,16 +39,18 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final RedisUtils redisUtils;
+    private final SecurityUtil securityUtil;
 
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,
                           CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler,
-                          RedisUtils redisUtils) {
+                          RedisUtils redisUtils, SecurityUtil securityUtil) {
 
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.redisUtils = redisUtils;
+        this.securityUtil = securityUtil;
     }
 
     @Bean
@@ -85,7 +85,7 @@ public class SecurityConfig {
 
                                 CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                                configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://everguide-client.vercel.app/"));
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -117,7 +117,7 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisUtils, securityUtil), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, redisUtils), LogoutFilter.class);
 

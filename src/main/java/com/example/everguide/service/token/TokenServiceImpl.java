@@ -4,6 +4,7 @@ import com.example.everguide.api.code.status.ErrorStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.domain.enums.Role;
 import com.example.everguide.jwt.JWTUtil;
+import com.example.everguide.jwt.SecurityUtil;
 import com.example.everguide.redis.RedisUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +22,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final JWTUtil jwtUtil;
     private final RedisUtils redisUtils;
+    private final SecurityUtil securityUtil;
 
     @Override
     @Transactional
@@ -78,7 +80,6 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @Transactional
     public boolean reissue(HttpServletRequest request, HttpServletResponse response) {
 
         String refresh = null;
@@ -129,20 +130,9 @@ public class TokenServiceImpl implements TokenService {
 
         //response
         response.setHeader("Authorization", "Bearer " + newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+        response.addCookie(securityUtil.createCookie("refresh", newRefresh));
         response.setStatus(HttpStatus.OK.value());
 
         return true;
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-//        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-
-        return cookie;
     }
 }

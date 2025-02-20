@@ -9,6 +9,8 @@ import com.example.everguide.service.validate.ValidateService;
 import com.example.everguide.validation.ChangePasswordValidator;
 import com.example.everguide.web.dto.member.MemberRequest;
 import com.example.everguide.web.dto.member.MemberResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Member", description = "회원 API")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -31,6 +34,7 @@ public class MemberController {
     private final ChangePasswordValidator changePasswordValidator;
 
     // 이메일 찾기
+    @Operation(summary = "이메일 찾기", description = "이름과 전화번호로 이메일을 찾습니다.")
     @PostMapping("/find-email")
     public ResponseEntity<ApiResponse<MemberResponse.FindEmailDTO>> findEmail(
             @RequestBody MemberRequest.FindEmailDTO findEmailDTO) {
@@ -48,8 +52,9 @@ public class MemberController {
     }
 
     // 비밀번호 찾기
+    @Operation(summary = "비밀번호 찾기", description = "이름과 전화번호, 이메일로 임시 비밀번호를 이메일로 보냅니다.")
     @PostMapping("/find-pwd")
-    public ResponseEntity<ApiResponse<String>> findEmail(
+    public ResponseEntity<ApiResponse<String>> findPwd(
             @RequestBody MemberRequest.FindPwdDTO findPwdDTO) {
 
         try {
@@ -74,6 +79,7 @@ public class MemberController {
     }
 
     // 비밀번호 변경
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
     @PutMapping("/member/change-pwd")
     public ResponseEntity<ApiResponse<Map<String, String>>> changePassword(
             @RequestBody @Valid MemberRequest.ChangePwdDTO changePwdDTO,
@@ -111,6 +117,7 @@ public class MemberController {
     }
 
     // 회원 탈퇴
+    @Operation(summary = "회원 탈퇴", description = "회원이 탈퇴됩니다.")
     @DeleteMapping("/member")
     public ResponseEntity<ApiResponse<String>> deleteMember(
             @RequestParam(name="user_id") String userId,

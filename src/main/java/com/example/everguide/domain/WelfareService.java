@@ -56,9 +56,12 @@ public class WelfareService {
     @Column(name = "provision_type", length = 200)
     private String provisionType; // srvPvsnNm 제공유형명 다중
 
-    @Column(name = "household_conditions", length = 500)
-    private String householdConditions; // trgterIndvdlNmArray 가구상황명 다중
+    @Column(name = "household_types", length = 500)
+    private String householdTypes; // trgterIndvdlNmArray 가구상황명 다중
 
     @Column(name = "region_detail", length = 100)
     private String regionDetail; // sggNm 시군구명
+
+    @Column(name = "region_category", length = 100)
+    private String regionCategory;
 }

@@ -11,6 +11,8 @@ import com.example.everguide.validation.RegisterValidator;
 import com.example.everguide.web.dto.member.MemberResponse;
 import com.example.everguide.web.dto.signup.SignupRequest;
 import com.example.everguide.web.dto.signup.SignupResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+@Tag(name = "Signup", description = "회원가입 API")
 @RestController
 @RequiredArgsConstructor
 public class SignupController {
@@ -39,6 +42,7 @@ public class SignupController {
     private final AdditionalInfoValidator additionalInfoValidator;
 
     // 일반 회원가입
+    @Operation(summary = "일반 회원가입", description = "일반 회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<SignupResponse.SignupNotValidateDTO>> localSignup(
             @RequestBody @Valid SignupRequest.SignupDTO signupDTO, BindingResult bindingResult
@@ -81,6 +85,7 @@ public class SignupController {
     }
 
     // email 중복 확인
+    @Operation(summary = "이메일 중복 확인", description = "이메일 중복을 확인합니다.")
     @PostMapping("/signup/verify-email")
     public ResponseEntity<ApiResponse<String>> verifyEmail(@RequestBody SignupRequest.SignupEmailDTO signupEmailDTO) {
 
@@ -97,6 +102,7 @@ public class SignupController {
     }
 
     // 소셜 회원가입 추가 정보 입력창
+    @Operation(summary = "소셜 회원가입 추가 정보 입력창", description = "소셜 회원가입 추가 정보 입력창 정보를 조회합니다.")
     @GetMapping("/signup/additional-info")
     public ResponseEntity<ApiResponse<SignupResponse.SignupAdditionalDTO>> getSignupAdditionalInfo(
             HttpServletRequest request, HttpServletResponse response
@@ -116,6 +122,7 @@ public class SignupController {
     }
 
     // 소셜 회원가입 추가 정보 입력
+    @Operation(summary = "소셜 회원가입 추가 정보 저장", description = "소셜 회원가입 추가 정보를 저장합니다.")
     @PostMapping("/signup/additional-info")
     public ResponseEntity<ApiResponse<SignupResponse.AdditionalNotValidateDTO>> registerSignupAdditionalInfo(
             HttpServletRequest request, HttpServletResponse response,
