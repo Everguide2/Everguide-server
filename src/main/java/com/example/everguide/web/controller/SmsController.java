@@ -9,6 +9,7 @@ import com.example.everguide.repository.MemberRepository;
 import com.example.everguide.service.sms.CoolSmsService;
 import com.example.everguide.web.dto.sms.SmsRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
 import net.nurigo.sdk.message.model.FailedMessage;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "Sms", description = "전화번호 인증 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/sms")
