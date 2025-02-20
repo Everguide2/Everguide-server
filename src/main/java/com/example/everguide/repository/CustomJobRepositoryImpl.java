@@ -56,7 +56,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
     //로그인 한 경우
     @Override
-    public Page<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member) {
+    public Page<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member, String keyWord) {
         BooleanBuilder predicate = new BooleanBuilder();
 
     // 필터링 조건 추가
@@ -70,6 +70,11 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
             if (isRecruiting) {
                 predicate.and(job.hireType.eq(HireType.RECRUITING)); // 접수중인 일자리만 필터링
             }
+        }
+
+        // 이름 검색
+        if (keyWord != null && !keyWord.isEmpty()) {
+            predicate.and(job.name.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 일자리만 필터링
         }
     // 정렬 조건 추가
         // 북마크 여부 (북마크가 있으면 true, 없으면 false로 표현)
@@ -97,7 +102,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
     //로그인 하지 않은 경우
     @Override
-    public Page<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
+    public Page<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, String keyWord) {
         BooleanBuilder predicate = new BooleanBuilder();
 
     // 필터링 조건 추가
@@ -112,6 +117,13 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
                 predicate.and(job.hireType.eq(HireType.RECRUITING)); // 접수중인 일자리만 필터링
             }
         }
+
+
+        // 이름 검색
+        if (keyWord != null && !keyWord.isEmpty()) {
+            predicate.and(job.name.containsIgnoreCase(keyWord)); // 검색 키워드가 이름에 포함된 일자리만 필터링
+        }
+
         JPQLQuery<Job> query = jpaQueryFactory.selectFrom(job).where(predicate);
 
     // 정렬 조건 추가

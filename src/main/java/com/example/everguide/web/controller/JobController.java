@@ -34,8 +34,6 @@ public class JobController {
     }
 
 
-
-
     @GetMapping("/api/job")
     public Mono<ResponseEntity<ApiResponse<List<Job>>>> getJobData() {
         return jobDataService.fetchAndSaveJobData()
@@ -60,9 +58,10 @@ public class JobController {
                                                                           @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
                                                                           @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
                                                                           @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                          @RequestParam(value = "size", required = false, defaultValue = "21") Integer size){
+                                                                          @RequestParam(value = "size", required = false, defaultValue = "21") Integer size,
+                                                                          @RequestParam(value = "keyWord", required = false) String keyWord) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
-        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginGetJobListResult(regionList, sortBy, isRecruiting, pageable)));
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.noLoginGetJobListResult(regionList, sortBy, isRecruiting, pageable,keyWord)));
     }
     // 로그인 안했을 때, 검색 기능
     @GetMapping("/jobs/getJobListSearchByName")
@@ -101,13 +100,14 @@ public class JobController {
 
     @GetMapping("member/jobs/getJobList")
     public ResponseEntity<ApiResponse<JobResponse.GetJobList>> loginGetJobList(@RequestParam(value = "regions", required = false) List<Region> regionList,
-                                                                          @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
-                                                                          @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
-                                                                          @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-                                                                          @RequestParam(value = "size", required = false, defaultValue = "21") Integer size) {
+                                                                               @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
+                                                                               @RequestParam(value = "recruiting", required = false) Boolean isRecruiting,
+                                                                               @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+                                                                               @RequestParam(value = "size", required = false, defaultValue = "21") Integer size,
+                                                                               @RequestParam(value = "keyWord", required = false) String keyWord) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortBy));
 
-        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.getJobListResult(regionList, sortBy, isRecruiting, pageable)));
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, jobService.getJobListResult(regionList, sortBy, isRecruiting, pageable,keyWord)));
     }
 
     @DeleteMapping("member/jobs/deleteJobBookmark")

@@ -11,8 +11,8 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 public interface CustomJobRepository {
-    Page<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member);
-    Page<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting,  Pageable pageable);
+    Page<Job> findJobList(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, Member member, String keyword);
+    Page<Job> noLoginFindJobList(List<Region> regionList, String sortBy, Boolean isRecruiting,  Pageable pageable, String keyWord);
 
 
     List<Job> findThisWeekJobList();

@@ -35,6 +35,7 @@ public class JobResponse {
         String sortBy; // 정렬 조건
         Integer currentPage; //현재 페이지
         Integer totalPages; // 모든 페이지 정보
+        String keyword; //이름 검색 키워드
     }
     @Getter
     @Builder

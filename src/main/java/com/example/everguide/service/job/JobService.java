@@ -50,24 +50,24 @@ public class JobService {
 
 
     @Transactional(readOnly = true)
-    public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
-        Page<Job> jobPage = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable);
+    public JobResponse.GetJobList noLoginGetJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable, String keyWord) {
+        Page<Job> jobPage = jobRepository.noLoginFindJobList(regionList, sortBy, isRecruiting, pageable, keyWord);
         List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
         int totalPages = jobPage.getTotalPages(); // 총 페이지 수
-        return jobMappingService.toNoLoginJobListDto(jobList,  regionList, sortBy, isRecruiting,pageable.getPageNumber(), totalPages );
+        return jobMappingService.toNoLoginJobListDto(jobList,  regionList, sortBy, isRecruiting,pageable.getPageNumber(), totalPages, keyWord);
     }
 
 
     @Transactional(readOnly = true)
-    public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable) {
+    public JobResponse.GetJobList getJobListResult(List<Region> regionList, String sortBy, Boolean isRecruiting, Pageable pageable,String keyWord) {
 
         String userId = securityUtil.getCurrentUserId();
         Member member = memberRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
 
-        Page<Job> jobPage = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member);
+        Page<Job> jobPage = jobRepository.findJobList(regionList, sortBy, isRecruiting, pageable, member,keyWord);
         List<Job> jobList = jobPage.getContent(); // 실제 Job 리스트 가져오기
         int totalPages = jobPage.getTotalPages(); // 총 페이지 수
-        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting, pageable.getPageNumber(), totalPages);
+        return jobMappingService.toJobListDto(jobList, member, regionList, sortBy, isRecruiting, pageable.getPageNumber(), totalPages, keyWord);
     }
 
 

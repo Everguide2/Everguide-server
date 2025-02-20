@@ -51,7 +51,7 @@ public class JobMappingService {
 
 
 
-    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPage) {
+    public  JobResponse.GetJobList toNoLoginJobListDto(List<Job> jobs, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPage, String keyWord) {
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(this::toNoLoginJobDto)
                 .collect(Collectors.toList());
@@ -65,6 +65,7 @@ public class JobMappingService {
                 .isRecruiting(isRecruiting)
                 .currentPage(currentPage)
                 .totalPages(totalPage)
+                .keyword(keyWord)
                 .build();
     }
 
@@ -152,7 +153,7 @@ public class JobMappingService {
     }
 
 
-    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPages ) {
+    public JobResponse.GetJobList toJobListDto(List<Job> jobs, Member member, List<Region> regionList, String sortBy, Boolean isRecruiting, Integer currentPage, Integer totalPages , String keyWord ) {
 
         List<JobResponse.JobDto> jobList = jobs.stream()
                 .map(job -> this.toJobDto(job, member))
@@ -165,6 +166,7 @@ public class JobMappingService {
                 .isRecruiting(isRecruiting)
                 .currentPage(currentPage)
                 .totalPages(totalPages)
+                .keyword(keyWord)
                 .build();
     }
 
