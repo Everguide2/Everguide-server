@@ -10,6 +10,7 @@ import com.example.everguide.validation.ChangePasswordValidator;
 import com.example.everguide.web.dto.member.MemberRequest;
 import com.example.everguide.web.dto.member.MemberResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "Member", description = "회원 API")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {

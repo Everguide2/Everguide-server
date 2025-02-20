@@ -6,6 +6,7 @@ import com.example.everguide.api.code.status.SuccessStatus;
 import com.example.everguide.api.exception.MemberBadRequestException;
 import com.example.everguide.service.token.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Token", description = "토큰 API")
 @RestController
 @RequiredArgsConstructor
 public class TokenController {

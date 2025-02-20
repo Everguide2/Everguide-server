@@ -12,6 +12,7 @@ import com.example.everguide.web.dto.member.MemberResponse;
 import com.example.everguide.web.dto.signup.SignupRequest;
 import com.example.everguide.web.dto.signup.SignupResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+@Tag(name = "Signup", description = "회원가입 API")
 @RestController
 @RequiredArgsConstructor
 public class SignupController {

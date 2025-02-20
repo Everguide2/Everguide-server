@@ -7,6 +7,7 @@ import com.example.everguide.service.recommend.RecommendService;
 import com.example.everguide.web.dto.recommend.RecommendRequest;
 import com.example.everguide.web.dto.recommend.RecommendResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Recommend", description = "정책 추천 API")
 @RestController
 @RequiredArgsConstructor
 public class RecommendController {
