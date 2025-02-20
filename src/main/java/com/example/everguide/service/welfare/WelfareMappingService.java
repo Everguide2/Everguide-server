@@ -53,7 +53,7 @@ public class WelfareMappingService {
         entity.setLifeCycle(dto.getLifeNmArray());
         entity.setSupportCycle(dto.getSprtCycNm());
         entity.setProvisionType(dto.getSrvPvsnNm());
-        entity.setHouseholdConditions(dto.getTrgterIndvdlNmArray());
+        entity.setHouseholdTypes(dto.getTrgterIndvdlNmArray());
         entity.setRegionCategory(region);
         return entity;
     }

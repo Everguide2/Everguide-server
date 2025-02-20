@@ -22,7 +22,7 @@ public interface WelfareServiceRepository extends JpaRepository<WelfareService, 
            "AND (:sggNm IS NULL OR w.regionDetail = :sggNm) " +
            "AND (:intrsThemaNm IS NULL OR w.supportTypes LIKE %:intrsThemaNm%) " +
            "AND (:lifeNm IS NULL OR w.lifeCycle LIKE %:lifeNm%) " +
-           "AND (:trgterIndvdlNm IS NULL OR w.householdConditions LIKE %:trgterIndvdlNm%)")
+           "AND (:trgterIndvdlNm IS NULL OR w.householdTypes LIKE %:trgterIndvdlNm%)")
     Page<WelfareService> findAllWithFilters(
             @Param("ctpvNm") String ctpvNm,
             @Param("sggNm") String sggNm,
@@ -34,7 +34,7 @@ public interface WelfareServiceRepository extends JpaRepository<WelfareService, 
     @Query("SELECT DISTINCT w.lifeCycle FROM WelfareService w WHERE w.lifeCycle IS NOT NULL")
     List<String> findDistinctLifeNmArray();
 
-    @Query("SELECT DISTINCT w.householdConditions FROM WelfareService w WHERE w.householdConditions IS NOT NULL")
+    @Query("SELECT DISTINCT w.householdTypes FROM WelfareService w WHERE w.householdTypes IS NOT NULL")
     List<String> findDistinctTrgterIndvdlNmArray();
 
     @Query("SELECT DISTINCT w.supportTypes FROM WelfareService w WHERE w.supportTypes IS NOT NULL")

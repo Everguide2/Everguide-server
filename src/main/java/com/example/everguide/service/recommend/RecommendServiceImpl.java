@@ -139,7 +139,7 @@ public class RecommendServiceImpl implements RecommendService {
                 .supportTypes(welfareService.getSupportTypes())
                 .supportCycle(welfareService.getSupportCycle())
                 .provisionType(welfareService.getProvisionType())
-                .householdConditions(welfareService.getHouseholdConditions())
+                .householdTypes(welfareService.getHouseholdTypes())
                 .regionDetail(welfareService.getRegionDetail())
                 .build();
     }

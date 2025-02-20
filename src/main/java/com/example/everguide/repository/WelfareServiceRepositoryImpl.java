@@ -206,7 +206,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdMulticulturalContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.MULTICULTURAL)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.MULTICULTURAL.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.MULTICULTURAL.getDescription()));
         } else {
             return new BooleanBuilder();
         }
@@ -215,7 +215,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdMultichildContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.MULTICHILD)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.MULTICHILD.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.MULTICHILD.getDescription()));
         } else {
             return new BooleanBuilder();
         }
@@ -224,7 +224,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdVeteranContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.VETERAN)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.VETERAN.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.VETERAN.getDescription()));
         } else {
             return new BooleanBuilder();
         }
@@ -233,7 +233,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdDisabledContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.DISABLED)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.DISABLED.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.DISABLED.getDescription()));
         } else {
             return new BooleanBuilder();
         }
@@ -242,7 +242,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdLowIncomeContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.LOW_INCOME)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.LOW_INCOME.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.LOW_INCOME.getDescription()));
         } else {
             return new BooleanBuilder();
         }
@@ -251,7 +251,7 @@ public class WelfareServiceRepositoryImpl implements WelfareServiceRepositoryCus
     public BooleanBuilder householdSingleGrandParentContains(Set<HouseholdType> householdTypes) {
 
         if (householdTypes.contains(HouseholdType.SINGLE_PARENT_GRANDPARENT)) {
-            return nullSafeBooleanBuilder(() -> welfareService.householdConditions.contains(HouseholdType.SINGLE_PARENT_GRANDPARENT.getDescription()));
+            return nullSafeBooleanBuilder(() -> welfareService.householdTypes.contains(HouseholdType.SINGLE_PARENT_GRANDPARENT.getDescription()));
         } else {
             return new BooleanBuilder();
         }
