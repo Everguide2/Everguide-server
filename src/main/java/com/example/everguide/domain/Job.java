@@ -50,4 +50,3 @@ public class Job extends BaseEntity {
 
 
 }
-
