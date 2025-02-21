@@ -12,6 +12,9 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
         corsRegistry.addMapping("/**")
                 .exposedHeaders("Set-Cookie")
-                .allowedOrigins("http://localhost:5173", "https://everguide-client.vercel.app/");
+                .allowedOrigins("http://localhost:5173",
+                        "https://everguide-client.vercel.app/",
+                        "http://everguide.s3-website.ap-northeast-2.amazonaws.com/"
+                );
     }
 }
