@@ -85,7 +85,7 @@ public class SecurityConfig {
 
                                 CorsConfiguration configuration = new CorsConfiguration();
 
-                                configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://everguide-client.vercel.app/"));
+                                configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://everguide-client.vercel.app/", "http://everguide.s3-website.ap-northeast-2.amazonaws.com/"));
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
